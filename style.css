@@ -1,0 +1,183 @@
+/* ================================
+   CSS Custom Properties (Variables)
+=================================== */
+:root {
+    --font-main: 'Noto Sans Mongolian', sans-serif;
+    --text-color: #222;
+    --bg-color: #fff;
+    --accent-color: #009688;
+    --gradient: linear-gradient(45deg, #009688, #26a69a);
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --radius: 12px;
+    --transition-speed: 0.3s;
+  }
+  
+  [data-theme="dark"] {
+    --text-color: #eee;
+    --bg-color: #121212;
+    --accent-color: #80cbc4;
+    --gradient: linear-gradient(45deg, #37474f, #263238);
+    --shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  }
+  
+  /* ====================
+     Global Reset & Base
+  ==================== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: var(--font-main);
+    background: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 1rem;
+    transition: background var(--transition-speed), color var(--transition-speed);
+  }
+  
+  /* ====================
+     Layout
+  ==================== */
+  header, footer {
+    text-align: center;
+    padding: 1rem;
+    background: var(--gradient);
+    color: white;
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+  }
+  
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style: none;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color var(--transition-speed);
+  }
+  
+  nav a:hover {
+    color: #ffe082;
+  }
+  
+  main {
+    display: grid;
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+  
+  /* ====================
+     Sections
+  ==================== */
+  section {
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: transform var(--transition-speed);
+  }
+  
+  section:hover {
+    transform: translateY(-4px);
+  }
+  
+  /* ====================
+     Media
+  ==================== */
+  img, video {
+    max-width: 100%;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  
+  audio {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  /* ====================
+     Typography & Spacing
+  ==================== */
+  h1, h2 {
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+    word-spacing: 1px;
+    line-height: 1.8;
+  }
+  
+  /* ====================
+     Animation Example
+  ==================== */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  section {
+    animation: fadeIn 0.7s ease-in-out;
+  }
+  
+  /* ====================
+     Responsive (Media Query)
+  ==================== */
+  
+  /* 1. Гар утас - Босоо */
+  @media (max-width: 600px) {
+    body {
+      font-size: 1rem;
+    }
+  
+    nav ul {
+      flex-direction: column;
+    }
+  }
+  
+  /* 2. Гар утас - Хэвтээ */
+  @media (min-width: 601px) and (max-width: 899px) {
+    body {
+      font-size: 1.1rem;
+    }
+  }
+  
+  /* 3. Компьютер */
+  @media (min-width: 900px) {
+    main {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  /* ====================
+     Inline SVG Styling (optional)
+  ==================== */
+  svg {
+    width: 100px;
+    height: auto;
+    fill: var(--accent-color);
+    transition: fill var(--transition-speed);
+  }
+  
+  /* ====================
+     Dark/Light Mode Toggle (Optional JS)
+  ==================== */
+  /* If you plan to add a toggle button later, this is ready */
+  
+  
