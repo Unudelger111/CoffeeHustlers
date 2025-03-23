@@ -1,183 +1,232 @@
-/* ================================
-   CSS Custom Properties (Variables)
-=================================== */
-:root {
-    --font-main: 'Noto Sans Mongolian', sans-serif;
-    --text-color: #222;
-    --bg-color: #fff;
-    --accent-color: #009688;
-    --gradient: linear-gradient(45deg, #009688, #26a69a);
-    --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --radius: 12px;
-    --transition-speed: 0.3s;
-  }
-  
-  [data-theme="dark"] {
-    --text-color: #eee;
-    --bg-color: #121212;
-    --accent-color: #80cbc4;
-    --gradient: linear-gradient(45deg, #37474f, #263238);
-    --shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-  }
-  
-  /* ====================
-     Global Reset & Base
-  ==================== */
-  * {
+body {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    background-color: #ffffff;
+    color: #000000;
   }
   
-  body {
-    font-family: var(--font-main);
-    background: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    padding: 1rem;
-    transition: background var(--transition-speed), color var(--transition-speed);
-  }
-  
-  /* ====================
-     Layout
-  ==================== */
-  header, footer {
-    text-align: center;
-    padding: 1rem;
-    background: var(--gradient);
-    color: white;
-    box-shadow: var(--shadow);
-    border-radius: var(--radius);
-  }
-  
-  nav ul {
+  .header {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #D9D9D9;
+  }
+  
+  .logo-menu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    height: 40px;
+    margin-right: 16px;
+  }
+  
+  .nav-links {
     list-style: none;
-    gap: 1rem;
-    margin-top: 0.5rem;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
   }
   
-  nav a {
-    text-decoration: none;
-    color: white;
+  .nav-links li {
+    cursor: pointer;
+    font-weight: 500;
+    color: #000000;
+  }
+  
+  .login-btn {
     font-weight: bold;
-    transition: color var(--transition-speed);
+    cursor: pointer;
+    color: #000000;
+  }
+
+  .filters {
+    padding: 24px 32px;
+    border-bottom: 1px solid #F2F2F2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
   
-  nav a:hover {
-    color: #ffe082;
-  }
-  
-  main {
+  fieldset.categories {
     display: grid;
-    gap: 2rem;
-    padding: 2rem 0;
-  }
-  
-  /* ====================
-     Sections
-  ==================== */
-  section {
-    padding: 1rem;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    transition: transform var(--transition-speed);
-  }
-  
-  section:hover {
-    transform: translateY(-4px);
-  }
-  
-  /* ====================
-     Media
-  ==================== */
-  img, video {
-    max-width: 100%;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-  }
-  
-  audio {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 32px;
+    padding: 24px;
+    margin: 0 auto 16px auto;
+    border: 2px solid #000000;
+    border-radius: 12px;
+    background-color: #ffffff;
     width: 100%;
-    margin-top: 1rem;
+    box-sizing: border-box;
+    justify-items: start;
   }
   
-  /* ====================
-     Typography & Spacing
-  ==================== */
-  h1, h2 {
-    margin-bottom: 0.5rem;
+  
+
+  .categories label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
   }
   
-  p {
-    margin-bottom: 1rem;
-    letter-spacing: 0.5px;
-    word-spacing: 1px;
-    line-height: 1.8;
+  .categories input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #606F5F;
   }
   
-  /* ====================
-     Animation Example
-  ==================== */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  
+  
+  form.dropdowns {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
   }
   
-  section {
-    animation: fadeIn 0.7s ease-in-out;
+  form.dropdowns label {
+    width: 100%;
+  }
+
+  form.dropdowns select {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid #606F5F;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #000000;
+    appearance: none; /* remove default arrow on some browsers */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill=\"%23606F5F\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
   }
   
-  /* ====================
-     Responsive (Media Query)
-  ==================== */
-  
-  /* 1. Гар утас - Босоо */
-  @media (max-width: 600px) {
-    body {
-      font-size: 1rem;
-    }
-  
-    nav ul {
-      flex-direction: column;
-    }
+  .regular-btn {
+    align-self: flex-start;
+    padding: 8px 16px;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .products {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+    padding: 32px;
   }
   
-  /* 2. Гар утас - Хэвтээ */
-  @media (min-width: 601px) and (max-width: 899px) {
-    body {
-      font-size: 1.1rem;
-    }
-  }
-  
-  /* 3. Компьютер */
-  @media (min-width: 900px) {
-    main {
+  @media (min-width: 768px) {
+    .products {
       grid-template-columns: repeat(2, 1fr);
     }
+    form.dropdowns {
+        flex-direction: row;
+      }
+    
+      form.dropdowns label {
+        flex: 1;
+      }
   }
   
-  /* ====================
-     Inline SVG Styling (optional)
-  ==================== */
-  svg {
+  @media (min-width: 1024px) {
+    .products {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  .product {
+    text-align: center;
+    padding: 16px;
+    border: 1px solid #F2F2F2;
+    border-radius: 8px;
+    background-color: #ffffff;
+    transition: transform 0.2s;
+  }
+  
+  .product:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product img {
     width: 100px;
     height: auto;
-    fill: var(--accent-color);
-    transition: fill var(--transition-speed);
+    margin-bottom: 8px;
   }
   
-  /* ====================
-     Dark/Light Mode Toggle (Optional JS)
-  ==================== */
-  /* If you plan to add a toggle button later, this is ready */
+  .product.sold-out {
+    opacity: 0.5;
+    position: relative;
+  }
   
+  .product.sold-out::before {
+    content: "Дууссан";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .cart-icon {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background-color: white;
+    border: 2px solid #000000;
+    padding: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  
+  .cart-icon img {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .footer {
+    display: flex;
+    justify-content: space-around;
+    padding: 32px;
+    background-color: #F2F2F2;
+    border-top: 1px solid #D9D9D9;
+    color: #606F5F;
+  }
+  
+  .footer h4 {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #7B3F00;
+  }
+  
+  .footer p {
+    font-size: 0.9rem;
+    color: #768A75;
+  }
+  
+  .hero img {
+    width: 100%;
+    display: block;
+    height: auto;
+  }
   
