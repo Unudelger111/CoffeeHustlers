@@ -203,3 +203,86 @@ html, body {
     z-index: -1;
     pointer-events: none;
   }
+
+@media (max-width: 1024px) {
+    .top-section {
+      flex-direction: column;
+      gap: 2rem;
+    }
+  
+    .size-options {
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+  
+    .size-section h3 {
+      text-align: center;
+      margin-left: 0;
+    }
+  
+    .coffee-particle-bg {
+      width: 300px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .nav-links {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+  
+    .logo-menu {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .size-options {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .drink-image img {
+      width: 150px;
+    }
+  
+    .size-s img {
+      width: 30px;
+    }
+  
+    .size-m img {
+      width: 40px;
+    }
+  
+    .size-l img {
+      width: 50px;
+    }
+  
+    .footer {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .coffee-particle-bg {
+      display: none;
+    }
+  
+    .size-options {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  
+    .add-to-cart button {
+      width: 100%;
+    }
+  }
+  
