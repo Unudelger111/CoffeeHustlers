@@ -1,288 +1,285 @@
 html, body {
-    height: 100%;
-    margin: 0;
-  }
+  height: 100%;
+  margin: 0;
+}
 
-  .page-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-  main {
-    flex: 1;
-  }
+main {
+  flex: 1;
+  position: relative;
+}
 
-  body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #ffffff;
-    color: #000000;
-  }
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+}
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 32px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #D9D9D9;
-  }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #D9D9D9;
+}
 
-  .logo-menu {
-    display: flex;
-    align-items: center;
-  }
+.logo-menu {
+  display: flex;
+  align-items: center;
+}
 
-  .logo {
-    height: 40px;
-    margin-right: 16px;
-  }
+.logo {
+  height: 40px;
+  margin-right: 16px;
+}
 
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-    padding: 0;
-    margin: 0;
-  }
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+}
 
-  .nav-links a {
-    text-decoration: none;
-    color: inherit;
-  }
+.nav-links a {
+  text-decoration: none;
+  color: inherit;
+}
 
-  .nav-links a:hover {
-    color: #c49a6c;
-  }
+.nav-links a:hover {
+  color: #c49a6c;
+}
 
-  .nav-links li {
-    cursor: pointer;
-    font-weight: 500;
-    color: #000000;
-  }
+.nav-links li {
+  cursor: pointer;
+  font-weight: 500;
+  color: #000000;
+}
 
-  .login-btn {
-    font-weight: bold;
-    cursor: pointer;
-    color: #000000;
-  }
+.login-btn {
+  font-weight: bold;
+  cursor: pointer;
+  color: #000000;
+}
 
-  .login-btn a {
-    text-decoration: none;
-    color: inherit;
-  }
+.login-btn a {
+  text-decoration: none;
+  color: inherit;
+}
 
-  .drink-details {
-    margin: 0;
-    width: 100%;
-    margin-top: 5rem;
-    margin-bottom: 5rem;
-  }
+.login-btn:hover{
+  color: #c49a6c;
+}
 
-  .top-section {
-    gap: 6rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.go-back {
+  margin: 20px 0 0 40px;
+}
 
-  .drink-image img {
-    width: 200px;
-    border-radius: 8px;
-  }
+.go-back button {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+.go-back button a{
+  text-decoration: none;
+  color: inherit;
+}
 
-  .drink-info h2 {
-    margin-top: 0;
-  }
+.go-back button:hover {
+  border-color: #c49a6c;
+  background-color: rgba(196, 154, 108, 0.15);
+  color: #c49a6c;
+}
 
-  .drink-info ul {
-    list-style: none;
-    padding: 0;
-    line-height: 1.8;
-  }
+.go-back button::before {
+  content: "←";
+  margin-right: 8px;
+  font-size: 16px;
+}
 
-  .size-section {
-    background-color: #F2F2F2;
-    padding: 2rem;
-    border-radius: 10px;
-    margin-top: 40px;
-  }
+.drink-details {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 20px;
+  margin-top: 2rem;
+  margin-bottom: 5rem;
+}
 
-  .size-section h3 {
-    margin-bottom: 15px;
-    margin-left: 20%;
-  }
+.top-section {
+  gap: 6rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
 
-  .size-options {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    gap: 40px;
-  }
+.drink-image img {
+  width: 200px;
+  border-radius: 8px;
+}
 
-  .sizes {
-    display: flex;
-    gap: 30px;
-  }
+.drink-info {
+  flex: 1;
+  max-width: 500px;
+}
 
-  .sizes label {
-    text-align: center;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.drink-info h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
 
-  .sizes img {
-    display: block;
-    margin-bottom: 8px;
-  }
+.drink-info ul {
+  list-style: none;
+  padding: 0;
+  line-height: 1.8;
+}
 
-  .sizes input[type="radio"] {
-    margin: 4px 0;
-    accent-color: #768A75;
-  }
 
-  .size-s img {
-    width: 40px;
-  }
+.price-info {
+  margin: 20px 0;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
 
-  .size-m img {
-    width: 55px;
-  }
+.price-info h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
 
-  .size-l img {
-    width: 70px;
-  }
+.price-options {
+  display: flex;
+  gap: 20px;
+}
 
-  .add-to-cart button {
-    background-color: white;
-    border: 2px solid #444;
-    padding: 10px 25px;
-    font-size: 16px;
-    border-radius: 10px;
-    cursor: pointer;
-  }
+.price-tag {
+  font-weight: bold;
+  color: #7B3F00;
+  font-size: 1.2rem;
+}
 
-  .add-to-cart button:hover {
-    background-color: #f0f0f0;
-  }
 
-  .footer {
-    display: flex;
-    justify-content: space-around;
-    padding: 32px;
-    background-color: #F2F2F2;
-    border-top: 1px solid #D9D9D9;
-    color: #606F5F;
-  }
+.size-section {
+  background-color: #F2F2F2;
+  padding: 2rem;
+  border-radius: 10px;
+  margin-top: 40px;
+  border-color: #7B3F00;
+}
 
-  .footer h4 {
-    margin-bottom: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #7B3F00;
-  }
+.size-section h3 {
+  margin-bottom: 15px;
+  margin-left: 20%;
+}
 
-  .footer p {
-    font-size: 0.9rem;
-    color: #768A75;
-  }
+.size-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 40px;
+}
 
-  figure {
-    margin: 0;
-    text-align: center;
-  }
+.sizes {
+  display: flex;
+  gap: 30px;
+}
 
-  .coffee-particle-bg {
-    position: absolute;
-    top: 2rem;
-    right: 0;
-    width: 400px;
-    opacity: 1;
-    z-index: -1;
-    pointer-events: none;
-  }
+.sizes label {
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-@media (max-width: 1024px) {
-    .top-section {
-      flex-direction: column;
-      gap: 2rem;
-    }
-  
-    .size-options {
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-    }
-  
-    .size-section h3 {
-      text-align: center;
-      margin-left: 0;
-    }
-  
-    .coffee-particle-bg {
-      width: 300px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .header {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  
-    .nav-links {
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
-    }
-  
-    .logo-menu {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .size-options {
-      flex-direction: column;
-      gap: 20px;
-    }
-  
-    .drink-image img {
-      width: 150px;
-    }
-  
-    .size-s img {
-      width: 30px;
-    }
-  
-    .size-m img {
-      width: 40px;
-    }
-  
-    .size-l img {
-      width: 50px;
-    }
-  
-    .footer {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .coffee-particle-bg {
-      display: none;
-    }
-  
-    .size-options {
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-  
-    .add-to-cart button {
-      width: 100%;
-    }
-  }
-  
+.sizes img {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.sizes input[type="radio"] {
+  margin: 4px 0;
+  accent-color: #c49a6c;
+
+}
+
+.size-s img {
+  width: 40px;
+}
+
+.size-m img {
+  width: 55px;
+}
+
+.size-l img {
+  width: 70px;
+}
+
+.add-to-cart button {
+  background-color: white;
+  border: 2px solid #444;
+  padding: 10px 25px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-to-cart button:hover {
+  transform: translateY(-2px);
+  border-color: #c49a6c;
+  background-color: rgba(196, 154, 108, 0.15);
+  color: #c49a6c;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-around;
+  padding: 32px;
+  background-color: #F2F2F2;
+  border-top: 1px solid #D9D9D9;
+  color: #606F5F;
+}
+
+.footer h4 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #7B3F00;
+}
+
+.footer p {
+  font-size: 0.9rem;
+  color: #768A75;
+  margin: 5px 0;
+}
+
+/* Background image */
+figure {
+  margin: 0;
+  text-align: center;
+}
+
+.coffee-particle-bg {
+  position: absolute;
+  top: 2rem;
+  right: 0;
+  width: 400px;
+  opacity: 0.3;
+  z-index: -1;
+  pointer-events: none;
+}

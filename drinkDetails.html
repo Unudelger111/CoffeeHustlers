@@ -4,20 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Homepage - Coffee Hustlers</title>
+  <title>Espresso Macchiato - Coffee Hustlers</title>
   <link rel="stylesheet" href="drinkStyle.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
   <div class="page-container">
-    <!-- Header -->
     <header class="header">
       <div class="logo-menu">
-        <a href="Menu.html"><img src="images/coffee-logo.png" alt="Coffee Logo" class="logo"></a>
+        <a href="index.html"><img src="images/coffee-logo.png" alt="Coffee Logo" class="logo"></a>
         <nav>
           <ul class="nav-links">
-            <li><a href="Menu.html">Меню</a></li>
+            <li><a href="index.html">Меню</a></li>
             <li><a href="Order.html">Миний захиалга</a></li>
             <li><a href="Cart.html">Сагс</a></li>
           </ul>
@@ -28,11 +27,15 @@
       </div>
     </header>
 
-    <!-- Drink details section -->
     <main>
-        <figure class="drink-image">
-            <img src="images/drink-coffee.png" alt="coffee-img-decoration" class="coffee-particle-bg"/>
-        </figure>
+      <div class="go-back">
+        <button><a href="index.html">Буцах</a></button>
+      </div>
+      
+      <figure>
+        <img src="images/drink-coffee.png" alt="coffee-img-decoration" class="coffee-particle-bg"/>
+      </figure>
+      
       <section class="drink-details">
         <article class="top-section">
           <figure class="drink-image">
@@ -40,6 +43,23 @@
           </figure>
           <section class="drink-info">
             <h2>Espresso Macchiato</h2>
+            <div class="price-info">
+              <h3>Үнэ</h3>
+              <div class="price-options">
+                <div>
+                  <span>S: </span>
+                  <span class="price-tag">4500₮</span>
+                </div>
+                <div>
+                  <span>M: </span>
+                  <span class="price-tag">5500₮</span>
+                </div>
+                <div>
+                  <span>L: </span>
+                  <span class="price-tag">6500₮</span>
+                </div>
+              </div>
+            </div>
             <ul>
               <li><strong>Calories:</strong> 12</li>
               <li><strong>Carbohydrates:</strong> 1</li>
@@ -83,7 +103,7 @@
     <footer class="footer">
       <div>
         <h4>Бидний тухай</h4>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget felis ut eros fermentum tristique. </p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget felis ut eros fermentum tristique.</p>
       </div>
       <div>
         <h4>Байршил</h4>
