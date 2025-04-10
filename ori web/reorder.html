@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoffeeHustlers - Re-Order</title>
+    <link rel="stylesheet" href="menu.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="reorder.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <a href="main.html" class="logo-container">
+            <img src="images/coffee-logo.png" alt="CoffeeHustlers Logo" class="logo">
+            <h1>CoffeeHustlers</h1>
+        </a>
+        <div class="header-buttons">
+            <div class="right-buttons">
+                <button id="history-btn"><i class="fas fa-history"></i> Order History</button>
+                <button id="cart-btn"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span></button>
+                <button id="account-btn"><i class="fas fa-user"></i> Account</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="reorder-container">
+        <div class="reorder-header">
+            <h2>Your Previous Orders</h2>
+            <p>Quickly reorder your favorite items</p>
+        </div>
+        
+        <div id="previous-orders" class="previous-orders">
+            <!-- Orders will be loaded here dynamically -->
+            <div class="loading">Loading your previous orders...</div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <ul>
+                    <li><a href="about.html">Our Story</a></li>
+                    <li><a href="about.html#mission">Our Mission</a></li>
+                    <li><a href="about.html#values">Our Values</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="faq.html">FAQs</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CoffeeHustlers. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="reorder.js"></script>
+</body>
+</html>
