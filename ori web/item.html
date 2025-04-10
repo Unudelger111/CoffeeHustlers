@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brew Express - Item Details</title>
+    <link rel="stylesheet" href="item.css">
+</head>
+<body>
+    <header>
+        <button id="back-btn">← Back to Menu</button>
+        <h1>Brew Express</h1>
+        <button id="cart-btn">Cart <span id="cart-count">0</span></button>
+    </header>
+    
+    <div class="container">
+        <div class="item-details">
+            <div class="item-image">
+                <img id="item-img" src="images/latte.jpg" alt="Coffee">
+                <div class="steam-effect">
+                    <div class="steam steam-1"></div>
+                    <div class="steam steam-2"></div>
+                    <div class="steam steam-3"></div>
+                </div>
+            </div>
+            
+            <div class="item-info">
+                <h2 id="item-name">Latte</h2>
+                <p id="item-description">Rich espresso balanced with steamed milk and a light layer of foam.</p>
+                <p id="item-price" class="price">$4.29</p>
+                
+                <div class="size-selection">
+                    <h3>Size</h3>
+                    <div class="size-options">
+                        <button class="size-btn active" data-size="small" data-price="0">Small</button>
+                        <button class="size-btn" data-size="medium" data-price="0.50">Medium</button>
+                        <button class="size-btn" data-size="large" data-price="1.00">Large</button>
+                    </div>
+                </div>
+                
+                <div class="options">
+                    <h3>Options</h3>
+                    <div class="option-group">
+                        <label class="option-checkbox">
+                            <input type="checkbox" name="extra-shot" data-price="0.80">
+                            Extra Shot
+                            <span class="price-add">+$0.80</span>
+                        </label>
+                        
+                        <label class="option-checkbox">
+                            <input type="checkbox" name="extra-cream" data-price="0.50">
+                            Extra Cream
+                            <span class="price-add">+$0.50</span>
+                        </label>
+                        
+                        <label class="option-checkbox">
+                            <input type="checkbox" name="vanilla-syrup" data-price="0.75">
+                            Vanilla Syrup
+                            <span class="price-add">+$0.75</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="quantity">
+                    <h3>Quantity</h3>
+                    <div class="quantity-selector">
+                        <button id="decrease-btn">-</button>
+                        <input type="number" id="quantity-input" value="1" min="1" max="10">
+                        <button id="increase-btn">+</button>
+                    </div>
+                </div>
+                
+                <div class="total">
+                    <h3>Total</h3>
+                    <p id="total-price">$4.29</p>
+                </div>
+                
+                <button id="add-to-cart-btn" class="primary-btn">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="item.js"></script>
+</body>
+</html>
