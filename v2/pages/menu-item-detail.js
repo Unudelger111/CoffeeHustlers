@@ -5,19 +5,19 @@ class MenuItemDetail extends HTMLElement {
         const itemId = idMatch ? idMatch[1] : null;
   
       const items = {
-        1: { name: 'Espresso', description: 'A concentrated shot of coffee with a robust, bold flavor.', price: 2.99, image: '/v2/images/espresso.jpg' },
-        2: { name: 'Americano', description: 'Espresso diluted with hot water, similar strength to coffee but different flavor.', price: 3.49, image: '/v2/images/americano.jpg' },
-        3: { name: 'Latte', description: 'Rich espresso balanced with steamed milk and a light layer of foam.', price: 4.29, image: '/v2/images/latte.jpg' },
-        4: { name: 'Cappuccino', description: 'Equal parts espresso, steamed milk, and milk foam.', price: 4.29, image: '/v2/images/cappuccino.jpg' },
-        5: { name: 'Iced Coffee', description: 'Chilled coffee served over ice.', price: 3.99, image: '/v2/images/iced-coffee.jpg' },
-        6: { name: 'Cold Brew', description: 'Coffee brewed cold for smoothness.', price: 4.49, image: '/v2/images/cold-brew.jpg' },
-        7: { name: 'Iced Latte', description: 'Espresso and cold milk over ice.', price: 4.79, image: '/v2/images/iced-latte.jpg' },
-        8: { name: 'Mocha', description: 'Espresso with steamed milk and chocolate.', price: 4.99, image: '/v2/images/mocha.jpg' },
-        9: { name: 'Caramel Macchiato', description: 'Vanilla espresso with caramel drizzle.', price: 5.29, image: '/v2/images/caramel-macchiato.jpg' },
-        10: { name: 'Milk Cake', description: 'Delicious milk-soaked pastry.', price: 3.49, image: '/v2/images/milk-cake.jpg' },
-        11: { name: 'Hotdog Pretzel', description: 'Savory pretzel filled with hotdog.', price: 3.99, image: '/v2/images/hotdog.jpg' },
-        12: { name: 'Chocolate Bread', description: 'Rich chocolate-filled bread.', price: 3.99, image: '/v2/images/chocolate-bread.jpg' },
-        13: { name: 'Milk Cream Croissant', description: 'Flaky croissant with creamy filling.', price: 3.99, image: '/v2/images/croissant.jpg' },
+        1: { name: 'Espresso', description: 'A concentrated shot of coffee with a robust, bold flavor.', price: 2.99, image: '/CoffeeHustlers/v2/images/espresso.jpg' },
+        2: { name: 'Americano', description: 'Espresso diluted with hot water, similar strength to coffee but different flavor.', price: 3.49, image: '/CoffeeHustlers/v2/images/americano.jpg' },
+        3: { name: 'Latte', description: 'Rich espresso balanced with steamed milk and a light layer of foam.', price: 4.29, image: '/CoffeeHustlers/v2/images/latte.jpg' },
+        4: { name: 'Cappuccino', description: 'Equal parts espresso, steamed milk, and milk foam.', price: 4.29, image: '/CoffeeHustlers/v2/images/cappuccino.jpg' },
+        5: { name: 'Iced Coffee', description: 'Chilled coffee served over ice.', price: 3.99, image: '/CoffeeHustlers/v2/images/iced-coffee.jpg' },
+        6: { name: 'Cold Brew', description: 'Coffee brewed cold for smoothness.', price: 4.49, image: '/CoffeeHustlers/v2/images/cold-brew.jpg' },
+        7: { name: 'Iced Latte', description: 'Espresso and cold milk over ice.', price: 4.79, image: '/CoffeeHustlers/v2/images/iced-latte.jpg' },
+        8: { name: 'Mocha', description: 'Espresso with steamed milk and chocolate.', price: 4.99, image: '/CoffeeHustlers/v2/images/mocha.jpg' },
+        9: { name: 'Caramel Macchiato', description: 'Vanilla espresso with caramel drizzle.', price: 5.29, image: '/CoffeeHustlers/v2/images/caramel-macchiato.jpg' },
+        10: { name: 'Milk Cake', description: 'Delicious milk-soaked pastry.', price: 3.49, image: '/CoffeeHustlers/v2/images/milk-cake.jpg' },
+        11: { name: 'Hotdog Pretzel', description: 'Savory pretzel filled with hotdog.', price: 3.99, image: '/CoffeeHustlers/v2/images/hotdog.jpg' },
+        12: { name: 'Chocolate Bread', description: 'Rich chocolate-filled bread.', price: 3.99, image: '/CoffeeHustlers/v2/images/chocolate-bread.jpg' },
+        13: { name: 'Milk Cream Croissant', description: 'Flaky croissant with creamy filling.', price: 3.99, image: '/CoffeeHustlers/v2/images/croissant.jpg' },
       };
   
       const item = items[itemId];
