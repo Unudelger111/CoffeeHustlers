@@ -10,7 +10,7 @@ class MenuCold extends HTMLElement {
           </div>
         </div>
         <div class="menu-item" data-id="6">
-          <img src="/CoffeeHustlers /v2/images/cold-brew.jpg" alt="Cold Brew">
+          <img src="/CoffeeHustlers/v2/images/cold-brew.jpg" alt="Cold Brew">
           <div class="item-details">
             <h3>Cold Brew</h3>
             <p>$4.49</p>
