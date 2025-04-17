@@ -3,28 +3,28 @@ class MenuFood extends HTMLElement {
     this.innerHTML = `
       <div class="menu-section" id="food">
         <div class="menu-item" data-id="10">
-          <img src="/CoffeeHustlers/v2/images/milk-cake.jpg" alt="Croissant">
+          <img src="images/milk-cake.jpg" alt="Croissant">
           <div class="item-details">
             <h3>Milk Cake</h3>
             <p>$3.49</p>
           </div>
         </div>
         <div class="menu-item" data-id="11">
-          <img src="/CoffeeHustlers/v2/images/hotdog.jpg" alt="Blueberry Muffin">
+          <img src="images/hotdog.jpg" alt="Blueberry Muffin">
           <div class="item-details">
             <h3>Hotdog Pretzel</h3>
             <p>$3.99</p>
           </div>
         </div>
         <div class="menu-item" data-id="12">
-          <img src="/CoffeeHustlers/v2/images/chocolate-bread.jpg" alt="Blueberry Muffin">
+          <img src="images/chocolate-bread.jpg" alt="Blueberry Muffin">
           <div class="item-details">
             <h3>Chocolate Bread</h3>
             <p>$3.99</p>
           </div>
         </div>
         <div class="menu-item" data-id="13">
-          <img src="/CoffeeHustlers/v2/images/croissant.jpg" alt="Blueberry Muffin">
+          <img src="images/croissant.jpg" alt="Blueberry Muffin">
           <div class="item-details">
             <h3>Milk Cream Croissant</h3>
             <p>$3.99</p>

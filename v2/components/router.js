@@ -17,9 +17,8 @@ class MenuRouter extends HTMLElement {
   }
 
   updateUI(path) {
-    // Normalize path for dynamic item route
     if (path.startsWith("/menu/item/")) {
-      path = "/menu/item"; // Match route map key
+      path = "/menu/item"; 
     }
 
     const route = this.routes.get(path);
@@ -32,7 +31,7 @@ class MenuRouter extends HTMLElement {
     if (!customElements.get(comp)) {
       import(`../pages/${comp}.js`)
         .then(() => this.renderComponent(comp))
-        .catch(err => console.error("❌ Import failed:", err));
+        .catch(err => console.error("Import failed:", err));
     } else {
       this.renderComponent(comp);
     }
@@ -46,7 +45,7 @@ class MenuRouter extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log("✅ menu-router connected");
+    console.log("menu-router connected");
 
     requestAnimationFrame(() => {
       const path = location.hash.slice(1) || "/menu/hot";
