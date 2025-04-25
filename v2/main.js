@@ -8,6 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     continueBtn.addEventListener('click', function() {
-        window.location.href = 'menu.html';
+        window.location.href = 'menu_final_routed.html';
     });
 });

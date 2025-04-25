@@ -17,6 +17,7 @@ class MenuRouter extends HTMLElement {
   }
 
   updateUI(path) {
+    // If the path starts with "/menu/item/", normalize it to "/menu/item"
     if (path.startsWith("/menu/item/")) {
       path = "/menu/item"; 
     }
@@ -30,15 +31,16 @@ class MenuRouter extends HTMLElement {
 
     if (!customElements.get(comp)) {
       import(`../pages/${comp}.js`)
-        .then(() => this.renderComponent(comp))
+        .then(() => this.renderComponent(comp, path))
         .catch(err => console.error("Import failed:", err));
     } else {
-      this.renderComponent(comp);
+      this.renderComponent(comp, path);
     }
   }
 
-  renderComponent(tagName) {
-    const view = document.querySelector('#menu-view');
+  renderComponent(tagName, path) {
+    // Determine the target container based on the path
+    const view = path === "/cart" ? document.querySelector('#app-content') : document.querySelector('#menu-view');
     if (view) {
       view.innerHTML = `<${tagName}></${tagName}>`;
     }

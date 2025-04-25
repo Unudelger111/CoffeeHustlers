@@ -11,6 +11,10 @@
   <!-- Custom router scripts -->
   <script type="module" src="./components/router.js"></script>
   <script type="module" src="./components/link.js"></script>
+  <script type="module" src="./components/cart.js"></script>
+  <script type="module" src="./components/account-view.js"></script>
+
+
 </head>
 <body>
   <header>
@@ -28,45 +32,49 @@
     </div>
   </header>
 
-  <section class="filters">
-    <form class="dropdowns">
-      <label>
-        <select>
-          <option>CoffeeShop</option>
-        </select>
-      </label>
-      <label>
-        <select>
-          <option>Салбар</option>
-        </select>
-      </label>
-    </form>
+  <!-- Wrap filters and menu content in a replaceable container -->
+  <div id="app-content">
+    <section class="filters">
+      <form class="dropdowns">
+        <label>
+          <select>
+            <option>CoffeeShop</option>
+          </select>
+        </label>
+        <label>
+          <select>
+            <option>Салбар</option>
+          </select>
+        </label>
+      </form>
 
-    <div class="container">
-      <div class="menu-categories">
-        <button is="menu-link" to="/menu/hot" class="category-btn"><i class="fas fa-mug-hot"></i> Hot Coffee</button>
-        <button is="menu-link" to="/menu/cold" class="category-btn"><i class="fas fa-glass-whiskey"></i> Cold Coffee</button>
-        <button is="menu-link" to="/menu/specialty" class="category-btn"><i class="fas fa-star"></i> Specialty Coffee</button>
-        <button is="menu-link" to="/menu/food" class="category-btn"><i class="fas fa-utensils"></i> Food & Snacks</button>
+      <div class="container">
+        <div class="menu-categories">
+          <button is="menu-link" to="/menu/hot" class="category-btn"><i class="fas fa-mug-hot"></i> Hot Coffee</button>
+          <button is="menu-link" to="/menu/cold" class="category-btn"><i class="fas fa-glass-whiskey"></i> Cold Coffee</button>
+          <button is="menu-link" to="/menu/specialty" class="category-btn"><i class="fas fa-star"></i> Specialty Coffee</button>
+          <button is="menu-link" to="/menu/food" class="category-btn"><i class="fas fa-utensils"></i> Food & Snacks</button>
+        </div>
+
+        <!-- Router mount point -->
+        <main id="menu-view"></main>
+
+        <menu-router>
+          <menu-routes>
+            <menu-route path="/menu/hot" component="menu-hot"></menu-route>
+            <menu-route path="/menu/cold" component="menu-cold"></menu-route>
+            <menu-route path="/menu/specialty" component="menu-specialty"></menu-route>
+            <menu-route path="/menu/food" component="menu-food"></menu-route>
+            <menu-route path="/account" component="account-view"></menu-route>
+            <menu-route path="/history" component="order-history"></menu-route>
+            <menu-route path="/menu/item" component="menu-item-detail"></menu-route>
+            <menu-route path="/cart" component="cart-component"></menu-route>
+            
+          </menu-routes>
+        </menu-router>
       </div>
-
-      <!-- Router mount point -->
-      <main id="menu-view"></main>
-
-      <menu-router>
-        <menu-routes>
-          <menu-route path="/menu/hot" component="menu-hot"></menu-route>
-          <menu-route path="/menu/cold" component="menu-cold"></menu-route>
-          <menu-route path="/menu/specialty" component="menu-specialty"></menu-route>
-          <menu-route path="/menu/food" component="menu-food"></menu-route>
-          <menu-route path="/cart" component="cart-view"></menu-route>
-          <menu-route path="/account" component="account-view"></menu-route>
-          <menu-route path="/history" component="order-history"></menu-route>
-          <menu-route path="/menu/item" component="menu-item-detail"></menu-route>
-        </menu-routes>
-      </menu-router>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <footer>
     <div class="footer-content">
