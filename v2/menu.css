@@ -356,3 +356,31 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* Add this to your main CSS file */
+.add-to-cart-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  
+  .add-to-cart-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .add-to-cart-notification i {
+    margin-right: 8px;
+    font-size: 16px;
+  }

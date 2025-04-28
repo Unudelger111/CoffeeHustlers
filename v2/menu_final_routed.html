@@ -11,8 +11,37 @@
   <!-- Custom router scripts -->
   <script type="module" src="./components/router.js"></script>
   <script type="module" src="./components/link.js"></script>
-  <script type="module" src="./components/cart.js"></script>
-  <script type="module" src="./components/account-view.js"></script>
+  <script type="module" src="./pages/cart.js"></script>
+  <script type="module" src="./pages/account-view.js"></script>
+  <script type="module" src="./components/cart-utilities.js"></script>
+
+
+
+  <script type="module">
+    import { addItemToCart, updateCartCount } from './components/cart-utilities.js';
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      updateCartCount(cart.length);
+  
+      document.body.addEventListener('click', (event) => {
+        const button = event.target.closest('.add-to-cart-btn');
+        if (button) {
+          const item = {
+            id: button.dataset.id,
+            name: button.dataset.name,
+            price: parseFloat(button.dataset.price),
+            image: button.dataset.image || 'images/default-coffee.jpg', 
+          };
+  
+          addItemToCart(item);
+  
+          const updatedCart = JSON.parse(localStorage.getItem('cart')) || [];
+          updateCartCount(updatedCart.length);
+        }
+      });
+    });
+  </script>
 
 
 </head>
@@ -64,17 +93,19 @@
             <menu-route path="/menu/hot" component="menu-hot"></menu-route>
             <menu-route path="/menu/cold" component="menu-cold"></menu-route>
             <menu-route path="/menu/specialty" component="menu-specialty"></menu-route>
-            <menu-route path="/menu/food" component="menu-food"></menu-route>
-            <menu-route path="/account" component="account-view"></menu-route>
+            <menu-route path="/menu/food" component="menu-food"></menu-route> 
             <menu-route path="/history" component="order-history"></menu-route>
             <menu-route path="/menu/item" component="menu-item-detail"></menu-route>
             <menu-route path="/cart" component="cart-component"></menu-route>
+            <menu-route path="/account" component="account-view"></menu-route>
+            
             
           </menu-routes>
         </menu-router>
       </div>
     </section>
   </div>
+  
 
   <footer>
     <div class="footer-content">
