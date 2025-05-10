@@ -1,0 +1,1469 @@
+openapi: 3.0.3
+info:
+  description: API for a multi-coffee shop pre-ordering mobile application
+  title: Coffee Ordering App API
+  version: 2.0.0
+servers:
+- description: Local development server
+  url: http://localhost:3000
+tags:
+- description: "Endpoints related to user registration, login, and profiles"
+  name: User
+- description: Franchise management
+  name: Franchises
+- description: Assigning managers and baristas
+  name: Staff
+- description: Coffee shop listing and details
+  name: CoffeeShops
+- description: Managing menu items and prices
+  name: Menu
+- description: Handling orders and order details
+  name: Orders
+- description: Sending and receiving notifications
+  name: Notifications
+paths:
+  /register:
+    post:
+      operationId: registerPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      x-codegen-request-body-name: userRegister
+      responses:
+        "201":
+          description: User registered
+      summary: Register a new user
+      tags:
+      - User
+      x-swagger-router-controller: User
+      x-eov-operation-handler: UserController
+  /login:
+    post:
+      operationId: loginPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      x-codegen-request-body-name: userLogin
+      responses:
+        "200":
+          description: Login successful
+      summary: User login
+      tags:
+      - User
+      x-swagger-router-controller: User
+      x-eov-operation-handler: UserController
+  /logout:
+    post:
+      operationId: logoutPOST
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User logged out
+      summary: Logout the user
+      tags:
+      - User
+      x-swagger-router-controller: User
+      x-eov-operation-handler: UserController
+  /users:
+    get:
+      operationId: getUsersByEmail
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+          required: true
+          description: The email address to search for
+      responses:
+        "200":
+          description: User found
+      summary: Get user by email
+      tags:
+        - User
+      x-swagger-router-controller: User
+      x-eov-operation-handler: UserController
+  /profile/{id}:
+    get:
+      operationId: profileIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: User profile
+      summary: Get user profile
+      tags:
+      - User
+      x-swagger-router-controller: User
+      x-eov-operation-handler: UserController
+    put:
+      operationId: profileIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+        required: true
+      x-codegen-request-body-name: userUpdate
+      responses:
+        "200":
+          description: Profile updated
+      summary: Update user profile
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /users/{id}/role:
+    put:
+      operationId: usersIdRolePUT
+      security:
+        - bearerAuth: []
+      parameters:
+        - explode: false
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleUpdate'
+        required: true
+      x-codegen-request-body-name: userRoleUpdate
+      responses:
+        "200":
+          description: User role updated
+      summary: Update user role
+      tags:
+        - User
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /franchises:
+    get:
+      operationId: franchisesGET
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of franchises
+      summary: Get all franchises
+      tags:
+      - Franchises
+      x-swagger-router-controller: Franchises
+      x-eov-operation-handler: FranchisesController
+    post:
+      operationId: franchisesPOST
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FranchiseCreate'
+        required: true
+      x-codegen-request-body-name: franchiseCreate
+      responses:
+        "201":
+          description: Franchise created
+      summary: Create a new franchise
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /franchises/{id}:
+    delete:
+      operationId: franchisesIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Franchise deleted
+      summary: Delete a franchise
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+    get:
+      operationId: franchisesIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Franchise details
+      summary: Get a specific franchise
+      tags:
+      - Franchises
+      x-swagger-router-controller: Franchises
+      x-eov-operation-handler: FranchisesController
+    put:
+      operationId: franchisesIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FranchiseCreate'
+        required: true
+      x-codegen-request-body-name: franchiseCreate
+      responses:
+        "200":
+          description: Franchise updated
+      summary: Update a franchise
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /franchises/{id}/coffee-shops:
+    get:
+      operationId: franchisesIdCoffee_shopsGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Coffee shops for the franchise
+      summary: Get coffee shops under a franchise
+      tags:
+      - Franchises
+      x-swagger-router-controller: Franchises
+      x-eov-operation-handler: FranchisesController
+  /franchise-assignments:
+    post:
+      operationId: franchise_assignmentsPOST
+      security:
+        - bearerAuth: []
+      summary: Assign manager to a franchise
+      tags: [Staff]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FranchiseAssignmentCreate'
+      x-codegen-request-body-name: franchiseAssignmentCreate
+      responses:
+        "201":
+          description: Franchise assignment created
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+    get:
+      operationId: franchise_assignmentsGET
+      security:
+        - bearerAuth: []
+      summary: Get all franchise assignments
+      tags: [Staff]
+      responses:
+        "200":
+          description: List of franchise assignments
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+  /franchise-assignments/{id}:
+    get:
+      operationId: franchise_assignmentsIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Get one franchise assignment
+      tags: [Staff]
+      responses:
+        "200":
+          description: Franchise assignment details
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+    delete:
+      operationId: franchise_assignmentsIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Remove a franchise manager
+      tags: [Staff]
+      responses:
+        "204":
+          description: Assignment deleted
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+    put:
+      operationId: franchise_assignmentsIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Update a franchise assignment
+      tags: [Staff]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FranchiseAssignmentUpdate'
+      x-codegen-request-body-name: franchiseAssignmentUpdate
+      responses:
+        "200":
+          description: Franchise assignment updated
+      x-eov-operation-handler: StaffController
+  /staff-assignments:
+    post:
+      operationId: staff_assignmentsPOST
+      security:
+        - bearerAuth: []
+      summary: Assign staff to a coffee shop
+      tags: [Staff]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffAssignmentCreate'
+      x-codegen-request-body-name: staffAssignmentCreate
+      responses:
+        "201":
+          description: Staff assignment created
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+    get:
+      operationId: staff_assignmentsGET
+      security:
+        - bearerAuth: []
+      summary: Get all staff assignments
+      tags: [Staff]
+      responses:
+        "200":
+          description: List of staff assignments
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+  /staff-assignments/{id}:
+    get:
+      operationId: staff_assignmentsIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Get one staff assignment
+      tags: [Staff]
+      responses:
+        "200":
+          description: Staff assignment details
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+    delete:
+      operationId: staff_assignmentsIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Remove a staff assignment
+      tags: [Staff]
+      responses:
+        "204":
+          description: Assignment deleted
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+    put:
+      operationId: staff_assignmentsIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Update a staff assignment
+      tags: [Staff]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffAssignmentUpdate'
+      x-codegen-request-body-name: staffAssignmentUpdate
+      responses:
+        "200":
+          description: Staff assignment updated
+      x-eov-operation-handler: StaffController
+  /coffee-shops/{id}/staff:
+    get:
+      operationId: coffee_shopsIdStaffGET
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Get staff list of a coffee shop
+      tags: [Staff]
+      responses:
+        "200":
+          description: List of staff for coffee shop
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+  /users/{id}/staff-assignments:
+    get:
+      operationId: usersIdStaffAssignmentsGET
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      summary: Get staff assignments of a user
+      tags: [Staff]
+      responses:
+        "200":
+          description: List of user's staff assignments
+      x-swagger-router-controller: Staff
+      x-eov-operation-handler: StaffController
+  /coffee-shops:
+    get:
+      operationId: coffee_shopsGET
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of coffee shops
+      summary: Get all coffee shops
+      tags:
+      - CoffeeShops
+      x-swagger-router-controller: CoffeeShops
+      x-eov-operation-handler: CoffeeShopsController
+    post:
+      operationId: coffee_shopsPOST
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoffeeShopCreate'
+        required: true
+      x-codegen-request-body-name: coffeeShopCreate
+      responses:
+        "201":
+          description: Coffee shop created
+      summary: Create a new coffee shop
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /coffee-shops/{id}:
+    delete:
+      operationId: coffee_shopsIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Coffee shop deleted
+      summary: Delete coffee shop
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+    get:
+      operationId: coffee_shopsIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Coffee shop details
+      summary: Get coffee shop details
+      tags:
+      - CoffeeShops
+      x-swagger-router-controller: CoffeeShops
+      x-eov-operation-handler: CoffeeShopsController
+    put:
+      operationId: coffee_shopsIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoffeeShopCreate'
+        required: true
+      x-codegen-request-body-name: coffeeShopCreate
+      responses:
+        "200":
+          description: Coffee shop updated
+      summary: Update coffee shop
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /coffee-shops/{id}/menu:
+    get:
+      operationId: coffee_shopsIdMenuGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Menu items list
+      summary: Get full menu of a coffee shop
+      tags:
+      - Menu
+      x-swagger-router-controller: Menu
+      x-eov-operation-handler: MenuController
+  /coffee-shops/{id}/menu-overrides:
+    post:
+      operationId: coffee_shopsIdMenuOverridesPOST
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItemOverrideCreate'
+      x-codegen-request-body-name: menuItemOverrideCreate
+      responses:
+        "201":
+          description: Menu override created
+      tags:
+        - Menu
+      x-swagger-router-controller: Menu
+      x-eov-operation-handler: MenuController
+  /menu-overrides/{id}:
+    get:
+      operationId: menu_overridesIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Menu item override detail
+      summary: Get a specific menu override
+      tags:
+        - Menu
+      x-swagger-router-controller: Menu
+      x-eov-operation-handler: MenuController
+    put:
+      operationId: menu_overridesIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/menuItemOverrideUpdate'
+      x-codegen-request-body-name: menuItemOverrideUpdate
+      responses:
+        "200":
+          description: Menu override updated
+      summary: Update a menu override
+      tags:
+        - Menu
+      x-swagger-router-controller: Menu
+      x-eov-operation-handler: MenuController
+    delete:
+      operationId: menu_overridesIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Menu override deleted
+      summary: Delete a menu override
+      tags:
+        - Menu
+      x-swagger-router-controller: Menu
+      x-eov-operation-handler: MenuController
+  /menu-items:
+    post:
+      operationId: menu_itemsPOST
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItemCreate'
+        required: true
+      x-codegen-request-body-name: menuItemCreate
+      responses:
+        "201":
+          description: Menu item created
+      summary: Create a new menu item
+      tags:
+        - default
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /menu-items/{id}:
+    delete:
+      operationId: menu_itemsIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Menu item deleted
+      summary: Delete menu item
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+    put:
+      operationId: menu_itemsIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItemUpdate'
+        required: true
+      x-codegen-request-body-name: menuItemUpdate
+      responses:
+        "200":
+          description: Menu item updated
+      summary: Update a menu item
+      tags:
+      - default
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+    get:
+      operationId: menu_itemsIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Menu item detail
+      summary: Get a specific menu item
+      tags:
+        - Menu
+      x-swagger-router-controller: Menu
+      x-eov-operation-handler: MenuController
+  /menu-items/{id}/sizes:
+    post:
+      operationId: menu_itemsIdSizesPOST
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuItemSizeCreate'
+        required: true
+      x-codegen-request-body-name: menuItemSizeCreate
+      responses:
+        "201":
+          description: Size variation added
+      summary: Add price/size variation
+      tags:
+      - default
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /menu-item-sizes/{id}:
+    delete:
+      operationId: menu_item_sizesIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Size deleted
+      summary: Delete size
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+    put:
+      operationId: menu_item_sizesIdPUT
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/menuitemsizes_id_body'
+        required: true
+      responses:
+        "200":
+          description: Size price updated
+      summary: Update size price
+      tags:
+      - default
+      x-swagger-router-controller: Default
+      x-eov-operation-handler: DefaultController
+  /orders:
+    post:
+      operationId: ordersPOST
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+        required: true
+      x-codegen-request-body-name: orderCreate
+      responses:
+        "201":
+          description: Order placed
+      summary: Place a new order
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /orders/{id}:
+    get:
+      operationId: ordersIdGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Order details
+      summary: Get order details
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /orders/{id}/status:
+    get:
+      operationId: ordersIdStatusGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: Order status
+      summary: Get order status
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+    put:
+      operationId: ordersIdStatusPUT
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusUpdate'
+        required: true
+      x-codegen-request-body-name: orderStatusUpdate
+      responses:
+        "200":
+          description: Order status updated
+      summary: Update order status
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /users/{id}/orders:
+    get:
+      operationId: usersIdOrdersGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: User order history
+      summary: Get user order history
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /coffee-shops/{id}/orders:
+    get:
+      operationId: coffee_shopsIdOrdersGET
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          description: List of orders
+      summary: Get coffee shop's orders
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /orders/{id}/items:
+    post:
+      operationId: ordersIdItemsPOST
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDetailCreate'
+        required: true
+      x-codegen-request-body-name: orderDetailCreate
+      responses:
+        "201":
+          description: Item added to order
+      summary: Add item to order
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /orders/{id}/items/{itemId}:
+    delete:
+      operationId: ordersIdItemsItemIdDELETE
+      security:
+        - bearerAuth: []
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      - explode: false
+        in: path
+        name: itemId
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Item removed from order
+      summary: Remove item from order
+      tags:
+      - Orders
+      x-swagger-router-controller: Orders
+      x-eov-operation-handler: OrdersController
+  /notifications:
+    post:
+      operationId: notificationsPOST
+      security:
+        - bearerAuth: []
+      summary: Create a new notification
+      tags:
+        - Notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationCreate'
+        required: true
+      x-codegen-request-body-name: notificationCreate
+      responses:
+        "201":
+          description: Notification created
+      x-swagger-router-controller: Notifications
+      x-eov-operation-handler: NotificationsController
+  /users/{userId}/notifications:
+    get:
+      operationId: usersUserIdNotificationsGET
+      security:
+        - bearerAuth: []
+      summary: Get all notifications for a user
+      tags:
+        - Notifications
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: unread
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of notifications
+      x-swagger-router-controller: Notifications
+      x-eov-operation-handler: NotificationsController
+  /notifications/{id}/read:
+    patch:
+      operationId: notificationsIdReadPATCH
+      security:
+        - bearerAuth: []
+      summary: Mark a notification as read
+      tags:
+        - Notifications
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Notification marked as read
+      x-swagger-router-controller: Notifications
+      x-eov-operation-handler: NotificationsController
+  /users/{userId}/notifications/read-all:
+    patch:
+      operationId: usersUserIdNotificationsReadAllPATCH
+      security:
+        - bearerAuth: []
+      summary: Mark all notifications as read for a user
+      tags:
+        - Notifications
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All notifications marked as read
+      x-swagger-router-controller: Notifications
+      x-eov-operation-handler: NotificationsController
+  /notifications/{id}:
+    delete:
+      operationId: notificationsIdDELETE
+      security:
+        - bearerAuth: []
+      summary: Delete a notification
+      tags:
+        - Notifications
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Notification deleted
+      x-swagger-router-controller: Notifications
+      x-eov-operation-handler: NotificationsController
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UserRegister:
+      example:
+        password: password
+        role: Customer
+        phone: phone
+        name: name
+        email: email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          enum:
+          - Customer
+          - Barista
+          - Manager
+          - Admin
+          type: string
+        phone:
+          type: string
+      required:
+      - email
+      - name
+      - password
+      - phone
+      - role
+      type: object
+    UserLogin:
+      example:
+        password: password
+        email: email
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+      - email
+      - password
+      type: object
+    UserUpdate:
+      example:
+        name: name
+        email: email
+        phone: phone
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+      - name
+      - email
+      - phone
+      type: object
+    FranchiseCreate:
+      example:
+        logo_url: logo_url
+        name: name
+        description: description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        logo_url:
+          type: string
+      required:
+      - description
+      - logo_url
+      - name
+      type: object
+    CoffeeShopCreate:
+      example:
+        franchise_id: 0
+        owner_id: 6
+        latitude: 1.4658129
+        name: name
+        location: location
+        longitude: 5.962134
+      properties:
+        franchise_id:
+          type: integer
+        name:
+          type: string
+        owner_id:
+          type: integer
+        location:
+          type: string
+        latitude:
+          format: float
+          type: number
+        longitude:
+          format: float
+          type: number
+      required:
+      - latitude
+      - location
+      - longitude
+      - name
+      - owner_id
+      type: object
+    MenuItemCreate:
+      type: object
+      required:
+        - name
+        - franchise_id
+        - created_by
+        - category
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        image_url:
+          type: string
+        franchise_id:
+          type: integer
+        created_by:
+          type: integer
+        stock_status:
+          type: string
+          enum: [Available, Out of Stock]
+        category:
+          type: string
+          enum: [Hot, Cold, Specialty, Food, Other]
+    MenuItemOverrideCreate:
+      example:
+        menu_item_id: 1
+        stock_status: Out of Stock
+      properties:
+        menu_item_id:
+          type: integer
+        stock_status:
+          enum:
+          - Available
+          - Out of Stock
+          type: string
+      required:
+        - menu_item_id
+        - stock_status
+      type: object
+    MenuItemUpdate:
+      example:
+        name: "Espresso"
+        description: "Updated description"
+        stock_status: "Available"
+        image_url: "new-image.jpg"
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        stock_status:
+          enum:
+            - Available
+            - Out of Stock
+          type: string
+        image_url:
+          type: string
+      type: object
+    MenuItemSizeCreate:
+      example:
+        size: Small
+        price: 6.027456183070403
+      properties:
+        size:
+          enum:
+          - Small
+          - Medium
+          - Large
+          type: string
+        price:
+          type: number
+      required:
+      - price
+      - size
+      type: object
+    OrderCreate:
+      type: object
+      required:
+        - user_id
+        - shop_id
+        - pickup_time
+      properties:
+        user_id:
+          type: integer
+        shop_id:
+          type: integer
+        pickup_time:
+          type: string
+          format: date-time
+    OrderDetailCreate:
+      example:
+        quantity: 1
+        subtotal: 5.962133916683182
+        menu_size_id: 6
+      properties:
+        menu_size_id:
+          type: integer
+        quantity:
+          type: integer
+        subtotal:
+          type: number
+      required:
+      - menu_size_id
+      - quantity
+      - subtotal
+      type: object
+    OrderStatusUpdate:
+      example:
+        order_status: Pending
+      properties:
+        order_status:
+          enum:
+          - Pending
+          - Preparing
+          - Ready
+          - Completed
+          type: string
+      required:
+      - order_status
+      type: object
+    menuitemsizes_id_body:
+      properties:
+        price:
+          type: number
+      type: object
+    OrderCreate_items:
+      example:
+        quantity: 5
+        subtotal: 5.637377
+        menu_size_id: 1
+      properties:
+        menu_size_id:
+          type: integer
+        quantity:
+          type: integer
+        subtotal:
+          format: float
+          type: number
+      type: object
+    FranchiseAssignmentCreate:
+      type: object
+      required:
+        - user_id
+        - franchise_id
+        - role
+      properties:
+        user_id:
+          type: integer
+        franchise_id:
+          type: integer
+        role:
+          type: string
+          enum: [Manager]
+    StaffAssignmentCreate:
+      type: object
+      required:
+        - user_id
+        - coffee_shop_id
+        - role
+      properties:
+        user_id:
+          type: integer
+        coffee_shop_id:
+          type: integer
+        role:
+          type: string
+          enum: [Barista, Manager]
+    FranchiseAssignmentUpdate:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: integer
+    StaffAssignmentUpdate:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [Barista, Manager]
+    menuItemOverrideUpdate:
+      example:
+        stock_status: Out of Stock
+      type: object
+      required:
+        - stock_status
+      properties:
+        stock_status:
+          enum:
+          - Available
+          - Out of Stock
+          type: string
+    NotificationCreate:
+      type: object
+      required:
+        - user_id
+        - message
+      properties:
+        user_id:
+          type: integer
+        order_id:
+          type: integer
+          nullable: true
+        message:
+          type: string
+    UserRoleUpdate:
+      type: object
+      required:
+        - role
+      properties:
+        role:
+          type: string
+          enum: [Customer, Barista, Manager, Admin]
