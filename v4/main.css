@@ -1,0 +1,196 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+
+    --bg-color: #f5ebe0;          
+    --card-bg: #fff;
+    --text-color: #3c2f24;        
+    --heading-color: #5e4a3a;    
+    --secondary-color: #a67c52;   
+    --button-bg: #8b6e4e;       
+    --button-text: #fff;
+    --primary-button-bg: #c89f7c; 
+    --primary-button-text: #3c2f24;
+    --shadow-color: rgba(109, 82, 60, 0.15); 
+    --border-color: #8b6e4e;      
+    --category-bg: #e9e1d9;
+    --category-active-bg: #8b6e4e;
+    --category-active-text: #fff;
+    --dropdown-bg: #fff;
+    --transition: all 0.3s ease;
+}
+
+.dark-mode {
+    --bg-color: #26211f;         
+    --card-bg: #342e2a;           
+    --text-color: #e6d9cc;        
+    --heading-color: #d7b89b;     
+    --secondary-color: #bb9b7c;     
+    --button-bg: #d7b89b;         
+    --button-text: #26211f;       
+    --primary-button-bg: #9b7c5c; 
+    --primary-button-text: #e6d9cc;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --border-color: #d7b89b;      
+    --category-bg: #342e2a;
+    --category-active-bg: #d7b89b;
+    --category-active-text: #26211f;
+    --dropdown-bg: #342e2a;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: var(--transition);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.landing-page {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.landing-page h1 {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+    color: var(--heading-color);
+    transition: var(--transition);
+}
+
+.landing-page p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    color: var(--secondary-color);
+    transition: var(--transition);
+}
+
+button {
+    cursor: pointer;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 16px;
+    transition: var(--transition);
+    margin: 10px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.primary-btn {
+    background-color: var(--primary-button-bg);
+    color: var(--primary-button-text);
+    font-weight: bold;
+}
+
+.primary-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.button-container {
+    margin-top: 30px;
+}
+
+/* Coffee Animation with updated colors */
+.cup {
+    position: relative;
+    width: 220px;
+    height: 180px;
+    border: 8px solid #f8f2e8;
+    box-shadow: 0 0 0 12px #3c2a20;
+    border-radius: 10px 10px 60px 75px;
+    background: url('../images/coffee.png');
+    background-repeat: repeat-x;
+    background-position: 0 130px;
+    animation: filling 4s infinite;
+}
+
+@keyframes filling {
+    0%, 100% {
+        background-position: 0 130px;
+    }
+
+    50% {
+        background-position: 600px -70px;
+    }
+}
+
+.cup .cup-handle {
+    position: absolute;
+    top: 10px;
+    right: -74px;
+    width: 65px;
+    height: 120px;
+    border: 12px solid #3c2a20;
+    border-radius: 20px 10px 50px 20px;
+}
+
+.cup .steam {
+    position: absolute;
+    border-radius: 10px 2px;
+    width: 8px;
+    animation: steaming 2s infinite;
+}
+
+@keyframes steaming {
+    0%, 100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+        filter: blur(.8px);
+        transform: translateY(-10px);
+    }
+}
+
+.cup .steam:nth-child(1) {
+    top: -70px;
+    left: 65px;
+    height: 30px;
+    background: rgba(142, 90, 52, 0.15);
+    animation-delay: .2s;
+}
+
+.cup .steam:nth-child(2) {
+    top: -120px;
+    left: 95px;
+    height: 50px;
+    background: rgba(142, 90, 52, 0.33);
+    animation-delay: .6s;
+}
+
+.cup .steam:nth-child(3) {
+    top: -90px;
+    left: 125px;
+    height: 40px;
+    background: rgba(142, 90, 52, 0.2);
+    animation-delay: 1s;
+}
+
+.cup-container {
+    height: 40vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
