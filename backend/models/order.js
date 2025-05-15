@@ -16,7 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     order_status: DataTypes.ENUM('Pending', 'Preparing', 'Ready', 'Completed'),
     order_time: DataTypes.DATE,
     pickup_time: DataTypes.DATE,
-    status_updated_at: DataTypes.DATE
+    status_updated_at: DataTypes.DATE,
+    public_order_id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    }
   }, {
     sequelize,
     modelName: 'Order',

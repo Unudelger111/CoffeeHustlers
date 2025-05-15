@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-const { Order, OrderDetail, MenuItemSize, MenuItem, CoffeeShop, User } = require('../models');
+const { Order, OrderDetail, MenuItemSize, MenuItem, CoffeeShop, User, Sequelize  } = require('../models');
+const { Op } = Sequelize;
 
 const coffee_shopsIdOrdersGET = ({ id }) => new Promise(
   async (resolve, reject) => {
@@ -86,27 +87,74 @@ const ordersIdStatusGET = ({ id }) => new Promise(
 const ordersPOST = ({ orderCreate }) => new Promise(
   async (resolve, reject) => {
     try {
+      // 1. Get CoffeeShop
+      const coffeeShop = await CoffeeShop.findByPk(orderCreate.shop_id);
+      if (!coffeeShop) {
+        console.error(`CoffeeShop with ID ${orderCreate.shop_id} not found.`);
+        return reject(Service.rejectResponse('Coffee shop not found', 404));
+      }
+
+      console.log(`CoffeeShop found: ${JSON.stringify(coffeeShop.toJSON())}`);
+
+      // 2. Generate public_order_id components
+      const franchiseIdStr = String(coffeeShop.franchise_id).padStart(3, '0');
+      const shopIdStr = String(orderCreate.shop_id).padStart(2, '0');
+      const dateStr = new Date().toISOString().slice(2, 10).replace(/-/g, '');
+
+      console.log(`Generated IDs: franchiseId=${franchiseIdStr}, shopId=${shopIdStr}, date=${dateStr}`);
+
+      // 3. Find latest order for this shop+date
+      const latestOrder = await Order.findOne({
+        where: {
+          shop_id: orderCreate.shop_id,
+          public_order_id: { [Op.like]: `${franchiseIdStr}-${shopIdStr}-${dateStr}-%` }
+        },
+        order: [['createdAt', 'DESC']],
+        attributes: ['public_order_id']
+      });
+
+      console.log(`Latest order: ${latestOrder ? latestOrder.public_order_id : 'None'}`);
+
+      // 4. Calculate next sequence
+      let nextSequence = 1;
+      if (latestOrder && latestOrder.public_order_id) {
+        const match = latestOrder.public_order_id.match(/-(\d+)-\d+$/);
+        console.log(`Match result: ${match}`);
+        if (match) nextSequence = parseInt(match[1], 10) + 1;
+      }
+
+      const sequenceStr = String(nextSequence).padStart(3, '0');
+      const randomDigits = Math.floor(100 + Math.random() * 900);
+      const publicOrderId = `${franchiseIdStr}-${shopIdStr}-${dateStr}-${sequenceStr}-${randomDigits}`;
+
+      console.log(`Final public_order_id: ${publicOrderId}`);
+
+      // 5. Create Order
       const order = await Order.create({
         user_id: orderCreate.user_id,
         shop_id: orderCreate.shop_id,
         order_status: "Pending",
         order_time: new Date(),
         pickup_time: orderCreate.pickup_time,
-        status_updated_at: new Date()
+        status_updated_at: new Date(),
+        public_order_id: publicOrderId
       });
+
+      console.log(`Order created successfully: ID = ${order.id}`);
 
       resolve(Service.successResponse({
         id: order.id,
+        public_order_id: publicOrderId,
         message: 'Order created'
       }));
+
     } catch (e) {
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 500
-      ));
+      console.error('Error creating order:', e);
+      reject(Service.rejectResponse(e.message, e.status || 500));
     }
   }
 );
+
 
 
 const usersIdOrdersGET = ({ id }) => new Promise(
