@@ -12,7 +12,6 @@ import "./pages/cart-page.js";
 import "./pages/history-view.js";
 import "./pages/reorder.js";
 
-
 import { Router } from "./router.js";
 import { cartService } from "./cart-service.js";
 

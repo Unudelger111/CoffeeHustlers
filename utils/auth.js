@@ -1,0 +1,59 @@
+/**
+ * Authentication utility functions
+ */
+
+// Check if user is logged in
+export const isAuthenticated = () => {
+  const token = localStorage.getItem('token');
+  return !!token;
+};
+
+// Get current user data
+export const getCurrentUser = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (!userData) return null;
+    return JSON.parse(userData);
+  } catch (e) {
+    console.error('Failed to parse user data', e);
+    return null;
+  }
+};
+
+// Logout user
+export const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  
+  // Dispatch logout event
+  const logoutEvent = new CustomEvent('user-logged-out', {
+    bubbles: true
+  });
+  document.dispatchEvent(logoutEvent);
+  
+  return true;
+};
+
+// Login user
+export const login = (userData, token) => {
+  localStorage.setItem('token', token);
+  localStorage.setItem('user', JSON.stringify(userData));
+  
+  // Dispatch login event
+  const loginEvent = new CustomEvent('user-logged-in', {
+    bubbles: true,
+    detail: { userData }
+  });
+  document.dispatchEvent(loginEvent);
+  
+  return true;
+};
+
+// Get user initials for avatar
+export const getUserInitials = (name) => {
+  if (!name) return '?';
+  
+  const parts = name.split(' ');
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+};

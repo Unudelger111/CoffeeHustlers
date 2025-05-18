@@ -1,3 +1,7 @@
+/**
+ * @class LoginPage
+ * Custom login page component that handles login and signup
+ */
 export default class LoginPage extends HTMLElement {
   constructor() {
     super();
@@ -44,8 +48,6 @@ export default class LoginPage extends HTMLElement {
           background-color: #d4a574;
       }
 
-
-
       .coffee-bg {
           position: absolute;
           top: 0;
@@ -88,7 +90,6 @@ export default class LoginPage extends HTMLElement {
           }
       }
 
-
       .auth-container {
           background-color: #fff;
           width: 90%;
@@ -126,7 +127,6 @@ export default class LoginPage extends HTMLElement {
           }
       }
 
-
       .auth-header {
           text-align: center;
           margin-bottom: 30px;
@@ -137,7 +137,6 @@ export default class LoginPage extends HTMLElement {
           margin-bottom: 20px;
           font-size: 2rem;
       }
-
 
       .auth-tabs {
           display: flex;
@@ -202,7 +201,6 @@ export default class LoginPage extends HTMLElement {
           font-size: 1.2rem;
       }
 
-
       .form-footer {
           display: flex;
           justify-content: space-between;
@@ -224,7 +222,6 @@ export default class LoginPage extends HTMLElement {
       .forgot-password:hover {
           text-decoration: underline;
       }
-
 
       .auth-btn {
           background-color: #6f4e37;
@@ -259,6 +256,12 @@ export default class LoginPage extends HTMLElement {
           text-decoration: underline;
       }
 
+      .error-message {
+          color: #e74c3c;
+          font-size: 0.9rem;
+          margin-top: 5px;
+          text-align: center;
+      }
 
       @media (max-width: 480px) {
           .auth-container {
@@ -276,7 +279,7 @@ export default class LoginPage extends HTMLElement {
           }
       }
     </style>
-  `
+  `;
 
   render() {
     this.shadowRoot.innerHTML = `
@@ -316,6 +319,7 @@ export default class LoginPage extends HTMLElement {
                   </div>
                   
                   <button type="submit" class="auth-btn">Login</button>
+                  <div class="error-message" id="login-error"></div>
                   
                   <div class="alt-auth">
                       <p>Don't have an account? <a href="#" id="go-to-signup">Sign up</a></p>
@@ -337,6 +341,12 @@ export default class LoginPage extends HTMLElement {
                   </div>
                   
                   <div class="input-group">
+                      <label for="signup-phone">Phone Number</label>
+                      <input type="text" id="signup-phone" required>
+                      <span class="coffee-icon">☕</span>
+                  </div>
+                  
+                  <div class="input-group">
                       <label for="signup-password">Password</label>
                       <input type="password" id="signup-password" required>
                       <span class="coffee-icon">☕</span>
@@ -349,6 +359,7 @@ export default class LoginPage extends HTMLElement {
                   </div>
                   
                   <button type="submit" class="auth-btn">Create Account</button>
+                  <div class="error-message" id="signup-error"></div>
                   
                   <div class="alt-auth">
                       <p>Already have an account? <a href="#" id="go-to-login">Login</a></p>
@@ -356,7 +367,7 @@ export default class LoginPage extends HTMLElement {
               </form>
           </div>
       </div>
-    `
+    `;
   }
 
   setupEventListeners() {
@@ -392,17 +403,187 @@ export default class LoginPage extends HTMLElement {
       this.switchToLogin();
     });
 
-    // Form submit handlers
-    loginForm.addEventListener('submit', (e) => {
+    // Login form submit handler
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Here you would add the actual login logic
-      console.log('Login form submitted');
+      
+      const email = this.shadowRoot.getElementById('login-email').value;
+      const password = this.shadowRoot.getElementById('login-password').value;
+      const errorElement = this.shadowRoot.getElementById('login-error');
+      
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!response.ok) {
+          const responseText = await response.text();
+          let errorMsg = 'Login failed';
+          
+          try {
+            // Try to parse as JSON
+            const errorData = JSON.parse(responseText);
+            errorMsg = errorData.message || errorMsg;
+          } catch (parseError) {
+            // If parsing fails, use the text directly
+            errorMsg = responseText || errorMsg;
+          }
+          
+          throw new Error(errorMsg);
+        }
+
+        const data = await response.json();
+        console.log('Logged in:', data);
+
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          
+          // Store user data for dropdown display
+          const userData = {
+            name: data.user?.name || 'Coffee Lover',
+            email: email,
+            id: data.user?.id
+          };
+          
+          localStorage.setItem('user', JSON.stringify(userData));
+          
+          // Dispatch login event for header to update
+          const loginEvent = new CustomEvent('user-logged-in', {
+            bubbles: true,
+            composed: true,
+            detail: { userData }
+          });
+          this.dispatchEvent(loginEvent);
+        }
+
+        // Show success message
+        errorElement.textContent = 'Logged in successfully!';
+        errorElement.style.color = '#2ecc71';
+
+        // Redirect after a short delay
+        setTimeout(() => {
+          window.location.href = '/menu';
+        }, 1000);
+      } catch (err) {
+        console.error(err);
+        errorElement.textContent = 'Login failed: ' + err.message;
+        errorElement.style.color = '#e74c3c';
+      }
     });
 
-    signupForm.addEventListener('submit', (e) => {
+    // Signup form submit handler
+    signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Here you would add the actual signup logic
-      console.log('Signup form submitted');
+      
+      const name = this.shadowRoot.getElementById('signup-name').value;
+      const email = this.shadowRoot.getElementById('signup-email').value;
+      const phone = this.shadowRoot.getElementById('signup-phone').value;
+      const password = this.shadowRoot.getElementById('signup-password').value;
+      const confirm = this.shadowRoot.getElementById('signup-confirm').value;
+      const errorElement = this.shadowRoot.getElementById('signup-error');
+      
+      // Client-side validation
+      if (password !== confirm) {
+        errorElement.textContent = 'Passwords do not match!';
+        return;
+      }
+      
+      // Prepare the user data - match exact order from Swagger UI example
+      const userData = {
+        password,
+        role: "Customer",
+        phone,
+        name,
+        email
+      };
+      
+      console.log('Attempting to register with data:', JSON.stringify(userData));
+      
+      try {
+        // Show a pending message
+        errorElement.textContent = 'Creating account...';
+        errorElement.style.color = '#3498db';
+        
+        const response = await fetch('http://localhost:3000/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+          },
+          body: JSON.stringify(userData),
+          // Add these options to help with potential CORS issues
+          mode: 'cors',
+          credentials: 'same-origin'
+        });
+
+        console.log('Registration response status:', response.status, response.statusText);
+        
+        // Get the raw response for debugging
+        let responseText;
+        try {
+          responseText = await response.text();
+          console.log('Raw server response:', responseText);
+        } catch (textError) {
+          console.error('Error getting response text:', textError);
+        }
+        
+        // If not OK status, handle the error
+        if (!response.ok) {
+          let errorMsg = 'Registration failed';
+          
+          if (responseText) {
+            try {
+              // Try to parse as JSON
+              const errorData = JSON.parse(responseText);
+              errorMsg = errorData.message || errorMsg;
+              
+              // Check if we have detailed validation errors
+              if (errorData.errors && Array.isArray(errorData.errors)) {
+                errorMsg = errorData.errors.map(err => err.message || err).join(', ');
+              }
+            } catch (parseError) {
+              // If parsing fails, use the text directly
+              errorMsg = responseText || errorMsg;
+            }
+          }
+          
+          throw new Error(errorMsg);
+        }
+
+        // Try to parse the success response
+        let data;
+        try {
+          data = responseText ? JSON.parse(responseText) : { success: true };
+          console.log('Registered successfully:', data);
+        } catch (parseError) {
+          console.log('Response is not JSON but registration appears successful');
+          data = { success: true };
+        }
+        
+        // Show success message
+        errorElement.textContent = 'Account created successfully!';
+        errorElement.style.color = '#2ecc71';
+        
+        // Clear form fields
+        this.shadowRoot.getElementById('signup-name').value = '';
+        this.shadowRoot.getElementById('signup-email').value = '';
+        this.shadowRoot.getElementById('signup-phone').value = '';
+        this.shadowRoot.getElementById('signup-password').value = '';
+        this.shadowRoot.getElementById('signup-confirm').value = '';
+        
+        // Switch to login after short delay
+        setTimeout(() => {
+          this.switchToLogin();
+        }, 1500);
+      } catch (err) {
+        console.error('Registration error:', err);
+        errorElement.textContent = 'Registration failed: ' + err.message;
+        errorElement.style.color = '#e74c3c';
+      }
     });
   }
 
@@ -411,6 +592,10 @@ export default class LoginPage extends HTMLElement {
     const signupTab = this.shadowRoot.getElementById('signup-tab');
     const loginForm = this.shadowRoot.getElementById('login-form');
     const signupForm = this.shadowRoot.getElementById('signup-form');
+    const loginError = this.shadowRoot.getElementById('login-error');
+    
+    // Clear any error messages
+    loginError.textContent = '';
 
     // Update tab buttons
     loginTab.classList.add('active');
@@ -421,11 +606,20 @@ export default class LoginPage extends HTMLElement {
     signupForm.classList.add('hidden');
   }
 
+  validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
   switchToSignup() {
     const loginTab = this.shadowRoot.getElementById('login-tab');
     const signupTab = this.shadowRoot.getElementById('signup-tab');
     const loginForm = this.shadowRoot.getElementById('login-form');
     const signupForm = this.shadowRoot.getElementById('signup-form');
+    const signupError = this.shadowRoot.getElementById('signup-error');
+    
+    // Clear any error messages
+    signupError.textContent = '';
 
     // Update tab buttons
     loginTab.classList.remove('active');
