@@ -3,12 +3,82 @@
  * Custom header component with user dropdown functionality
  */
 export default class Header extends HTMLElement {
+  // Define observed attributes that will update when changed
+  static get observedAttributes() {
+    return ['username', 'cart-count', 'user-avatar', 'theme'];
+  }
+  
+  // Properties that will reflect to attributes
+  get username() {
+    return this.getAttribute('username');
+  }
+  
+  set username(value) {
+    if (value) {
+      this.setAttribute('username', value);
+    } else {
+      this.removeAttribute('username');
+    }
+  }
+  
+  get cartCount() {
+    return this.getAttribute('cart-count');
+  }
+  
+  set cartCount(value) {
+    this.setAttribute('cart-count', value);
+  }
+  
+  get userAvatar() {
+    return this.getAttribute('user-avatar');
+  }
+  
+  set userAvatar(value) {
+    if (value) {
+      this.setAttribute('user-avatar', value);
+    } else {
+      this.removeAttribute('user-avatar');
+    }
+  }
+  
+  get theme() {
+    return this.getAttribute('theme');
+  }
+  
+  set theme(value) {
+    if (value) {
+      this.setAttribute('theme', value);
+    } else {
+      this.removeAttribute('theme');
+    }
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
     this.user = null;
     this.render();
     this.setupEventListeners();
+  }
+
+  // Handle attribute changes
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    
+    switch (name) {
+      case 'username':
+        this.updateUserDisplay();
+        break;
+      case 'cart-count':
+        this.updateCartCountDisplay();
+        break;
+      case 'user-avatar':
+        this.updateUserAvatar();
+        break;
+      case 'theme':
+        this.updateTheme();
+        break;
+    }
   }
 
   styleSheet = `
@@ -30,6 +100,14 @@ export default class Header extends HTMLElement {
           --header-button-hover: var(--secondary-color, #a67c52);
           --header-cart-badge: #ff6b6b;
           --transition: var(--transition, all 0.3s ease);
+        }
+
+        /* Light/Dark theme support */
+        :host([theme="dark"]) {
+          --header-bg: #2d2520;
+          --header-text: #f5f0eb;
+          --header-title: #e0d5ca;
+          --header-shadow: rgba(0, 0, 0, 0.3);
         }
 
         header {
@@ -134,7 +212,7 @@ export default class Header extends HTMLElement {
           filter: invert(0);
         }
 
-        :host-context([data-theme="dark"]) .search-button img.search-icon {
+        :host([theme="dark"]) .search-button img.search-icon {
           filter: invert(1);
         }
 
@@ -179,19 +257,22 @@ export default class Header extends HTMLElement {
         }
 
         #cart-count {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          background-color: var(--header-cart-badge);
-          color: #fff;
-          border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-        }
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #6F4E37; /* Coffee brown */
+        color: #fff;
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Bean-like ellipse */
+        width: 24px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: inset 0 0 2px #3e2b23; /* Inner shading for texture */
+        font-family: sans-serif;
+      }
 
         /* User Account Styling */
         .user-container {
@@ -245,6 +326,11 @@ export default class Header extends HTMLElement {
           z-index: 1500; /* Higher z-index to appear above the theme toggle */
         }
 
+        :host([theme="dark"]) .user-dropdown {
+          background-color: #2d2520;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
         .user-dropdown.visible {
           opacity: 1;
           transform: translateY(0);
@@ -257,16 +343,29 @@ export default class Header extends HTMLElement {
           background-color: #f9f5f1;
         }
 
+        :host([theme="dark"]) .dropdown-header {
+          background-color: #3a322c;
+          border-bottom: 1px solid #4a4038;
+        }
+
         .dropdown-header .user-full-name {
           font-weight: 600;
           color: #6f4e37;
           font-size: 15px;
         }
 
+        :host([theme="dark"]) .dropdown-header .user-full-name {
+          color: #e0d5ca;
+        }
+
         .dropdown-header .user-email {
           font-size: 13px;
           color: #8b5a2b;
           word-break: break-word;
+        }
+
+        :host([theme="dark"]) .dropdown-header .user-email {
+          color: #c3b5a6;
         }
 
         .dropdown-menu {
@@ -283,8 +382,16 @@ export default class Header extends HTMLElement {
           cursor: pointer;
         }
 
+        :host([theme="dark"]) .dropdown-item {
+          color: #e0d5ca;
+        }
+
         .dropdown-item:hover {
           background-color: #f9f5f1;
+        }
+
+        :host([theme="dark"]) .dropdown-item:hover {
+          background-color: #4a4038;
         }
 
         .dropdown-item.logout {
@@ -387,10 +494,9 @@ export default class Header extends HTMLElement {
                 <div class="user-full-name"></div>
                 <div class="user-email"></div>
               </div>
-                <div class="dropdown-item logout" id="logout-btn">
-                  <span class="icon">⤴</span>
-                  <span>Logout</span>
-                </div>
+              <div class="dropdown-item logout" id="logout-btn">
+                <span class="icon">⤴</span>
+                <span>Logout</span>
               </div>
             </div>
           </div>
@@ -403,34 +509,90 @@ export default class Header extends HTMLElement {
   }
 
   updateUserInterface() {
-    const user = this.getUserData();
+    // First check for attributes (these take precedence over localStorage)
+    if (this.hasAttribute('username')) {
+      this.updateUserDisplay();
+      this.updateUserAvatar();
+    } else {
+      // Fall back to localStorage if no attribute is set
+      const user = this.getUserData();
+      if (user) {
+        // Update attributes from localStorage
+        this.username = user.name;
+        if (user.email) {
+          this.setAttribute('user-email', user.email);
+        }
+      }
+    }
+    
+    // Update cart count from attribute or localStorage
+    if (this.hasAttribute('cart-count')) {
+      this.updateCartCountDisplay();
+    } else {
+      this.updateCartCountFromStorage();
+    }
+  }
+  
+  updateUserDisplay() {
     const accountBtn = this.shadowRoot.getElementById('account-btn');
-    const userContainer = this.shadowRoot.querySelector('.user-container');
-    const userDropdown = this.shadowRoot.getElementById('user-dropdown');
     const userFullName = this.shadowRoot.querySelector('.user-full-name');
     const userEmail = this.shadowRoot.querySelector('.user-email');
     
-    if (user) {
+    if (this.username) {
       // User is logged in - show personalized content
       accountBtn.classList.add('user-logged-in');
       accountBtn.innerHTML = `
-        <div class="user-avatar">${this.getInitials(user.name)}</div>
-        <span class="user-name">${user.name.split(' ')[0]}</span>
+        <div class="user-avatar">${this.getInitials(this.username)}</div>
+        <span class="user-name">${this.username.split(' ')[0]}</span>
       `;
       
       // Update dropdown user info
-      if (userFullName) userFullName.textContent = user.name;
-      if (userEmail) userEmail.textContent = user.email || '';
+      if (userFullName) userFullName.textContent = this.username;
+      if (userEmail && this.hasAttribute('user-email')) {
+        userEmail.textContent = this.getAttribute('user-email');
+      }
     } else {
       // User is not logged in - show default
       accountBtn.classList.remove('user-logged-in');
       accountBtn.innerHTML = '<i class="fas fa-user"></i> Account';
       
       // Hide dropdown if it's currently open
+      const userDropdown = this.shadowRoot.getElementById('user-dropdown');
       if (userDropdown && userDropdown.classList.contains('visible')) {
         userDropdown.classList.remove('visible');
       }
     }
+  }
+  
+  updateUserAvatar() {
+    const userAvatar = this.shadowRoot.querySelector('.user-avatar');
+    if (!userAvatar) return;
+    
+    if (this.hasAttribute('user-avatar')) {
+      // Custom avatar provided
+      userAvatar.innerHTML = `<img src="${this.getAttribute('user-avatar')}" alt="User avatar">`;
+    } else if (this.username) {
+      // Generate initials avatar
+      userAvatar.textContent = this.getInitials(this.username);
+    }
+  }
+  
+  updateCartCountDisplay() {
+    const cartCountEl = this.shadowRoot.getElementById('cart-count');
+    if (cartCountEl) {
+      cartCountEl.textContent = this.cartCount || '0';
+    }
+  }
+  
+  updateCartCountFromStorage() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+    this.cartCount = itemCount.toString();
+  }
+  
+  updateTheme() {
+    // Theme is handled via CSS using the theme attribute
+    // No JavaScript needed as we've set up the CSS to use the attribute
   }
 
   getInitials(name) {
@@ -470,9 +632,7 @@ export default class Header extends HTMLElement {
     
     // Account button behavior depends on login state
     accountButton.addEventListener('click', (e) => {
-      const user = this.getUserData();
-      
-      if (user) {
+      if (this.username) {
         // User is logged in - toggle dropdown
         e.stopPropagation();
         userDropdown.classList.toggle('visible');
@@ -491,8 +651,9 @@ export default class Header extends HTMLElement {
         // Hide dropdown
         userDropdown.classList.remove('visible');
         
-        // Update UI
-        this.updateUserInterface();
+        // Clear attributes
+        this.removeAttribute('username');
+        this.removeAttribute('user-email');
         
         // Dispatch logout event
         const logoutEvent = new CustomEvent('user-logged-out', {
@@ -518,18 +679,16 @@ export default class Header extends HTMLElement {
         userDropdown.classList.remove('visible');
       }
     });
-
-    this.updateCartCount();
-    window.addEventListener('cart-updated', () => this.updateCartCount());
     
     // Listen for login events
     window.addEventListener('user-logged-in', (e) => {
-      this.updateUserInterface();
+      if (e.detail && e.detail.user) {
+        this.username = e.detail.user.name;
+        if (e.detail.user.email) {
+          this.setAttribute('user-email', e.detail.user.email);
+        }
+      }
     });
-
-    // Dark mode support
-    window.addEventListener('theme-changed', () => this.updateCSSVariables());
-    this.updateCSSVariables();
 
     // Search functionality
     const searchInput = this.shadowRoot.getElementById('search-input');
@@ -567,25 +726,6 @@ export default class Header extends HTMLElement {
     updateClearVisibility(); // Initial check
   }
 
-  updateCSSVariables() {
-    const rootStyles = getComputedStyle(document.documentElement);
-    const host = this.shadowRoot.host;
-    host.style.setProperty('--header-bg', rootStyles.getPropertyValue('--card-bg'));
-    host.style.setProperty('--header-text', rootStyles.getPropertyValue('--text-color'));
-    host.style.setProperty('--header-title', rootStyles.getPropertyValue('--heading-color'));
-    host.style.setProperty('--header-shadow', rootStyles.getPropertyValue('--shadow-color'));
-    host.style.setProperty('--header-button-bg', rootStyles.getPropertyValue('--button-bg'));
-    host.style.setProperty('--header-button-text', rootStyles.getPropertyValue('--button-text'));
-    host.style.setProperty('--header-button-hover', rootStyles.getPropertyValue('--secondary-color'));
-  }
-
-  updateCartCount() {
-    const cartCountEl = this.shadowRoot.getElementById('cart-count');
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const itemCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
-    cartCountEl.textContent = itemCount;
-  }
-
   navigateTo(path) {
     const navigationEvent = new CustomEvent('navigate', {
       bubbles: true,
@@ -596,22 +736,26 @@ export default class Header extends HTMLElement {
   }
 
   connectedCallback() {
-    this.updateCartCount();
-    this.updateCSSVariables();
+    // Initial updates based on attributes or localStorage
     this.updateUserInterface();
     
-    // Add event listeners for dynamic updates
+    // Listen for cart updates via the storage event
     window.addEventListener('storage', (e) => {
-      if (e.key === 'user' || e.key === 'token') {
-        this.updateUserInterface();
+      if (e.key === 'cart') {
+        this.updateCartCountFromStorage();
       }
+    });
+    
+    // Listen for cart-updated events
+    window.addEventListener('cart-updated', () => {
+      this.updateCartCountFromStorage();
     });
   }
 
   disconnectedCallback() {
-    window.removeEventListener('cart-updated', this.updateCartCount);
+    window.removeEventListener('cart-updated', this.updateCartCountFromStorage);
     window.removeEventListener('user-logged-in', this.updateUserInterface);
-    window.removeEventListener('theme-changed', this.updateCSSVariables);
+    window.removeEventListener('storage', this.updateUserFromStorage);
   }
 }
 

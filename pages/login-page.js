@@ -1,7 +1,3 @@
-/**
- * @class LoginPage
- * Custom login page component that handles login and signup
- */
 export default class LoginPage extends HTMLElement {
   constructor() {
     super();
@@ -178,7 +174,7 @@ export default class LoginPage extends HTMLElement {
           font-weight: 500;
       }
 
-      .input-group input {
+      .input-group input, .input-group select {
           width: 100%;
           padding: 12px 40px 12px 15px;
           border: 2px solid #e9e1d9;
@@ -188,7 +184,7 @@ export default class LoginPage extends HTMLElement {
           transition: all 0.3s ease;
       }
 
-      .input-group input:focus {
+      .input-group input:focus, .input-group select:focus {
           outline: none;
           border-color: #d4a574;
           box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.2);
@@ -199,6 +195,7 @@ export default class LoginPage extends HTMLElement {
           right: 15px;
           bottom: 12px;
           font-size: 1.2rem;
+          cursor: pointer;
       }
 
       .form-footer {
@@ -307,7 +304,7 @@ export default class LoginPage extends HTMLElement {
                   <div class="input-group">
                       <label for="login-password">Password</label>
                       <input type="password" id="login-password" required>
-                      <span class="coffee-icon">☕</span>
+                      <span class="coffee-icon toggle-password" data-for="login-password">👁️</span>
                   </div>
                   
                   <div class="form-footer">
@@ -347,15 +344,24 @@ export default class LoginPage extends HTMLElement {
                   </div>
                   
                   <div class="input-group">
+                      <label for="signup-role">Role</label>
+                      <select id="signup-role" required>
+                          <option value="Customer">Customer</option>
+                          <option value="BARISTA">Barista</option>
+                      </select>
+                      <span class="coffee-icon">☕</span>
+                  </div>
+                  
+                  <div class="input-group">
                       <label for="signup-password">Password</label>
                       <input type="password" id="signup-password" required>
-                      <span class="coffee-icon">☕</span>
+                      <span class="coffee-icon toggle-password" data-for="signup-password">👁️</span>
                   </div>
                   
                   <div class="input-group">
                       <label for="signup-confirm">Confirm Password</label>
                       <input type="password" id="signup-confirm" required>
-                      <span class="coffee-icon">☕</span>
+                      <span class="coffee-icon toggle-password" data-for="signup-confirm">👁️</span>
                   </div>
                   
                   <button type="submit" class="auth-btn">Create Account</button>
@@ -371,19 +377,32 @@ export default class LoginPage extends HTMLElement {
   }
 
   setupEventListeners() {
-    // Get tab buttons
     const loginTab = this.shadowRoot.getElementById('login-tab');
     const signupTab = this.shadowRoot.getElementById('signup-tab');
     
-    // Get forms
     const loginForm = this.shadowRoot.getElementById('login-form');
     const signupForm = this.shadowRoot.getElementById('signup-form');
     
-    // Get link buttons within forms
     const goToSignup = this.shadowRoot.getElementById('go-to-signup');
     const goToLogin = this.shadowRoot.getElementById('go-to-login');
 
-    // Tab button click handlers
+    // Setup password toggles
+    const passwordToggles = this.shadowRoot.querySelectorAll('.toggle-password');
+    passwordToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const inputId = toggle.getAttribute('data-for');
+        const input = this.shadowRoot.getElementById(inputId);
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          toggle.textContent = '🔒';
+        } else {
+          input.type = 'password';
+          toggle.textContent = '👁️';
+        }
+      });
+    });
+
     loginTab.addEventListener('click', () => {
       this.switchToLogin();
     });
@@ -392,7 +411,6 @@ export default class LoginPage extends HTMLElement {
       this.switchToSignup();
     });
 
-    // Link buttons click handlers
     goToSignup.addEventListener('click', (e) => {
       e.preventDefault();
       this.switchToSignup();
@@ -403,7 +421,6 @@ export default class LoginPage extends HTMLElement {
       this.switchToLogin();
     });
 
-    // Login form submit handler
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -425,11 +442,9 @@ export default class LoginPage extends HTMLElement {
           let errorMsg = 'Login failed';
           
           try {
-            // Try to parse as JSON
             const errorData = JSON.parse(responseText);
             errorMsg = errorData.message || errorMsg;
           } catch (parseError) {
-            // If parsing fails, use the text directly
             errorMsg = responseText || errorMsg;
           }
           
@@ -442,7 +457,6 @@ export default class LoginPage extends HTMLElement {
         if (data.token) {
           localStorage.setItem('token', data.token);
           
-          // Store user data for dropdown display
           const userData = {
             name: data.user?.name || 'Coffee Lover',
             email: email,
@@ -451,7 +465,6 @@ export default class LoginPage extends HTMLElement {
           
           localStorage.setItem('user', JSON.stringify(userData));
           
-          // Dispatch login event for header to update
           const loginEvent = new CustomEvent('user-logged-in', {
             bubbles: true,
             composed: true,
@@ -459,12 +472,10 @@ export default class LoginPage extends HTMLElement {
           });
           this.dispatchEvent(loginEvent);
         }
-
-        // Show success message
+ 
         errorElement.textContent = 'Logged in successfully!';
         errorElement.style.color = '#2ecc71';
 
-        // Redirect after a short delay
         setTimeout(() => {
           window.location.href = '/menu';
         }, 1000);
@@ -475,78 +486,85 @@ export default class LoginPage extends HTMLElement {
       }
     });
 
-    // Signup form submit handler
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const name = this.shadowRoot.getElementById('signup-name').value;
       const email = this.shadowRoot.getElementById('signup-email').value;
       const phone = this.shadowRoot.getElementById('signup-phone').value;
+      const role = this.shadowRoot.getElementById('signup-role').value;
       const password = this.shadowRoot.getElementById('signup-password').value;
       const confirm = this.shadowRoot.getElementById('signup-confirm').value;
       const errorElement = this.shadowRoot.getElementById('signup-error');
       
-      // Client-side validation
+
       if (password !== confirm) {
         errorElement.textContent = 'Passwords do not match!';
         return;
       }
       
-      // Prepare the user data - match exact order from Swagger UI example
+      // Enhanced validation before submission
+      if (!this.validateEmail(email)) {
+        errorElement.textContent = 'Please enter a valid email address';
+        return;
+      }
+      
+      if (password.length < 6) {
+        errorElement.textContent = 'Password must be at least 6 characters long';
+        return;
+      }
+      
+      // Format userData according to server expectations
       const userData = {
+        email,
         password,
-        role: "Customer",
-        phone,
         name,
-        email
+        phone,
+        role: role
       };
       
       console.log('Attempting to register with data:', JSON.stringify(userData));
       
       try {
-        // Show a pending message
         errorElement.textContent = 'Creating account...';
         errorElement.style.color = '#3498db';
         
         const response = await fetch('http://localhost:3000/register', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Accept': '*/*'
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(userData),
-          // Add these options to help with potential CORS issues
-          mode: 'cors',
-          credentials: 'same-origin'
+          body: JSON.stringify(userData)
         });
 
         console.log('Registration response status:', response.status, response.statusText);
         
-        // Get the raw response for debugging
-        let responseText;
-        try {
-          responseText = await response.text();
-          console.log('Raw server response:', responseText);
-        } catch (textError) {
-          console.error('Error getting response text:', textError);
-        }
-        
-        // If not OK status, handle the error
+        // Better error handling
         if (!response.ok) {
+          let responseText;
+          try {
+            responseText = await response.text();
+            console.log('Error response:', responseText);
+          } catch (err) {
+            console.error('Error getting response text:', err);
+          }
+          
           let errorMsg = 'Registration failed';
           
           if (responseText) {
             try {
-              // Try to parse as JSON
               const errorData = JSON.parse(responseText);
-              errorMsg = errorData.message || errorMsg;
+              console.log('Parsed error data:', errorData);
               
-              // Check if we have detailed validation errors
-              if (errorData.errors && Array.isArray(errorData.errors)) {
+              if (errorData.message) {
+                errorMsg = errorData.message;
+              } else if (errorData.error) {
+                errorMsg = errorData.error;
+              } else if (errorData.errors && Array.isArray(errorData.errors)) {
                 errorMsg = errorData.errors.map(err => err.message || err).join(', ');
               }
             } catch (parseError) {
-              // If parsing fails, use the text directly
+              console.error('Error parsing response:', parseError);
               errorMsg = responseText || errorMsg;
             }
           }
@@ -554,28 +572,19 @@ export default class LoginPage extends HTMLElement {
           throw new Error(errorMsg);
         }
 
-        // Try to parse the success response
-        let data;
-        try {
-          data = responseText ? JSON.parse(responseText) : { success: true };
-          console.log('Registered successfully:', data);
-        } catch (parseError) {
-          console.log('Response is not JSON but registration appears successful');
-          data = { success: true };
-        }
+        // Success handling
+        const data = await response.json();
+        console.log('Registration successful:', data);
         
-        // Show success message
         errorElement.textContent = 'Account created successfully!';
         errorElement.style.color = '#2ecc71';
         
-        // Clear form fields
         this.shadowRoot.getElementById('signup-name').value = '';
         this.shadowRoot.getElementById('signup-email').value = '';
         this.shadowRoot.getElementById('signup-phone').value = '';
         this.shadowRoot.getElementById('signup-password').value = '';
         this.shadowRoot.getElementById('signup-confirm').value = '';
         
-        // Switch to login after short delay
         setTimeout(() => {
           this.switchToLogin();
         }, 1500);
@@ -594,20 +603,17 @@ export default class LoginPage extends HTMLElement {
     const signupForm = this.shadowRoot.getElementById('signup-form');
     const loginError = this.shadowRoot.getElementById('login-error');
     
-    // Clear any error messages
     loginError.textContent = '';
 
-    // Update tab buttons
     loginTab.classList.add('active');
     signupTab.classList.remove('active');
-    
-    // Update forms visibility
+  
     loginForm.classList.remove('hidden');
     signupForm.classList.add('hidden');
   }
 
   validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
   }
 
@@ -618,14 +624,11 @@ export default class LoginPage extends HTMLElement {
     const signupForm = this.shadowRoot.getElementById('signup-form');
     const signupError = this.shadowRoot.getElementById('signup-error');
     
-    // Clear any error messages
     signupError.textContent = '';
 
-    // Update tab buttons
     loginTab.classList.remove('active');
     signupTab.classList.add('active');
     
-    // Update forms visibility
     loginForm.classList.add('hidden');
     signupForm.classList.remove('hidden');
   }

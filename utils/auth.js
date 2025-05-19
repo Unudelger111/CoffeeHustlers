@@ -1,14 +1,8 @@
-/**
- * Authentication utility functions
- */
-
-// Check if user is logged in
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token');
   return !!token;
 };
 
-// Get current user data
 export const getCurrentUser = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -20,12 +14,10 @@ export const getCurrentUser = () => {
   }
 };
 
-// Logout user
 export const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   
-  // Dispatch logout event
   const logoutEvent = new CustomEvent('user-logged-out', {
     bubbles: true
   });
