@@ -11,6 +11,8 @@ import "./pages/login-page.js"
 import "./pages/cart-page.js";
 import "./pages/history-view.js";
 import "./pages/reorder.js";
+import "./pages/payment.js";
+import "./pages/barista-page.js";
 
 import { Router } from "./router.js";
 import { cartService } from "./cart-service.js";
@@ -49,6 +51,8 @@ const router = new Router({
     '/account': 'login-page',
     '/order-history': 'history-view',
     '/reorder': 'reorder-page',
+    '/payment': 'payment-page',
+    '/barista': 'barista-page',
 
   },
   hideHeaderOnPaths,

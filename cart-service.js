@@ -1,6 +1,7 @@
 export class CartService {
   constructor() {
     this.cartKey = 'cart';
+    this.pickupTimeKey = 'pickupTime';  // new key for pick-up time
     this.init();
   }
   
@@ -62,6 +63,7 @@ export class CartService {
   
   clearCart() {
     this.saveCart([]);
+    this.clearPickupTime();  // clear pick-up time when cart is cleared
     return [];
   }
   
@@ -77,6 +79,19 @@ export class CartService {
   
   notifyCartUpdated() {
     window.dispatchEvent(new CustomEvent('cart-updated'));
+  }
+
+  // New methods for pick-up time
+  setPickupTime(time) {
+    localStorage.setItem(this.pickupTimeKey, time);
+  }
+
+  getPickupTime() {
+    return localStorage.getItem(this.pickupTimeKey);
+  }
+
+  clearPickupTime() {
+    localStorage.removeItem(this.pickupTimeKey);
   }
 }
 

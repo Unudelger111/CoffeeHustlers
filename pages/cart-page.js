@@ -4,7 +4,21 @@ export default class CartPage extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    this.pickupTime = null;
     this.render();
+
+    // Load saved pickup time into input after render
+    const savedTime = cartService.getPickupTime();
+    if (savedTime) {
+      this.pickupTime = savedTime;
+      setTimeout(() => {
+        const pickupInput = this.shadowRoot.getElementById("pickup-time");
+        if (pickupInput) {
+          pickupInput.value = savedTime;
+        }
+      }, 0);
+    }
+
     this.bindEvents();
     this.updateCartUI();
   }
@@ -37,18 +51,17 @@ export default class CartPage extends HTMLElement {
     cartItemsContainer.innerHTML = '';
 
     const cart = cartService.getCart();
-    
+
     cart.forEach(item => {
       const cartItem = document.createElement('div');
       cartItem.classList.add('cart-item');
       cartItem.innerHTML = `
         <div class="item-image">
-            <img src="${item.image}" alt="${item.name}" onerror="this.src='/img/default-coffee.jpg'">
+          <img src="${item.image}" alt="${item.name}" onerror="this.src='/img/default-coffee.jpg'">
         </div>
         <div class="item-details">
-            <div class="item-name">${item.name}</div>
-            <div class="item-size">${item.size || 'Regular'}</div>
-            <div class="item-options">${item.options || 'No special instructions'}</div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-size">${item.size || 'Regular'}</div>
         </div>
         <div class="item-quantity">x${item.quantity}</div>
         <div class="item-price">${this.formatPrice(item.price * item.quantity)}</div>
@@ -100,6 +113,11 @@ export default class CartPage extends HTMLElement {
   }
 
   goToCheckout() {
+    if (!this.pickupTime) {
+      alert("Please select a pick-up time before proceeding.");
+      return;
+    }
+    cartService.setPickupTime(this.pickupTime);
     window.router.navigate('/checkout');
   }
 
@@ -108,6 +126,7 @@ export default class CartPage extends HTMLElement {
     const clearCartBtn = this.shadowRoot.getElementById('clear-cart-btn');
     const checkoutBtn = this.shadowRoot.getElementById('checkout-btn');
     const backBtn = this.shadowRoot.getElementById('back-btn');
+    const pickupTimeInput = this.shadowRoot.getElementById("pickup-time");
 
     if (browseMenuBtn) {
       browseMenuBtn.addEventListener('click', () => this.goToMenu());
@@ -125,6 +144,13 @@ export default class CartPage extends HTMLElement {
       backBtn.addEventListener('click', () => this.goToMenu());
     }
 
+    if (pickupTimeInput) {
+      pickupTimeInput.addEventListener("change", (e) => {
+        this.pickupTime = e.target.value;
+        cartService.setPickupTime(this.pickupTime);
+      });
+    }
+
     // Listen for cart updates from other components
     window.addEventListener('cart-updated', () => {
       this.updateCartUI();
@@ -132,25 +158,25 @@ export default class CartPage extends HTMLElement {
   }
 
   styleSheet = `
-  <style>
-    * {
+    <style>
+      * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
         font-family: 'Poppins', sans-serif;
-    }
+      }
 
-    .container {
+      .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
-    }
+      }
 
-    .hidden {
+      .hidden {
         display: none !important;
-    }
+      }
 
-    button {
+      button {
         cursor: pointer;
         background-color: #d4a574;
         color: #4a3520;
@@ -159,104 +185,104 @@ export default class CartPage extends HTMLElement {
         border-radius: 20px;
         font-size: 14px;
         transition: all 0.3s ease;
-    }
+      }
 
-    button:hover {
+      button:hover {
         background-color: #c69c6d;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+      }
 
-    #back-btn {
+      #back-btn {
         background-color: transparent;
         color: #6f4e37;
         padding: 5px 10px;
         margin-bottom: 10px;
         display: inline-block;
-    }
+      }
 
-    .primary-btn {
+      .primary-btn {
         background-color: #6f4e37;
         color: #fff;
         padding: 12px 24px;
         font-size: 16px;
         font-weight: bold;
-    }
+      }
 
-    h2 {
+      h2 {
         color: #6f4e37;
         margin: 30px 0 20px;
         font-size: 1.8rem;
-    }
+      }
 
-    .cart-items {
+      .cart-items {
         background-color: #fff;
         border-radius: 15px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
-    }
+      }
 
-    .cart-item {
+      .cart-item {
         display: flex;
         align-items: center;
         padding: 20px;
         border-bottom: 1px solid #e9e1d9;
-    }
+      }
 
-    .cart-item:last-child {
+      .cart-item:last-child {
         border-bottom: none;
-    }
+      }
 
-    .item-image {
+      .item-image {
         width: 80px;
         height: 80px;
         border-radius: 10px;
         overflow: hidden;
         margin-right: 20px;
-    }
+      }
 
-    .item-image img {
+      .item-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-    }
+      }
 
-    .item-details {
+      .item-details {
         flex: 1;
-    }
+      }
 
-    .item-name {
+      .item-name {
         font-weight: bold;
         font-size: 1.1rem;
         color: #6f4e37;
         margin-bottom: 5px;
-    }
+      }
 
-    .item-size {
+      .item-size {
         font-size: 0.9rem;
         color: #8b5a2b;
         margin-bottom: 5px;
-    }
+      }
 
-    .item-options {
+      .item-options {
         font-size: 0.8rem;
         color: #8b5a2b;
-    }
+      }
 
-    .item-quantity {
+      .item-quantity {
         font-weight: bold;
         margin: 0 20px;
-    }
+      }
 
-    .item-price {
+      .item-price {
         font-weight: bold;
         font-size: 1.1rem;
         color: #6f4e37;
         margin-right: 15px;
-    }
+      }
 
-    .remove-btn {
+      .remove-btn {
         background-color: #ff6b6b;
         color: #fff;
         width: 30px;
@@ -267,37 +293,37 @@ export default class CartPage extends HTMLElement {
         justify-content: center;
         padding: 0;
         font-size: 18px;
-    }
+      }
 
-    /* Empty Cart */
-    .empty-cart {
+      /* Empty Cart */
+      .empty-cart {
         text-align: center;
         padding: 40px 20px;
         background-color: #fff;
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
-    }
+      }
 
-    .empty-cart h3 {
+      .empty-cart h3 {
         font-size: 1.5rem;
         color: #6f4e37;
         margin-bottom: 10px;
-    }
+      }
 
-    .empty-cart p {
+      .empty-cart p {
         color: #8b5a2b;
         margin-bottom: 20px;
-    }
+      }
 
-    .empty-cart-animation {
+      .empty-cart-animation {
         position: relative;
         width: 150px;
         height: 180px;
         margin: 0 auto 30px;
-    }
+      }
 
-    .coffee-cup {
+      .coffee-cup {
         position: absolute;
         width: 100px;
         height: 120px;
@@ -305,9 +331,9 @@ export default class CartPage extends HTMLElement {
         border: 3px solid #6f4e37;
         border-radius: 0 0 50px 50px;
         left: 25px;
-    }
+      }
 
-    .coffee-cup.empty::after {
+      .coffee-cup.empty::after {
         content: "";
         position: absolute;
         width: 40px;
@@ -318,9 +344,9 @@ export default class CartPage extends HTMLElement {
         border-bottom-right-radius: 40px;
         right: -20px;
         top: 30px;
-    }
+      }
 
-    .coffee-drop {
+      .coffee-drop {
         position: absolute;
         width: 20px;
         height: 20px;
@@ -330,126 +356,117 @@ export default class CartPage extends HTMLElement {
         top: 150px;
         left: 65px;
         animation: dropFall 2s ease-in-out infinite;
-    }
+      }
 
-    @keyframes dropFall {
+      @keyframes dropFall {
         0% {
-            transform: rotate(-45deg) translateY(-60px);
-            opacity: 0;
+          transform: rotate(-45deg) translateY(-60px);
+          opacity: 0;
         }
         50% {
-            opacity: 1;
+          transform: rotate(-45deg) translateY(0);
+          opacity: 1;
         }
         100% {
-            transform: rotate(-45deg) translateY(0);
-            opacity: 0;
+          transform: rotate(-45deg) translateY(-60px);
+          opacity: 0;
         }
-    }
+      }
 
-    /* Cart Summary */
-    .cart-summary {
+      /* Cart Summary */
+      .cart-summary {
         background-color: #fff;
         border-radius: 15px;
-        padding: 20px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
+        padding: 30px;
+      }
 
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #e9e1d9;
-    }
-
-    .summary-row.total {
-        border-bottom: none;
-        margin-top: 5px;
-        font-size: 1.2rem;
-        font-weight: bold;
+      .cart-summary h3 {
         color: #6f4e37;
-    }
+        margin-bottom: 20px;
+      }
 
-    .checkout-section {
+      .summary-item {
         display: flex;
         justify-content: space-between;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #e9e1d9;
-    }
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #6f4e37;
+      }
 
-    @media (max-width: 768px) {
-        .cart-item {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .item-image {
-            margin-bottom: 15px;
-        }
-        
-        .item-price-actions {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-        
-        .checkout-section {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        #checkout-btn, #clear-cart-btn {
-            width: 100%;
-        }
-    }
-  </style>
-  `
+      .pickup-time-container {
+        margin-top: 25px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #6f4e37;
+      }
+
+      input[type="time"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 15px;
+        border: 2px solid #d4a574;
+        font-size: 16px;
+        font-weight: 600;
+        color: #6f4e37;
+      }
+
+      input[type="time"]:focus {
+        outline: none;
+        border-color: #6f4e37;
+      }
+    </style>
+  `;
 
   render() {
     this.shadowRoot.innerHTML = `
-    ${this.styleSheet}
-    <div class="container">
-        <button id="back-btn">← Back to Menu</button>
-        <h2>Your Cart</h2>
-        
-        <div id="empty-cart" class="empty-cart">
-            <div class="empty-cart-animation">
-                <div class="coffee-cup empty"></div>
-                <div class="coffee-drop"></div>
-            </div>
-            <h3>Your cart is empty</h3>
-            <p>Add some delicious coffee to your cart!</p>
-            <button id="browse-menu-btn" class="primary-btn">Browse Menu</button>
+      ${this.styleSheet}
+      <button id="back-btn" title="Back to menu">&#8592; Back</button>
+      <div class="container">
+        <h2>Shopping Cart</h2>
+        <div id="cart-items" class="cart-items"></div>
+
+        <div id="empty-cart" class="empty-cart hidden">
+          <div class="empty-cart-animation">
+            <div class="coffee-cup empty"></div>
+            <div class="coffee-drop"></div>
+          </div>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added anything to your cart yet.</p>
+          <button id="browse-menu-btn" class="primary-btn">Browse Menu</button>
         </div>
-        
-        <div id="cart-items" class="cart-items">
-            <!-- Cart items will be dynamically added here -->
-        </div>
-        
+
         <div id="cart-summary" class="cart-summary">
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span id="subtotal">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>Tax (8%)</span>
-                <span id="tax">$0.00</span>
-            </div>
-            <div class="summary-row total">
-                <span>Total</span>
-                <span id="total">$0.00</span>
-            </div>
-            
-            <div class="checkout-section">
-                <button id="clear-cart-btn">Clear Cart</button>
-                <button id="checkout-btn" class="primary-btn">Proceed to Payment</button>
-            </div>
+          <div class="summary-item">
+            <div>Subtotal:</div>
+            <div id="subtotal">$0.00</div>
+          </div>
+          <div class="summary-item">
+            <div>Tax (8%):</div>
+            <div id="tax">$0.00</div>
+          </div>
+          <div class="summary-item" style="font-size: 1.2rem; font-weight: 700;">
+            <div>Total:</div>
+            <div id="total">$0.00</div>
+          </div>
+
+          <div class="pickup-time-container">
+            <label for="pickup-time">Pick-up time:</label>
+            <input type="time" id="pickup-time" />
+          </div>
+
+          <div style="margin-top: 30px; display: flex; gap: 15px;">
+            <button id="clear-cart-btn">Clear Cart</button>
+            <button id="checkout-btn" class="primary-btn">Checkout</button>
+          </div>
         </div>
-    </div>
+      </div>
     `;
   }
 }
 
-customElements.define('cart-page', CartPage);
+customElements.define("cart-page", CartPage);

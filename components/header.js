@@ -483,7 +483,6 @@ export default class Header extends HTMLElement {
             </button>
           </div>
 
-          <button id="reorder-btn"><i class="fa fa-redo"></i> Re-order</button>
           <button id="history-btn"><i class="fas fa-history"></i> History</button>
           <button id="cart-btn"><i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span></button>
           
@@ -619,7 +618,6 @@ export default class Header extends HTMLElement {
   }
 
   setupEventListeners() {
-    const reorderButton = this.shadowRoot.getElementById('reorder-btn');
     const cartButton = this.shadowRoot.getElementById('cart-btn');
     const historyButton = this.shadowRoot.getElementById('history-btn');
     const accountButton = this.shadowRoot.getElementById('account-btn');
@@ -628,7 +626,6 @@ export default class Header extends HTMLElement {
 
     cartButton.addEventListener('click', () => this.navigateTo('/cart'));
     historyButton.addEventListener('click', () => this.navigateTo('/order-history'));
-    reorderButton.addEventListener('click', () => this.navigateTo('/reorder'));
     
     // Account button behavior depends on login state
     accountButton.addEventListener('click', (e) => {
