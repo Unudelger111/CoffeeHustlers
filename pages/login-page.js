@@ -6,8 +6,9 @@ export default class LoginPage extends HTMLElement {
     this.setupEventListeners();
   }
 
-  styleSheet = `
-    <style>
+  get styleSheet() {
+    return `
+       <style>
       * {
           margin: 0;
           padding: 0;
@@ -272,366 +273,257 @@ export default class LoginPage extends HTMLElement {
           .form-footer {
               flex-direction: column;
               gap: 10px;
-              align-items: flex-start;
+              align-items: flex-start ;
           }
       }
     </style>
-  `;
+    `;
+  }
 
   render() {
     this.shadowRoot.innerHTML = `
       ${this.styleSheet}
       <div class="container">
         <a data-link href="menu" class="go-back-btn">← Back</a>
-          <div class="coffee-bg"></div>
-          <div class="auth-container">
-              <div class="auth-header">
-                  <h1>Coffee Hustlers</h1>
-                  <div class="auth-tabs">
-                      <button class="tab-btn active" id="login-tab">Login</button>
-                      <button class="tab-btn" id="signup-tab">Sign Up</button>
-                  </div>
-              </div>
-              
-              <!-- Login Form -->
-              <form id="login-form" class="auth-form">
-                  <div class="input-group">
-                      <label for="login-email">Email</label>
-                      <input type="email" id="login-email" required>
-                      <span class="coffee-icon">☕</span>
-                  </div>
-                  
-                  <div class="input-group">
-                      <label for="login-password">Password</label>
-                      <input type="password" id="login-password" required>
-                      <span class="coffee-icon toggle-password" data-for="login-password">👁️</span>
-                  </div>
-                  
-                  <div class="form-footer">
-                      <div class="remember-me">
-                          <input type="checkbox" id="remember">
-                          <label for="remember">Remember me</label>
-                      </div>
-                      <a href="#" class="forgot-password">Forgot Password?</a>
-                  </div>
-                  
-                  <button type="submit" class="auth-btn">Login</button>
-                  <div class="error-message" id="login-error"></div>
-                  
-                  <div class="alt-auth">
-                      <p>Don't have an account? <a href="#" id="go-to-signup">Sign up</a></p>
-                  </div>
-              </form>
-              
-              <!-- Signup Form -->
-              <form id="signup-form" class="auth-form hidden">
-                  <div class="input-group">
-                      <label for="signup-name">Full Name</label>
-                      <input type="text" id="signup-name" required>
-                      <span class="coffee-icon">☕</span>
-                  </div>
-                  
-                  <div class="input-group">
-                      <label for="signup-email">Email</label>
-                      <input type="email" id="signup-email" required>
-                      <span class="coffee-icon">☕</span>
-                  </div>
-                  
-                  <div class="input-group">
-                      <label for="signup-phone">Phone Number</label>
-                      <input type="text" id="signup-phone" required>
-                      <span class="coffee-icon">☕</span>
-                  </div>
-                  
-                  <div class="input-group">
-                      <label for="signup-role">Role</label>
-                      <select id="signup-role" required>
-                          <option value="Customer">Customer</option>
-                          <option value="BARISTA">Barista</option>
-                      </select>
-                      <span class="coffee-icon">☕</span>
-                  </div>
-                  
-                  <div class="input-group">
-                      <label for="signup-password">Password</label>
-                      <input type="password" id="signup-password" required>
-                      <span class="coffee-icon toggle-password" data-for="signup-password">👁️</span>
-                  </div>
-                  
-                  <div class="input-group">
-                      <label for="signup-confirm">Confirm Password</label>
-                      <input type="password" id="signup-confirm" required>
-                      <span class="coffee-icon toggle-password" data-for="signup-confirm">👁️</span>
-                  </div>
-                  
-                  <button type="submit" class="auth-btn">Create Account</button>
-                  <div class="error-message" id="signup-error"></div>
-                  
-                  <div class="alt-auth">
-                      <p>Already have an account? <a href="#" id="go-to-login">Login</a></p>
-                  </div>
-              </form>
+        <div class="coffee-bg"></div>
+        <div class="auth-container">
+          <div class="auth-header">
+            <h1>Coffee Hustlers</h1>
+            <div class="auth-tabs">
+              <button class="tab-btn active" id="login-tab">Login</button>
+              <button class="tab-btn" id="signup-tab">Sign Up</button>
+            </div>
           </div>
+
+          <!-- Login Form -->
+          <form id="login-form" class="auth-form">
+            <div class="input-group">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" required>
+              <span class="coffee-icon">☕</span>
+            </div>
+
+            <div class="input-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" required>
+              <span class="coffee-icon toggle-password" data-for="login-password">👁️</span>
+            </div>
+
+            <div class="form-footer">
+              <div class="remember-me">
+                <input type="checkbox" id="remember">
+                <label for="remember">Remember me</label>
+              </div>
+              <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="auth-btn">Login</button>
+            <div class="error-message" id="login-error"></div>
+
+            <div class="alt-auth">
+              <p>Don't have an account? <a href="#" id="go-to-signup">Sign up</a></p>
+            </div>
+          </form>
+
+          <!-- Signup Form -->
+          <form id="signup-form" class="auth-form hidden">
+            <div class="input-group">
+              <label for="signup-name">Full Name</label>
+              <input type="text" id="signup-name" required>
+              <span class="coffee-icon">☕</span>
+            </div>
+
+            <div class="input-group">
+              <label for="signup-email">Email</label>
+              <input type="email" id="signup-email" required>
+              <span class="coffee-icon">☕</span>
+            </div>
+
+            <div class="input-group">
+              <label for="signup-phone">Phone Number</label>
+              <input type="text" id="signup-phone" required>
+              <span class="coffee-icon">☕</span>
+            </div>
+
+            <div class="input-group hidden">
+              <label for="signup-role">Role</label>
+              <select id="signup-role">
+                <option value="Customer" selected>Customer</option>
+              </select>
+              <span class="coffee-icon">☕</span>
+            </div>
+
+            <div class="input-group">
+              <label for="signup-password">Password</label>
+              <input type="password" id="signup-password" required>
+              <span class="coffee-icon toggle-password" data-for="signup-password">👁️</span>
+            </div>
+
+            <div class="input-group">
+              <label for="signup-confirm">Confirm Password</label>
+              <input type="password" id="signup-confirm" required>
+              <span class="coffee-icon toggle-password" data-for="signup-confirm">👁️</span>
+            </div>
+
+            <button type="submit" class="auth-btn">Create Account</button>
+            <div class="error-message" id="signup-error"></div>
+
+            <div class="alt-auth">
+              <p>Already have an account? <a href="#" id="go-to-login">Login</a></p>
+            </div>
+          </form>
+        </div>
       </div>
     `;
   }
 
   setupEventListeners() {
-    const loginTab = this.shadowRoot.getElementById('login-tab');
-    const signupTab = this.shadowRoot.getElementById('signup-tab');
-    
-    const loginForm = this.shadowRoot.getElementById('login-form');
-    const signupForm = this.shadowRoot.getElementById('signup-form');
-    
-    const goToSignup = this.shadowRoot.getElementById('go-to-signup');
-    const goToLogin = this.shadowRoot.getElementById('go-to-login');
+    const loginTab = this.shadowRoot.getElementById("login-tab");
+    const signupTab = this.shadowRoot.getElementById("signup-tab");
+    const loginForm = this.shadowRoot.getElementById("login-form");
+    const signupForm = this.shadowRoot.getElementById("signup-form");
+    const goToSignup = this.shadowRoot.getElementById("go-to-signup");
+    const goToLogin = this.shadowRoot.getElementById("go-to-login");
 
-    // Setup password toggles
-    const passwordToggles = this.shadowRoot.querySelectorAll('.toggle-password');
+    const passwordToggles = this.shadowRoot.querySelectorAll(".toggle-password");
     passwordToggles.forEach(toggle => {
-      toggle.addEventListener('click', () => {
-        const inputId = toggle.getAttribute('data-for');
+      toggle.addEventListener("click", () => {
+        const inputId = toggle.getAttribute("data-for");
         const input = this.shadowRoot.getElementById(inputId);
-        
-        if (input.type === 'password') {
-          input.type = 'text';
-          toggle.textContent = '🔒';
+        if (input.type === "password") {
+          input.type = "text";
+          toggle.textContent = "🔒";
         } else {
-          input.type = 'password';
-          toggle.textContent = '👁️';
+          input.type = "password";
+          toggle.textContent = "👁️";
         }
       });
     });
 
-    loginTab.addEventListener('click', () => {
-      this.switchToLogin();
-    });
-
-    signupTab.addEventListener('click', () => {
-      this.switchToSignup();
-    });
-
-    goToSignup.addEventListener('click', (e) => {
+    loginTab.addEventListener("click", () => this.switchToLogin());
+    signupTab.addEventListener("click", () => this.switchToSignup());
+    goToSignup.addEventListener("click", e => {
       e.preventDefault();
       this.switchToSignup();
     });
-
-    goToLogin.addEventListener('click', (e) => {
+    goToLogin.addEventListener("click", e => {
       e.preventDefault();
       this.switchToLogin();
     });
 
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const email = this.shadowRoot.getElementById('login-email').value;
-      const password = this.shadowRoot.getElementById('login-password').value;
-      const errorElement = this.shadowRoot.getElementById('login-error');
-      
-      try {
-        const response = await fetch('http://localhost:3000/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password })
-        });
-
-        if (!response.ok) {
-          const responseText = await response.text();
-          let errorMsg = 'Login failed';
-          
-          try {
-            const errorData = JSON.parse(responseText);
-            errorMsg = errorData.message || errorMsg;
-          } catch (parseError) {
-            errorMsg = responseText || errorMsg;
-          }
-          
-          throw new Error(errorMsg);
-        }
-
-        const data = await response.json();
-        console.log('Logged in:', data);
-
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          
-          const userData = {
-            name: data.user?.name || 'Coffee Lover',
-            email: email,
-            id: data.user?.id
-          };
-          
-          localStorage.setItem('user', JSON.stringify(userData));
-          
-          const loginEvent = new CustomEvent('user-logged-in', {
-            bubbles: true,
-            composed: true,
-            detail: { userData }
-          });
-          this.dispatchEvent(loginEvent);
-        }
- 
-        errorElement.textContent = 'Logged in successfully!';
-        errorElement.style.color = '#2ecc71';
-
-        setTimeout(() => {
-          window.location.href = '/menu';
-        }, 1000);
-      } catch (err) {
-        console.error(err);
-        errorElement.textContent = 'Login failed: ' + err.message;
-        errorElement.style.color = '#e74c3c';
-      }
-    });
-
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = this.shadowRoot.getElementById('signup-name').value;
-      const email = this.shadowRoot.getElementById('signup-email').value;
-      const phone = this.shadowRoot.getElementById('signup-phone').value;
-      const role = this.shadowRoot.getElementById('signup-role').value;
-      const password = this.shadowRoot.getElementById('signup-password').value;
-      const confirm = this.shadowRoot.getElementById('signup-confirm').value;
-      const errorElement = this.shadowRoot.getElementById('signup-error');
-      
-
-      if (password !== confirm) {
-        errorElement.textContent = 'Passwords do not match!';
-        return;
-      }
-      
-      // Enhanced validation before submission
-      if (!this.validateEmail(email)) {
-        errorElement.textContent = 'Please enter a valid email address';
-        return;
-      }
-      
-      if (password.length < 6) {
-        errorElement.textContent = 'Password must be at least 6 characters long';
-        return;
-      }
-      
-      // Format userData according to server expectations
-      const userData = {
-        email,
-        password,
-        name,
-        phone,
-        role: role
-      };
-      
-      console.log('Attempting to register with data:', JSON.stringify(userData));
-      
-      try {
-        errorElement.textContent = 'Creating account...';
-        errorElement.style.color = '#3498db';
-        
-        const response = await fetch('http://localhost:3000/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-        });
-
-        console.log('Registration response status:', response.status, response.statusText);
-        
-        // Better error handling
-        if (!response.ok) {
-          let responseText;
-          try {
-            responseText = await response.text();
-            console.log('Error response:', responseText);
-          } catch (err) {
-            console.error('Error getting response text:', err);
-          }
-          
-          let errorMsg = 'Registration failed';
-          
-          if (responseText) {
-            try {
-              const errorData = JSON.parse(responseText);
-              console.log('Parsed error data:', errorData);
-              
-              if (errorData.message) {
-                errorMsg = errorData.message;
-              } else if (errorData.error) {
-                errorMsg = errorData.error;
-              } else if (errorData.errors && Array.isArray(errorData.errors)) {
-                errorMsg = errorData.errors.map(err => err.message || err).join(', ');
-              }
-            } catch (parseError) {
-              console.error('Error parsing response:', parseError);
-              errorMsg = responseText || errorMsg;
-            }
-          }
-          
-          throw new Error(errorMsg);
-        }
-
-        // Success handling
-        const data = await response.json();
-        console.log('Registration successful:', data);
-        
-        errorElement.textContent = 'Account created successfully!';
-        errorElement.style.color = '#2ecc71';
-        
-        this.shadowRoot.getElementById('signup-name').value = '';
-        this.shadowRoot.getElementById('signup-email').value = '';
-        this.shadowRoot.getElementById('signup-phone').value = '';
-        this.shadowRoot.getElementById('signup-password').value = '';
-        this.shadowRoot.getElementById('signup-confirm').value = '';
-        
-        setTimeout(() => {
-          this.switchToLogin();
-        }, 1500);
-      } catch (err) {
-        console.error('Registration error:', err);
-        errorElement.textContent = 'Registration failed: ' + err.message;
-        errorElement.style.color = '#e74c3c';
-      }
-    });
+    loginForm.addEventListener("submit", this.handleLogin.bind(this));
+    signupForm.addEventListener("submit", this.handleSignup.bind(this));
   }
 
   switchToLogin() {
-    const loginTab = this.shadowRoot.getElementById('login-tab');
-    const signupTab = this.shadowRoot.getElementById('signup-tab');
-    const loginForm = this.shadowRoot.getElementById('login-form');
-    const signupForm = this.shadowRoot.getElementById('signup-form');
-    const loginError = this.shadowRoot.getElementById('login-error');
-    
-    loginError.textContent = '';
+    this.shadowRoot.getElementById("login-form").classList.remove("hidden");
+    this.shadowRoot.getElementById("signup-form").classList.add("hidden");
+    this.shadowRoot.getElementById("login-tab").classList.add("active");
+    this.shadowRoot.getElementById("signup-tab").classList.remove("active");
+  }
 
-    loginTab.classList.add('active');
-    signupTab.classList.remove('active');
-  
-    loginForm.classList.remove('hidden');
-    signupForm.classList.add('hidden');
+  switchToSignup() {
+    this.shadowRoot.getElementById("signup-form").classList.remove("hidden");
+    this.shadowRoot.getElementById("login-form").classList.add("hidden");
+    this.shadowRoot.getElementById("signup-tab").classList.add("active");
+    this.shadowRoot.getElementById("login-tab").classList.remove("active");
   }
 
   validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).toLowerCase());
+    return re.test(email);
   }
 
-  switchToSignup() {
-    const loginTab = this.shadowRoot.getElementById('login-tab');
-    const signupTab = this.shadowRoot.getElementById('signup-tab');
-    const loginForm = this.shadowRoot.getElementById('login-form');
-    const signupForm = this.shadowRoot.getElementById('signup-form');
-    const signupError = this.shadowRoot.getElementById('signup-error');
-    
-    signupError.textContent = '';
+  async handleLogin(e) {
+    e.preventDefault();
+    const email = this.shadowRoot.getElementById("login-email").value;
+    const password = this.shadowRoot.getElementById("login-password").value;
+    const errorElement = this.shadowRoot.getElementById("login-error");
 
-    loginTab.classList.remove('active');
-    signupTab.classList.add('active');
-    
-    loginForm.classList.add('hidden');
-    signupForm.classList.remove('hidden');
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message);
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify({
+        name: data.user?.name || "Coffee Lover",
+        email,
+        id: data.user?.id
+      }));
+
+      errorElement.textContent = "Logged in successfully!";
+      errorElement.style.color = "#2ecc71";
+
+      setTimeout(() => (window.location.href = "/menu"), 1000);
+    } catch (err) {
+      errorElement.textContent = "Login failed: " + err.message;
+      errorElement.style.color = "#e74c3c";
+    }
+  }
+
+  async handleSignup(e) {
+    e.preventDefault();
+
+    const name = this.shadowRoot.getElementById("signup-name").value;
+    const email = this.shadowRoot.getElementById("signup-email").value;
+    const phone = this.shadowRoot.getElementById("signup-phone").value;
+    const role = "Customer";
+    const password = this.shadowRoot.getElementById("signup-password").value;
+    const confirm = this.shadowRoot.getElementById("signup-confirm").value;
+    const errorElement = this.shadowRoot.getElementById("signup-error");
+
+    if (password !== confirm) {
+      errorElement.textContent = "Passwords do not match!";
+      return;
+    }
+
+    if (!this.validateEmail(email)) {
+      errorElement.textContent = "Please enter a valid email address";
+      return;
+    }
+
+    if (password.length < 6) {
+      errorElement.textContent = "Password must be at least 6 characters long";
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name, phone, role })
+      });
+
+          if (!response.ok) {
+      const text = await response.text();
+      let message = text;
+
+      // Customize message for email in use
+      if (text.toLowerCase().includes("validation") || text.toLowerCase().includes("email")) {
+        message = "Email already in use";
+      }
+
+      throw new Error(message);
+    }
+
+      errorElement.textContent = "Account created successfully!";
+      errorElement.style.color = "#2ecc71";
+
+      this.switchToLogin();
+    } catch (err) {
+      errorElement.textContent = "Registration failed: " + err.message;
+      errorElement.style.color = "#e74c3c";
+    }
   }
 }
 
-customElements.define('login-page', LoginPage);
+customElements.define("login-page", LoginPage);

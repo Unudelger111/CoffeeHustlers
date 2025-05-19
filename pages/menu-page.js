@@ -4,15 +4,83 @@ export default class MenuPage extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.tab = "hot";
     this.data = [];
+    this.franchises = [];
+    this.franchiseMap = {}; // { franchiseName: id }
     this.render();
     this.setupThemeListener();
   }
 
-    async fetchData() {
-      const res = await fetch("data/items.json");
-      this.data = await res.json();
-      this.renderItems();
+  async fetchData() {
+    const res = await fetch("data/items.json");
+    this.data = await res.json();
+    this.renderItems();
+  }
+
+  async fetchFranchises() {
+    try {
+      const res = await fetch("http://localhost:3000/franchises", {
+        headers: {
+          Authorization: `Bearer YOUR_TOKEN_HERE`,
+          Accept: "*/*",
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch franchises");
+
+      const franchises = await res.json();
+      this.franchises = franchises.map(f => f.name);
+      franchises.forEach(f => this.franchiseMap[f.name] = f.id);
+      this.render(); // Re-render after fetching franchises
+      this.addFranchiseListener(); // Attach listener after render
+    } catch (error) {
+      console.error("Error fetching franchises:", error);
     }
+  }
+
+  async fetchLocations(franchiseId) {
+    try {
+      const res = await fetch(`http://localhost:3000/franchises/${franchiseId}/coffee-shops`, {
+        headers: {
+          Authorization: `Bearer YOUR_TOKEN_HERE`,
+          Accept: "*/*",
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch coffee shop locations");
+
+      const locations = await res.json();
+      this.populateLocationSelect(locations);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  }
+
+  populateLocationSelect(locations) {
+    const locationSelect = this.shadowRoot.querySelector("#location-select");
+    if (!locationSelect) return;
+
+    // Clear existing options (except the first)
+    locationSelect.innerHTML = `<option disabled selected>Select Location</option>`;
+    locations.forEach(shop => {
+      const option = document.createElement("option");
+      option.value = shop.id;
+      option.textContent = shop.location || shop.name;
+      locationSelect.appendChild(option);
+    });
+  }
+
+  addFranchiseListener() {
+    const shopSelect = this.shadowRoot.querySelector("#shop-select");
+    if (!shopSelect) return;
+
+    shopSelect.addEventListener("change", (e) => {
+      const selectedName = e.target.value;
+      const franchiseId = this.franchiseMap[selectedName];
+      if (franchiseId) {
+        this.fetchLocations(franchiseId);
+      }
+    });
+  }
 
   renderItems() {
     const container = this.shadowRoot.getElementById('menu-items-container');
@@ -47,19 +115,18 @@ export default class MenuPage extends HTMLElement {
   }
 
   setupThemeListener() {
-    // Listen for theme-changed events
-    document.addEventListener('theme-changed', (e) => {
+    document.addEventListener('theme-changed', () => {
       this.updateThemeStyles();
     });
   }
 
   updateThemeStyles() {
-    // This method can be used to dynamically update styles if needed
-    // Most styling will come from CSS variables
+    // future dynamic style updates
   }
 
   connectedCallback() {
     this.fetchData();
+    this.fetchFranchises();
 
     const observer = new MutationObserver(() => {
       const categoryBtn = this.shadowRoot.querySelector("menu-categories");
@@ -76,7 +143,8 @@ export default class MenuPage extends HTMLElement {
   }
 
   styleSheet = `
-    <style>
+
+  <style>
       * {
           margin: 0;
           padding: 0;
@@ -253,7 +321,8 @@ export default class MenuPage extends HTMLElement {
               grid-template-columns: 1fr;
           }
       }
-    </style>
+    </style> 
+  
   `;
 
   render() {
@@ -264,20 +333,19 @@ export default class MenuPage extends HTMLElement {
           <theme-toggle></theme-toggle>
         </div>
 
-        <div class="dropdowns">
-          <select id="shop-select">
-            <option disabled selected>Select Coffee Shop</option>
-            <option value="Cafe Bene">Cafe Bene</option>
-            <option value="Coffee Namu">Coffee Namu</option>
-            <option value="Tom N Toms">Tom N Toms</option>
-          </select>
-          <select id="location-select">
-            <option disabled selected>Select Location</option>
-            <option value="Downtown">Downtown</option>
-            <option value="Uptown">Uptown</option>
-            <option value="Suburb">Suburb</option>
-          </select>
-        </div>
+        ${this.franchises.length > 0 ? `
+          <div class="dropdowns">
+            <select id="shop-select">
+              <option disabled selected>Select Coffee Shop</option>
+              ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
+            </select>
+            <select id="location-select">
+              <option disabled selected>Select Location</option>
+            </select>
+          </div>
+        ` : `
+          <p>Loading coffee shops...</p>
+        `}
 
         <menu-categories></menu-categories>
 
