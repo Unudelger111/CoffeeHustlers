@@ -1,3 +1,5 @@
+import { saveMenuPageState } from './menu-state.js'; // Adjust the path as needed
+
 export class Router {
   constructor({ routes, rootId, hideHeaderOnPaths = [], hideFooterOnPaths = [] }) {
     this.routes = routes; 
@@ -101,16 +103,28 @@ export class Router {
     ) {
       event.preventDefault();
       const path = anchor.getAttribute('href');
+
+      // ✅ Save menu state before leaving /menu
+      if (location.pathname === '/menu') {
+        saveMenuPageState();
+      }
+
       this.navigate(path);
     }
   }
 
+
   handleNavigationEvent(event) {
     if (event.detail && event.detail.path) {
+      if (location.pathname === '/menu') {
+        saveMenuPageState();
+      }
+
       event.preventDefault();
       this.navigate(event.detail.path);
     }
   }
+
 
   handlePopState() {
     this.render(location.pathname);

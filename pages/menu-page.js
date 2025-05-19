@@ -2,25 +2,20 @@ export default class MenuPage extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.tab = "hot";
-    this.data = [];
+    this.tab = "";
+    this.menuItems = [];
     this.franchises = [];
-    this.franchiseMap = {}; // { franchiseName: id }
+    this.franchiseMap = {};
+    this.categories = [];
     this.render();
     this.setupThemeListener();
-  }
-
-  async fetchData() {
-    const res = await fetch("data/items.json");
-    this.data = await res.json();
-    this.renderItems();
   }
 
   async fetchFranchises() {
     try {
       const res = await fetch("http://localhost:3000/franchises", {
         headers: {
-          Authorization: `Bearer YOUR_TOKEN_HERE`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           Accept: "*/*",
         },
       });
@@ -30,8 +25,18 @@ export default class MenuPage extends HTMLElement {
       const franchises = await res.json();
       this.franchises = franchises.map(f => f.name);
       franchises.forEach(f => this.franchiseMap[f.name] = f.id);
-      this.render(); // Re-render after fetching franchises
-      this.addFranchiseListener(); // Attach listener after render
+
+      this.render();
+      this.addFranchiseListener();
+
+      const shopSelect = this.shadowRoot.querySelector("#shop-select");
+      if (shopSelect && this.restoreFranchise) {
+        shopSelect.value = this.restoreFranchise;
+        const franchiseId = this.franchiseMap[this.restoreFranchise];
+        if (franchiseId) {
+          await this.fetchLocations(franchiseId); // ⚠️ continue into locations
+        }
+      }
     } catch (error) {
       console.error("Error fetching franchises:", error);
     }
@@ -41,7 +46,7 @@ export default class MenuPage extends HTMLElement {
     try {
       const res = await fetch(`http://localhost:3000/franchises/${franchiseId}/coffee-shops`, {
         headers: {
-          Authorization: `Bearer YOUR_TOKEN_HERE`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           Accept: "*/*",
         },
       });
@@ -55,17 +60,102 @@ export default class MenuPage extends HTMLElement {
     }
   }
 
-  populateLocationSelect(locations) {
+  async fetchCoffeeShopMenu(coffeeShopId) {
+    try {
+      const res = await fetch(`http://localhost:3000/coffee-shops/${coffeeShopId}/menu`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Accept: "*/*",
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch menu");
+
+      const items = await res.json();
+      this.menuItems = items;
+
+      const categoriesSet = new Set(items.map(i => i.category));
+      this.categories = [...categoriesSet];
+      if (!this.tab || !this.categories.includes(this.tab)) {
+        this.tab = this.categories[0];
+      }
+
+      // Fetch price information for each menu item
+      await this.fetchMenuItemPrices();
+
+      this.updateCategories();  // only updates menu-categories
+      this.renderItems();       // updates menu items
+
+    } catch (error) {
+      console.error("Error fetching menu:", error);
+    }
+  }
+
+  async fetchMenuItemPrices() {
+    try {
+      // Create enhanced menu items with price information
+      const enhancedMenuItems = await Promise.all(
+        this.menuItems.map(async (item) => {
+          try {
+            const res = await fetch(`http://localhost:3000/menu-items/${item.id}`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                Accept: "*/*",
+              },
+            });
+
+            if (!res.ok) throw new Error(`Failed to fetch price for item ${item.id}`);
+
+            const detailedItem = await res.json();
+            
+            // Get the smallest size price as default display price
+            const smallestSize = detailedItem.sizes && detailedItem.sizes.length > 0 
+              ? detailedItem.sizes.reduce((prev, curr) => 
+                  parseFloat(prev.base_price) < parseFloat(curr.base_price) ? prev : curr
+                )
+              : null;
+              
+            return {
+              ...item,
+              price: smallestSize ? smallestSize.base_price : "N/A", 
+              sizes: detailedItem.sizes || []
+            };
+          } catch (error) {
+            console.error(`Error fetching price for menu item ${item.id}:`, error);
+            return { ...item, price: "N/A", sizes: [] };
+          }
+        })
+      );
+
+      this.menuItems = enhancedMenuItems;
+    } catch (error) {
+      console.error("Error fetching menu item prices:", error);
+    }
+  }
+
+  async populateLocationSelect(locations) {
     const locationSelect = this.shadowRoot.querySelector("#location-select");
     if (!locationSelect) return;
 
-    // Clear existing options (except the first)
     locationSelect.innerHTML = `<option disabled selected>Select Location</option>`;
     locations.forEach(shop => {
       const option = document.createElement("option");
       option.value = shop.id;
       option.textContent = shop.location || shop.name;
       locationSelect.appendChild(option);
+    });
+
+    if (this.restoreLocation) {
+      locationSelect.value = this.restoreLocation;
+      await this.fetchCoffeeShopMenu(this.restoreLocation); // Load menu
+      window.scrollTo(0, this.savedScrollY || 0);
+      sessionStorage.removeItem("menuState"); // ✅ Clear so it's not reused
+      this.restoreLocation = null;
+    }
+
+    locationSelect.addEventListener("change", (e) => {
+      const shopId = e.target.value;
+      if (shopId) this.fetchCoffeeShopMenu(shopId);
     });
   }
 
@@ -76,9 +166,7 @@ export default class MenuPage extends HTMLElement {
     shopSelect.addEventListener("change", (e) => {
       const selectedName = e.target.value;
       const franchiseId = this.franchiseMap[selectedName];
-      if (franchiseId) {
-        this.fetchLocations(franchiseId);
-      }
+      if (franchiseId) this.fetchLocations(franchiseId);
     });
   }
 
@@ -86,25 +174,24 @@ export default class MenuPage extends HTMLElement {
     const container = this.shadowRoot.getElementById('menu-items-container');
     if (!container) return;
 
-    const itemsHTML = this.data.filter(el => el.type === this.tab).map(el => `
-      <item-card
-        id="${el.id}"
-        name="${el.name}"
-        price="${el.price}"
-        img="${el.image}"
-      ></item-card>
-    `).join("");
+    const itemsHTML = this.menuItems
+      .filter(el => el.category === this.tab)
+      .map(el => `
+        <item-card
+          id="${el.id}"
+          name="${el.name}"
+          price="${el.price}"
+          img="${el.image_url}"
+          sizes='${JSON.stringify(el.sizes || [])}'
+        ></item-card>
+      `).join("");
 
     container.innerHTML = itemsHTML;
     this.updateActiveButton();
   }
 
   updateActiveButton() {
-    const menuCategoriesComponent = this.shadowRoot.querySelector('menu-categories');
-    if (!menuCategoriesComponent) return;
-
-    const buttons = menuCategoriesComponent.shadowRoot.querySelectorAll('.category-btn');
-
+    const buttons = this.shadowRoot.querySelectorAll(".category-btn");
     buttons.forEach(button => {
       if (button.dataset.category === this.tab) {
         button.classList.add('active');
@@ -120,30 +207,40 @@ export default class MenuPage extends HTMLElement {
     });
   }
 
-  updateThemeStyles() {
-    // future dynamic style updates
-  }
+  updateThemeStyles() {}
 
   connectedCallback() {
-    this.fetchData();
-    this.fetchFranchises();
+    const savedState = sessionStorage.getItem("menuState");
+    console.log("🟡 connectedCallback: savedState = ", savedState);
 
-    const observer = new MutationObserver(() => {
-      const categoryBtn = this.shadowRoot.querySelector("menu-categories");
-      if (categoryBtn) {
-        categoryBtn.addEventListener('change-tab', (e) => {
-          this.tab = e.detail.tab;
-          this.renderItems();
-        });
-        observer.disconnect();
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        this.tab = state.tab || this.tab;
+        this.savedScrollY = state.scrollY || 0;
+        this.restoreFranchise = state.franchise;
+        this.restoreLocation = state.location;
+
+        console.log("✅ Restoring tab:", this.tab);
+        console.log("✅ Restoring franchise:", this.restoreFranchise);
+        console.log("✅ Restoring location:", this.restoreLocation);
+      } catch (e) {
+        console.warn("Failed to parse saved menu state:", e);
       }
-    });
+    }
 
-    observer.observe(this.shadowRoot, { childList: true, subtree: true });
+    this.fetchFranchises();
+  }
+
+
+  updateCategories() {
+    const catComponent = this.shadowRoot.querySelector("menu-categories");
+    if (!catComponent) return;
+    catComponent.setAttribute('categories', JSON.stringify(this.categories));
+    catComponent.setAttribute('active', this.tab);
   }
 
   styleSheet = `
-
   <style>
       * {
           margin: 0;
@@ -286,6 +383,12 @@ export default class MenuPage extends HTMLElement {
           color: var(--secondary-color, #8b5a2b);
           font-weight: bold;
       }
+      
+      .loading-indicator {
+          text-align: center;
+          padding: 30px;
+          font-size: 18px;
+      }
 
       @media (max-width: 768px) {
           .menu-section {
@@ -322,7 +425,6 @@ export default class MenuPage extends HTMLElement {
           }
       }
     </style> 
-  
   `;
 
   render() {
@@ -343,17 +445,28 @@ export default class MenuPage extends HTMLElement {
               <option disabled selected>Select Location</option>
             </select>
           </div>
-        ` : `
-          <p>Loading coffee shops...</p>
-        `}
+        ` : `<p class="loading-indicator">Loading coffee shops...</p>`}
 
-        <menu-categories></menu-categories>
+          <menu-categories 
+            categories='${JSON.stringify(this.categories)}' 
+            active='${this.tab}'
+          ></menu-categories>
 
         <div class="menu-items">
           <div class="menu-section" id="menu-items-container"></div>
         </div>
       </div>
     `;
+
+    // ✅ Reattach category listener every render
+    const catComponent = this.shadowRoot.querySelector("menu-categories");
+    if (catComponent) {
+      catComponent.addEventListener("change-tab", (e) => {
+        this.tab = e.detail.tab;
+        this.updateCategories();  // just updates the `menu-categories` state
+        this.renderItems();       // to update filtered menu
+      });
+    }
   }
 }
 

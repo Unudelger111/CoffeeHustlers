@@ -8,6 +8,7 @@ export default class ItemPage extends HTMLElement {
     this.quantity = 1;
     this.size = "Regular";
     this.options = "";
+    this.price = 0;
 
     this.render();
     this.loadItemData();
@@ -17,27 +18,52 @@ export default class ItemPage extends HTMLElement {
     this.setupEventListeners();
   }
 
-  loadItemData() {
-    const path = window.location.pathname;
-    const id = parseInt(path.split('/').pop());
+  async loadItemData() {
+    const cachedItem = sessionStorage.getItem("selectedItem");
 
-    const coffeeItems = [
-      { id: 1, name: "Espresso", description: "A strong and concentrated coffee served in small, powerful shots.", price: 3.99, image: "/images/espresso.jpg" },
-      { id: 2, name: "Cappuccino", description: "Equal parts espresso, steamed milk, and milk foam for a perfect balance.", price: 4.99, image: "/images/cappuccino.jpg" },
-      { id: 3, name: "Latte", description: "Espresso with steamed milk and a light layer of foam, smooth and creamy.", price: 4.50, image: "/images/latte.jpg" },
-      { id: 4, name: "Americano", description: "Espresso diluted with hot water for a coffee similar to drip coffee but with a different flavor profile.", price: 3.50, image: "/images/americano.jpg" }
-    ];
+    if (!cachedItem) {
+      console.error("No item found in sessionStorage.");
+      return;
+    }
 
-    this.item = coffeeItems.find(item => item.id === id) || {
-      id: id,
-      name: `Coffee Item ${id}`,
-      description: "A delicious coffee beverage.",
-      price: 3.99,
-      image: "/images/default-coffee.jpg"
-    };
+    const parsed = JSON.parse(cachedItem);
+    const id = parsed?.id;
 
-    this.updateItemDisplay();
+    if (!id) {
+      console.error("Invalid item ID in sessionStorage.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/menu-items/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Accept: "*/*",
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch item");
+
+      const item = await res.json();
+      this.item = item;
+
+      // ✅ Set default size and price from the first size
+      const firstSize = item.sizes?.[0];
+      if (firstSize) {
+        this.size = firstSize.size;
+        this.price = parseFloat(firstSize.base_price) || 0;
+      } else {
+        this.size = "Regular";
+        this.price = parseFloat(item.price) || 3.99;
+      }
+
+      this.updateItemDisplay();
+    } catch (err) {
+      console.error("Error loading item from API:", err);
+    }
   }
+
+
 
   updateItemDisplay() {
     const nameElement = this.shadowRoot.getElementById('item-name');
@@ -45,30 +71,56 @@ export default class ItemPage extends HTMLElement {
     const priceElement = this.shadowRoot.getElementById('item-price');
     const imageElement = this.shadowRoot.getElementById('item-image');
     const quantityElement = this.shadowRoot.getElementById('quantity');
+    const sizeContainer = this.shadowRoot.getElementById('size-buttons');
 
     if (nameElement) nameElement.textContent = this.item.name;
     if (descriptionElement) descriptionElement.textContent = this.item.description;
-    if (priceElement) priceElement.textContent = `$${this.item.price.toFixed(2)}`;
+    if (priceElement) priceElement.textContent = `$${this.price.toFixed(2)}`;
     if (imageElement) {
-      imageElement.src = this.item.image;
+      imageElement.src = this.item.image_url || '/img/default-coffee.jpg';
       imageElement.alt = this.item.name;
       imageElement.onerror = () => {
         imageElement.src = '/img/default-coffee.jpg';
       };
     }
+
     if (quantityElement) quantityElement.value = this.quantity;
+
+    // 🆕 Generate dynamic size buttons
+    if (sizeContainer && Array.isArray(this.item.sizes)) {
+      sizeContainer.innerHTML = ''; // clear existing
+      this.item.sizes.forEach((s, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = `${s.size} ($${parseFloat(s.base_price).toFixed(2)})`;
+        btn.dataset.size = s.size;
+        btn.classList.add('size-btn');
+        if (s.size === this.size) btn.classList.add('active');
+        sizeContainer.appendChild(btn);
+      });
+
+      // Re-bind listeners
+      this.setupSizeListeners();
+    }
   }
 
-  setupEventListeners() {
+  setupSizeListeners() {
     const sizeButtons = this.shadowRoot.querySelectorAll('.size-btn');
     sizeButtons.forEach(button => {
       button.addEventListener('click', (e) => {
         sizeButtons.forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
         this.size = e.target.dataset.size;
+
+        const selected = this.item.sizes?.find(s => s.size === this.size);
+        this.price = parseFloat(selected?.base_price) || 0;
+
+        this.shadowRoot.getElementById("item-price").textContent = `$${this.price.toFixed(2)}`;
       });
     });
+  }
 
+
+  setupEventListeners() {
     const decreaseBtn = this.shadowRoot.getElementById('decrease-quantity');
     const increaseBtn = this.shadowRoot.getElementById('increase-quantity');
     const quantityInput = this.shadowRoot.getElementById('quantity');
@@ -125,7 +177,7 @@ export default class ItemPage extends HTMLElement {
     const cartItem = {
       id: this.item.id,
       name: this.item.name,
-      price: this.item.price,
+      price: this.price,
       image: this.item.image,
       quantity: this.quantity,
       size: this.size,
@@ -418,14 +470,13 @@ export default class ItemPage extends HTMLElement {
             <p id="item-description" class="item-description">A delicious coffee beverage perfect for any time of day.</p>
             <div id="item-price" class="item-price">$0.00</div>
             
-            <div class="size-selection">
-              <h3>Size</h3>
-              <div class="sizes">
-                <button class="size-btn active" data-size="Regular">Regular</button>
-                <button class="size-btn" data-size="Large">Large</button>
-                <button class="size-btn" data-size="Extra Large">Extra Large</button>
+              <div class="size-selection">
+                <h3>Size</h3>
+                <div class="sizes" id="size-buttons">
+                  <!-- Dynamic buttons will be injected here -->
+                </div>
               </div>
-            </div>
+
             
             <div class="quantity-control">
               <h3>Quantity</h3>

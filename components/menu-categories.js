@@ -2,20 +2,40 @@ export default class MenuCategories extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    this.categories = [];
+    this.activeTab = "";
+  }
+
+  static get observedAttributes() {
+    return ["categories", "active"];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "categories") {
+      try {
+        this.categories = JSON.parse(newValue);
+      } catch (e) {
+        console.error("Invalid JSON for categories attribute");
+      }
+    } else if (name === "active") {
+      this.activeTab = newValue;
+    }
     this.render();
   }
+
   connectedCallback() {
-    const buttons = this.shadowRoot.querySelectorAll("button");
-    buttons.forEach(el => {
-      el.addEventListener("click", (e) => {
+    this.shadowRoot.addEventListener("click", (e) => {
+      if (e.target.matches("button[data-category]")) {
+        const tab = e.target.dataset.category;
         this.dispatchEvent(new CustomEvent("change-tab", {
           bubbles: true,
           composed: true,
-          detail: { tab: e.target.dataset.category },
+          detail: { tab },
         }));
-      })
-    })
+      }
+    });
   }
+
   render() {
     this.shadowRoot.innerHTML = `
       <style>
@@ -55,6 +75,7 @@ export default class MenuCategories extends HTMLElement {
             background-color: #6f4e37;
             color: #fff;
         }
+
         @media (max-width: 480px) {
             .menu-categories {
                 flex-direction: column;
@@ -66,18 +87,11 @@ export default class MenuCategories extends HTMLElement {
         }
       </style>
       <div class="menu-categories">
-        <button class="category-btn active" data-category="hot">
-          <i class="fas fa-mug-hot"></i> Hot Coffee
-        </button>
-        <button class="category-btn" data-category="cold">
-          <i class="fas fa-glass-whiskey"></i> Cold Coffee
-        </button>
-        <button class="category-btn" data-category="specialty">
-          <i class="fas fa-star"></i> Specialty
-        </button>
-        <button class="category-btn" data-category="food">
-          <i class="fas fa-utensils"></i> Food & Snacks
-        </button>
+        ${this.categories.map(cat => `
+          <button class="category-btn ${cat === this.activeTab ? 'active' : ''}" data-category="${cat}">
+            ${cat}
+          </button>
+        `).join("")}
       </div>
     `;
   }
