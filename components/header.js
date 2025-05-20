@@ -502,21 +502,17 @@ export default class Header extends HTMLElement {
         </div>
       </header>
     `;
-    
-    // Update account button if user is logged in
+
     this.updateUserInterface();
   }
 
   updateUserInterface() {
-    // First check for attributes (these take precedence over localStorage)
     if (this.hasAttribute('username')) {
       this.updateUserDisplay();
       this.updateUserAvatar();
     } else {
-      // Fall back to localStorage if no attribute is set
       const user = this.getUserData();
       if (user) {
-        // Update attributes from localStorage
         this.username = user.name;
         if (user.email) {
           this.setAttribute('user-email', user.email);
@@ -524,7 +520,6 @@ export default class Header extends HTMLElement {
       }
     }
     
-    // Update cart count from attribute or localStorage
     if (this.hasAttribute('cart-count')) {
       this.updateCartCountDisplay();
     } else {
@@ -538,24 +533,21 @@ export default class Header extends HTMLElement {
     const userEmail = this.shadowRoot.querySelector('.user-email');
     
     if (this.username) {
-      // User is logged in - show personalized content
       accountBtn.classList.add('user-logged-in');
       accountBtn.innerHTML = `
         <div class="user-avatar">${this.getInitials(this.username)}</div>
         <span class="user-name">${this.username.split(' ')[0]}</span>
       `;
       
-      // Update dropdown user info
       if (userFullName) userFullName.textContent = this.username;
       if (userEmail && this.hasAttribute('user-email')) {
         userEmail.textContent = this.getAttribute('user-email');
       }
     } else {
-      // User is not logged in - show default
+
       accountBtn.classList.remove('user-logged-in');
       accountBtn.innerHTML = '<i class="fas fa-user"></i> Account';
       
-      // Hide dropdown if it's currently open
       const userDropdown = this.shadowRoot.getElementById('user-dropdown');
       if (userDropdown && userDropdown.classList.contains('visible')) {
         userDropdown.classList.remove('visible');
@@ -568,10 +560,8 @@ export default class Header extends HTMLElement {
     if (!userAvatar) return;
     
     if (this.hasAttribute('user-avatar')) {
-      // Custom avatar provided
       userAvatar.innerHTML = `<img src="${this.getAttribute('user-avatar')}" alt="User avatar">`;
     } else if (this.username) {
-      // Generate initials avatar
       userAvatar.textContent = this.getInitials(this.username);
     }
   }
@@ -590,8 +580,6 @@ export default class Header extends HTMLElement {
   }
   
   updateTheme() {
-    // Theme is handled via CSS using the theme attribute
-    // No JavaScript needed as we've set up the CSS to use the attribute
   }
 
   getInitials(name) {
@@ -627,48 +615,39 @@ export default class Header extends HTMLElement {
     cartButton.addEventListener('click', () => this.navigateTo('/cart'));
     historyButton.addEventListener('click', () => this.navigateTo('/order-history'));
     
-    // Account button behavior depends on login state
     accountButton.addEventListener('click', (e) => {
       if (this.username) {
-        // User is logged in - toggle dropdown
         e.stopPropagation();
         userDropdown.classList.toggle('visible');
       } else {
-        // User is not logged in - redirect to login
+
         this.navigateTo('/login');
       }
     });
-    
-    // Logout functionality
+ 
     if (logoutButton) {
       logoutButton.addEventListener('click', () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         
-        // Hide dropdown
         userDropdown.classList.remove('visible');
         
-        // Clear attributes
         this.removeAttribute('username');
         this.removeAttribute('user-email');
-        
-        // Dispatch logout event
+
         const logoutEvent = new CustomEvent('user-logged-out', {
           bubbles: true,
           composed: true
         });
         this.dispatchEvent(logoutEvent);
-        
-        // Optionally redirect
+
         this.navigateTo('/');
       });
     }
 
-    // Click outside to close dropdown
     document.addEventListener('click', (e) => {
       const userContainer = this.shadowRoot.querySelector('.user-container');
       
-      // Check if userContainer contains the target or if target is in the shadow DOM
       if (userDropdown && 
           userDropdown.classList.contains('visible') && 
           !userContainer.contains(e.target) && 
@@ -676,8 +655,7 @@ export default class Header extends HTMLElement {
         userDropdown.classList.remove('visible');
       }
     });
-    
-    // Listen for login events
+
     window.addEventListener('user-logged-in', (e) => {
       if (e.detail && e.detail.user) {
         this.username = e.detail.user.name;
@@ -687,7 +665,6 @@ export default class Header extends HTMLElement {
       }
     });
 
-    // Search functionality
     const searchInput = this.shadowRoot.getElementById('search-input');
     const searchBtn = this.shadowRoot.getElementById('search-btn');
     const clearBtn = this.shadowRoot.getElementById('clear-btn');
@@ -720,7 +697,7 @@ export default class Header extends HTMLElement {
       searchInput.focus();
     });
 
-    updateClearVisibility(); // Initial check
+    updateClearVisibility(); 
   }
 
   navigateTo(path) {

@@ -1,12 +1,12 @@
-import { saveMenuPageState } from './menu-state.js'; // Adjust the path as needed
+import { saveMenuPageState } from './menu-state.js';
 
 export class Router {
   constructor({ routes, rootId, hideHeaderOnPaths = [], hideFooterOnPaths = [] }) {
     this.routes = routes; 
     this.root = document.getElementById(rootId);
     this.routeMatchers = this.compileRoutes(routes);
-    this.hideHeaderOnPaths = hideHeaderOnPaths; // Header hide paths
-    this.hideFooterOnPaths = hideFooterOnPaths; // Footer hied paths
+    this.hideHeaderOnPaths = hideHeaderOnPaths; 
+    this.hideFooterOnPaths = hideFooterOnPaths; 
     this.handleClick = this.handleClick.bind(this);
     this.handlePopState = this.handlePopState.bind(this);
     this.handleNavigationEvent = this.handleNavigationEvent.bind(this);
@@ -103,8 +103,7 @@ export class Router {
     ) {
       event.preventDefault();
       const path = anchor.getAttribute('href');
-
-      // ✅ Save menu state before leaving /menu
+      
       if (location.pathname === '/menu') {
         saveMenuPageState();
       }

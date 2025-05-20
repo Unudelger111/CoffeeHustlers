@@ -2,15 +2,13 @@ class HistoryView extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.currentTheme = 'light'; // default
+    this.currentTheme = 'light'; 
     this.onThemeChange = this.onThemeChange.bind(this);
   }
 
   connectedCallback() {
-    // Listen for theme changes globally
     window.addEventListener('theme-changed', this.onThemeChange);
 
-    // Set initial theme based on document root class
     this.currentTheme = document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light';
 
     this.renderLoading();
@@ -35,7 +33,6 @@ class HistoryView extends HTMLElement {
 
   onThemeChange(e) {
     this.currentTheme = e.detail.theme || 'light';
-    // Re-render current view so styles update
     if (this.ordersDisplayed) {
       this.renderOrders(this.ordersDisplayed);
     } else if (this.currentOrderDetail) {
@@ -58,7 +55,6 @@ class HistoryView extends HTMLElement {
       if (!res.ok) throw new Error('Failed to fetch order history');
       const orders = await res.json();
 
-      // Fetch details for each order
       const ordersWithDetails = await Promise.all(orders.map(async order => {
         const detailRes = await fetch(`http://localhost:3000/orders/${order.id}`, {
           headers: {
@@ -71,7 +67,7 @@ class HistoryView extends HTMLElement {
         return orderDetails;
       }));
 
-      this.ordersDisplayed = ordersWithDetails; // cache for re-render on theme change
+      this.ordersDisplayed = ordersWithDetails;
       this.currentOrderDetail = null;
       this.renderOrders(ordersWithDetails);
     } catch (error) {
@@ -91,7 +87,7 @@ class HistoryView extends HTMLElement {
 
       if (!res.ok) throw new Error('Failed to fetch order details');
       const order = await res.json();
-      this.currentOrderDetail = order; // cache for re-render on theme change
+      this.currentOrderDetail = order;
       this.ordersDisplayed = null;
       this.renderOrderDetail(order);
     } catch (error) {
@@ -140,8 +136,6 @@ class HistoryView extends HTMLElement {
           </div>
         `;
       }
-
-      // Build summary: "Cappuccino Small x2, Latte Medium x1 +N more..."
       const summaryParts = [];
       const summaryLimit = 2;
       for (let i = 0; i < Math.min(details.length, summaryLimit); i++) {

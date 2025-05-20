@@ -35,7 +35,7 @@ export default class MenuPage extends HTMLElement {
         shopSelect.value = this.restoreFranchise;
         const franchiseId = this.franchiseMap[this.restoreFranchise];
         if (franchiseId) {
-          await this.fetchLocations(franchiseId); // ⚠️ continue into locations
+          await this.fetchLocations(franchiseId); 
         }
       }
     } catch (error) {
@@ -81,11 +81,10 @@ export default class MenuPage extends HTMLElement {
         this.tab = this.categories[0];
       }
 
-      // Fetch price information for each menu item
       await this.fetchMenuItemPrices();
 
-      this.updateCategories();  // only updates menu-categories
-      this.renderItems();       // updates menu items
+      this.updateCategories();  
+      this.renderItems();      
 
     } catch (error) {
       console.error("Error fetching menu:", error);
@@ -94,7 +93,6 @@ export default class MenuPage extends HTMLElement {
 
   async fetchMenuItemPrices() {
     try {
-      // Create enhanced menu items with price information
       const enhancedMenuItems = await Promise.all(
         this.menuItems.map(async (item) => {
           try {
@@ -108,8 +106,6 @@ export default class MenuPage extends HTMLElement {
             if (!res.ok) throw new Error(`Failed to fetch price for item ${item.id}`);
 
             const detailedItem = await res.json();
-            
-            // Get the smallest size price as default display price
             const smallestSize = detailedItem.sizes && detailedItem.sizes.length > 0 
               ? detailedItem.sizes.reduce((prev, curr) => 
                   parseFloat(prev.base_price) < parseFloat(curr.base_price) ? prev : curr
@@ -148,9 +144,9 @@ export default class MenuPage extends HTMLElement {
 
     if (this.restoreLocation) {
       locationSelect.value = this.restoreLocation;
-      await this.fetchCoffeeShopMenu(this.restoreLocation); // Load menu
+      await this.fetchCoffeeShopMenu(this.restoreLocation); 
       window.scrollTo(0, this.savedScrollY || 0);
-      sessionStorage.removeItem("menuState"); // ✅ Clear so it's not reused
+      sessionStorage.removeItem("menuState"); 
       this.restoreLocation = null;
     }
 
@@ -213,13 +209,9 @@ export default class MenuPage extends HTMLElement {
   }
   
   setupCartEvents() {
-    // Listen for add-to-cart events from the re-order column
     this.addEventListener('add-to-cart', (e) => {
       const item = e.detail;
       console.log('Adding to cart:', item);
-      
-      // Dispatch an event to add the item to cart
-      // This assumes you have a cart system that listens for this event
       const addToCartEvent = new CustomEvent('add-item-to-cart', {
         bubbles: true,
         composed: true,
@@ -227,19 +219,15 @@ export default class MenuPage extends HTMLElement {
       });
       
       this.dispatchEvent(addToCartEvent);
-      
-      // Show a notification
       this.showAddToCartNotification(item);
     });
   }
   
   showAddToCartNotification(item) {
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = 'cart-notification';
     notification.textContent = `Added ${item.name} (${item.size}) to cart!`;
     
-    // Apply styles
     notification.style.position = 'fixed';
     notification.style.bottom = '20px';
     notification.style.right = '20px';
@@ -251,7 +239,6 @@ export default class MenuPage extends HTMLElement {
     notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
     notification.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
     
-    // Add animation styles
     const style = document.createElement('style');
     style.textContent = `
       @keyframes fadeIn {
@@ -265,10 +252,8 @@ export default class MenuPage extends HTMLElement {
     `;
     document.head.appendChild(style);
     
-    // Add to document
     document.body.appendChild(notification);
     
-    // Remove after 3 seconds
     setTimeout(() => {
       document.body.removeChild(notification);
     }, 3000);
@@ -288,9 +273,9 @@ export default class MenuPage extends HTMLElement {
         this.restoreFranchise = state.franchise;
         this.restoreLocation = state.location;
 
-        console.log("✅ Restoring tab:", this.tab);
-        console.log("✅ Restoring franchise:", this.restoreFranchise);
-        console.log("✅ Restoring location:", this.restoreLocation);
+        console.log("Restoring tab:", this.tab);
+        console.log("Restoring franchise:", this.restoreFranchise);
+        console.log("Restoring location:", this.restoreLocation);
       } catch (e) {
         console.warn("Failed to parse saved menu state:", e);
       }

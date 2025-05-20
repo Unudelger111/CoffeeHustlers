@@ -75,7 +75,6 @@ export default class PaymentPage extends HTMLElement {
 
     const shopId = cart[0].shop_id;
 
-    // 1️⃣ Step 1: Create the order
     const orderPayload = {
       user_id: user.id,
       shop_id: shopId,
@@ -102,12 +101,12 @@ export default class PaymentPage extends HTMLElement {
       const orderId = orderData.id;
       const publicOrderId = orderData.public_order_id;
 
-      // 2️⃣ Step 2: Add each item to the order
       for (const item of cart) {
         const itemPayload = {
           quantity: item.quantity,
           subtotal: item.price * item.quantity,
-          menu_size_id: item.menu_size_id // 🟡 Make sure this is available in each cart item!
+
+          menu_size_id: item.menu_size_id 
         };
 
         const itemRes = await fetch(`http://localhost:3000/orders/${orderId}/items`, {
@@ -148,7 +147,7 @@ export default class PaymentPage extends HTMLElement {
     now.setMinutes(minute);
     now.setSeconds(0);
     now.setMilliseconds(0);
-    return now.toISOString(); // ✅ valid full timestamp
+    return now.toISOString(); 
   }
 
 

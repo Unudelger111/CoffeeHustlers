@@ -26,12 +26,10 @@ export const logout = () => {
   return true;
 };
 
-// Login user
 export const login = (userData, token) => {
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(userData));
   
-  // Dispatch login event
   const loginEvent = new CustomEvent('user-logged-in', {
     bubbles: true,
     detail: { userData }
@@ -41,7 +39,6 @@ export const login = (userData, token) => {
   return true;
 };
 
-// Get user initials for avatar
 export const getUserInitials = (name) => {
   if (!name) return '?';
   

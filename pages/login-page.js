@@ -464,7 +464,6 @@ export default class LoginPage extends HTMLElement {
       errorElement.textContent = "Logged in successfully!";
       errorElement.style.color = "#2ecc71";
 
-      // Check if user is a Barista and redirect accordingly
       if (data.user?.role === "Barista") {
         setTimeout(() => (window.location.href = "/barista"), 1000);
       } else {
@@ -513,7 +512,6 @@ export default class LoginPage extends HTMLElement {
         const text = await response.text();
         let message = text;
 
-        // Customize message for email in use
         if (text.toLowerCase().includes("validation") || text.toLowerCase().includes("email")) {
           message = "Email already in use";
         }
