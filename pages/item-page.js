@@ -58,6 +58,7 @@ export default class ItemPage extends HTMLElement {
       }
 
       this.updateItemDisplay();
+      this.updateTotalPrice();
     } catch (err) {
       console.error("Error loading item from API:", err);
     }
@@ -115,6 +116,7 @@ export default class ItemPage extends HTMLElement {
         this.price = parseFloat(selected?.base_price) || 0;
 
         this.shadowRoot.getElementById("item-price").textContent = `$${this.price.toFixed(2)}`;
+        this.updateTotalPrice();
       });
     });
   }
@@ -130,6 +132,7 @@ export default class ItemPage extends HTMLElement {
         if (this.quantity > 1) {
           this.quantity--;
           quantityInput.value = this.quantity;
+          this.updateTotalPrice();
         }
       });
     }
@@ -138,6 +141,7 @@ export default class ItemPage extends HTMLElement {
       increaseBtn.addEventListener('click', () => {
         this.quantity++;
         quantityInput.value = this.quantity;
+        this.updateTotalPrice();
       });
     }
 
@@ -146,13 +150,7 @@ export default class ItemPage extends HTMLElement {
         const value = parseInt(e.target.value);
         this.quantity = value > 0 ? value : 1;
         quantityInput.value = this.quantity;
-      });
-    }
-
-    const specialInstructions = this.shadowRoot.getElementById('special-instructions');
-    if (specialInstructions) {
-      specialInstructions.addEventListener('input', (e) => {
-        this.options = e.target.value;
+        this.updateTotalPrice();
       });
     }
 
@@ -196,6 +194,14 @@ export default class ItemPage extends HTMLElement {
 
     window.dispatchEvent(new CustomEvent('cart-updated'));
   }
+  updateTotalPrice() {
+    const total = this.price * this.quantity;
+    const totalPriceEl = this.shadowRoot.getElementById('total-price');
+    if (totalPriceEl) {
+      totalPriceEl.textContent = `$${total.toFixed(2)}`;
+    }
+  }
+
 
   styleSheet = `
   <style>
@@ -451,6 +457,22 @@ export default class ItemPage extends HTMLElement {
     :host-context(.dark) #added-message {
       background-color: #357a38;
     }
+    .total-price {
+      margin-bottom: 20px;
+    }
+
+    .total-price h3 {
+      font-size: 1.2rem;
+      color: #6f4e37;
+      margin-bottom: 5px;
+    }
+
+    .total-price-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #6f4e37;
+    }
+
   </style>
   `;
 
@@ -487,10 +509,11 @@ export default class ItemPage extends HTMLElement {
               </div>
             </div>
             
-            <div class="special-instructions">
-              <h3>Special Instructions</h3>
-              <textarea id="special-instructions" placeholder="Any special requests? (Extra hot, less sweet, etc.)"></textarea>
+            <div class="total-price">
+              <h3>Total Price</h3>
+              <div id="total-price" class="total-price-value">$0.00</div>
             </div>
+
             
             <button id="add-to-cart">Add to Cart</button>
             <div id="added-message" class="hidden">Added to cart!</div>

@@ -467,7 +467,7 @@ export default class Header extends HTMLElement {
     this.shadowRoot.innerHTML = `
       ${this.styleSheet}
       <header>
-        <a href="/" data-link class="logo-container">
+        <a href="/menu" data-link class="logo-container">
           <img src="/images/coffee-logo.png" alt="CoffeeHustlers Logo" class="logo">
           <h1>CoffeeHustlers</h1>
         </a>

@@ -17,6 +17,10 @@ import "./pages/barista-page.js";
 import { Router } from "./router.js";
 import { cartService } from "./cart-service.js";
 
+if (window.location.pathname === "/index.html") {
+  history.replaceState(null, null, "/");
+}
+
 
 window.cartService = cartService;
 
