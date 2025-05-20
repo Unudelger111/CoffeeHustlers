@@ -26,7 +26,7 @@ export default class CartPage extends HTMLElement {
     }
 
     const latest = new Date();
-    latest.setHours(20, 0, 0, 0); 
+    latest.setHours(22, 0, 0, 0); 
 
     const options = [];
 

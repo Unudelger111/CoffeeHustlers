@@ -77,6 +77,7 @@ class ReOrderColumn extends HTMLElement {
       // Get only the latest order
       const latestOrder = orders[0];
 
+
       // Fetch details for the latest order
       const detailRes = await fetch(`http://localhost:3000/orders/${latestOrder.id}`, {
         headers: {
@@ -105,19 +106,22 @@ class ReOrderColumn extends HTMLElement {
     }
     
     try {
+      console.log(this.latestOrder);
+      const shopId = parseInt(this.latestOrder.shop_id);
       // Add each item from the latest order to the cart
       this.latestOrder.OrderDetails.forEach(detail => {
         const menuItem = detail.MenuItemSize.menu_item;
         const price = detail.subtotal / detail.quantity;
-        
         // Create cart item with the exact structure expected by CartService
         const cartItem = {
-          id: detail.MenuItemSize.id,  // This is critical - must match the id CartService expects
+          id: detail.MenuItemSize.id,
           name: menuItem.name,
           size: detail.MenuItemSize.size,
           price: price,
           quantity: detail.quantity,
-          image: menuItem.image_url
+          image: menuItem.image_url,
+          shop_id: shopId,
+          menu_size_id: detail.menu_size_id          
         };
         
         // Add directly to cart using the cartService
