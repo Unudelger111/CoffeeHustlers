@@ -153,7 +153,7 @@ export default class CartPage extends HTMLElement {
       return;
     }
     cartService.setPickupTime(this.pickupTime);
-    window.router.navigate('/checkout');
+    window.router.navigate('/payment');
   }
 
   bindEvents() {

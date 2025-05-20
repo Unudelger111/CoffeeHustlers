@@ -58,37 +58,17 @@ export default class PaymentPage extends HTMLElement {
   }
 
   generateQRCode() {
-    const cart = cartService.getCart();
-
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
-      return;
-    }
-
-    const order = {
-      items: cart.map((item) => ({
-        id: item.id,
-        name: item.name,
-        size: item.size || "Regular",
-        quantity: item.quantity,
-        price: item.price,
-      })),
-      total: this.totalAmount,
-      paymentType: this.paymentType,
-      timestamp: new Date().toISOString(),
-    };
-
     const qrContainer = this.shadowRoot.getElementById("qr-code");
-    qrContainer.innerHTML = ""; 
-
-    // Generate QR code with qrcode library (https://github.com/soldair/node-qrcode)
-    QRCode.toCanvas(order, { errorCorrectionLevel: "H", width: 200 }, (error, canvas) => {
-      if (error) {
-        console.error(error);
-        alert("Failed to generate QR code");
-        return;
-      }
-      qrContainer.appendChild(canvas);
+    qrContainer.innerHTML = "";
+    
+    // Simple data for the QR code - just a basic order ID
+    const qrData = "ORDER-" + new Date().getTime();
+    
+    // Generate basic QR code
+    new QRCode(qrContainer, {
+      text: qrData,
+      width: 200,
+      height: 200
     });
   }
 

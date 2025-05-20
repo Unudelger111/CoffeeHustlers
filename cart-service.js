@@ -98,4 +98,5 @@ export class CartService {
   }
 }
 
+// Create a singleton instance and export it
 export const cartService = new CartService();
