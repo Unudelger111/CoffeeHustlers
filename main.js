@@ -13,6 +13,8 @@ import "./pages/history-view.js";
 import "./pages/reorder.js";
 import "./pages/payment.js";
 import "./pages/barista-page.js";
+import './pages/order-confirmation-page.js';
+
 
 import { Router } from "./router.js";
 import { cartService } from "./cart-service.js";
@@ -57,7 +59,7 @@ const router = new Router({
     '/reorder': 'reorder-page',
     '/payment': 'payment-page',
     '/barista': 'barista-page',
-
+    '/order-confirmation': 'order-confirmation-page',
   },
   hideHeaderOnPaths,
   hideFooterOnPaths

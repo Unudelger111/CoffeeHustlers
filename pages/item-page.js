@@ -171,6 +171,8 @@ export default class ItemPage extends HTMLElement {
   addToCart() {
     if (!this.item) return;
 
+    const selectedSize = this.item.sizes?.find(s => s.size === this.size);
+
     const cartItem = {
       id: this.item.id,
       name: this.item.name,
@@ -178,6 +180,7 @@ export default class ItemPage extends HTMLElement {
       image: this.item.image_url,
       quantity: this.quantity,
       size: this.size,
+      menu_size_id: selectedSize?.id
     };
 
     cartService.addItem(cartItem);

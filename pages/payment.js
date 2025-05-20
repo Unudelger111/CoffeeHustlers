@@ -18,7 +18,7 @@ export default class PaymentPage extends HTMLElement {
   calculateTotal() {
     const cart = cartService.getCart();
     const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
-    const tax = subtotal * 0.08;
+    const tax = subtotal * 0.1;
     const total = subtotal + tax;
 
     const totalElement = this.shadowRoot.getElementById("total");
@@ -53,24 +53,105 @@ export default class PaymentPage extends HTMLElement {
     }
 
     if (payBtn) {
-      payBtn.addEventListener("click", () => this.generateQRCode());
+      payBtn.addEventListener("click", () => this.submitOrder());
     }
   }
 
-  generateQRCode() {
-    const qrContainer = this.shadowRoot.getElementById("qr-code");
-    qrContainer.innerHTML = "";
-    
-    // Simple data for the QR code - just a basic order ID
-    const qrData = "ORDER-" + new Date().getTime();
-    
-    // Generate basic QR code
-    new QRCode(qrContainer, {
-      text: qrData,
-      width: 200,
-      height: 200
-    });
+  async submitOrder() {
+    const cart = cartService.getCart();
+    const pickupTime = cartService.getPickupTime();
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const token = localStorage.getItem("token");
+
+    if (!user?.id || !token) {
+      alert("You must be logged in to place an order.");
+      return;
+    }
+
+    if (!pickupTime || !cart.length) {
+      alert("Cart is empty or pick-up time not set.");
+      return;
+    }
+
+    const shopId = cart[0].shop_id || 1;
+
+    // 1️⃣ Step 1: Create the order
+    const orderPayload = {
+      user_id: user.id,
+      shop_id: shopId,
+      pickup_time: this.combineDateWithTime(pickupTime)
+    };
+
+    try {
+      const orderRes = await fetch("http://localhost:3000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "Accept": "*/*"
+        },
+        body: JSON.stringify(orderPayload)
+      });
+
+      if (!orderRes.ok) {
+        const err = await orderRes.json();
+        throw new Error(err.message || "Order creation failed");
+      }
+
+      const orderData = await orderRes.json();
+      const orderId = orderData.id;
+      const publicOrderId = orderData.public_order_id;
+
+      // 2️⃣ Step 2: Add each item to the order
+      for (const item of cart) {
+        const itemPayload = {
+          quantity: item.quantity,
+          subtotal: item.price * item.quantity,
+          menu_size_id: item.menu_size_id // 🟡 Make sure this is available in each cart item!
+        };
+
+        const itemRes = await fetch(`http://localhost:3000/orders/${orderId}/items`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            "Accept": "*/*"
+          },
+          body: JSON.stringify(itemPayload)
+        });
+
+        if (!itemRes.ok) {
+          const err = await itemRes.json();
+          throw new Error(`Failed to add item to order: ${err.message}`);
+        }
+      }
+
+      // ✅ Save confirmation data
+      sessionStorage.setItem("orderConfirmation", JSON.stringify({
+        public_order_id: publicOrderId,
+        total_price: this.totalAmount
+      }));
+
+      cartService.clearCart();
+      window.router.navigate("/order-confirmation");
+
+    } catch (error) {
+      console.error("❌ Error placing order:", error);
+      alert("❌ Failed to place order: " + error.message);
+    }
   }
+  
+  combineDateWithTime(timeStr) {
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const now = new Date();
+    now.setHours(hour);
+    now.setMinutes(minute);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    return now.toISOString(); // ✅ valid full timestamp
+  }
+
+
 
   styleSheet = `
   <style>
