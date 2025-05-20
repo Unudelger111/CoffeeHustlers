@@ -230,7 +230,7 @@ class ReOrderColumn extends HTMLElement {
         </div>
         
         <button class="add-all-to-cart-btn">
-          Re-Order All Items
+          Add to Cart
         </button>
       </div>
     `;
