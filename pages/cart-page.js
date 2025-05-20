@@ -7,17 +7,52 @@ export default class CartPage extends HTMLElement {
     this.pickupTime = null;
     this.render();
 
-    // Load saved pickup time into input after render
+  setTimeout(() => {
+    const pickupSelect = this.shadowRoot.getElementById("pickup-time");
+    if (!pickupSelect) return;
+
     const savedTime = cartService.getPickupTime();
-    if (savedTime) {
-      this.pickupTime = savedTime;
-      setTimeout(() => {
-        const pickupInput = this.shadowRoot.getElementById("pickup-time");
-        if (pickupInput) {
-          pickupInput.value = savedTime;
-        }
-      }, 0);
+    pickupSelect.innerHTML = ''; // clear
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 30);
+
+    // Round up to next 10 min
+    const roundedMinutes = Math.ceil(now.getMinutes() / 10) * 10;
+    if (roundedMinutes === 60) {
+      now.setHours(now.getHours() + 1);
+      now.setMinutes(0);
+    } else {
+      now.setMinutes(roundedMinutes);
     }
+
+    const latest = new Date();
+    latest.setHours(20, 0, 0, 0); // 8:00 PM
+
+    const options = [];
+
+    while (now <= latest) {
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const value = `${h}:${m}`;
+      options.push(value);
+      now.setMinutes(now.getMinutes() + 10);
+    }
+
+    options.forEach(time => {
+      const option = document.createElement('option');
+      option.value = time;
+      option.textContent = time;
+      pickupSelect.appendChild(option);
+    });
+
+    const selected = savedTime && options.includes(savedTime) ? savedTime : options[0];
+    pickupSelect.value = selected;
+    this.pickupTime = selected;
+    cartService.setPickupTime(selected);
+  }, 0);
+
+
 
     this.bindEvents();
     this.updateCartUI();
@@ -30,7 +65,7 @@ export default class CartPage extends HTMLElement {
   calculateTotals() {
     const cart = cartService.getCart();
     const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const tax = subtotal * 0.08;
+    const tax = subtotal * 0.1;
     const total = subtotal + tax;
 
     const subtotalElement = this.shadowRoot.getElementById('subtotal');
@@ -405,7 +440,7 @@ export default class CartPage extends HTMLElement {
         color: #6f4e37;
       }
 
-      input[type="time"] {
+      #pickup-time {
         width: 100%;
         padding: 10px;
         border-radius: 15px;
@@ -413,12 +448,16 @@ export default class CartPage extends HTMLElement {
         font-size: 16px;
         font-weight: 600;
         color: #6f4e37;
+        background-color: #fff;
+        appearance: none;
+        outline: none;
       }
 
-      input[type="time"]:focus {
-        outline: none;
+      #pickup-time:focus {
         border-color: #6f4e37;
+        box-shadow: 0 0 0 2px rgba(111, 78, 55, 0.2);
       }
+
     </style>
   `;
 
@@ -446,7 +485,7 @@ export default class CartPage extends HTMLElement {
             <div id="subtotal">$0.00</div>
           </div>
           <div class="summary-item">
-            <div>Tax (8%):</div>
+            <div>GST (10%):</div>
             <div id="tax">$0.00</div>
           </div>
           <div class="summary-item" style="font-size: 1.2rem; font-weight: 700;">
@@ -456,7 +495,9 @@ export default class CartPage extends HTMLElement {
 
           <div class="pickup-time-container">
             <label for="pickup-time">Pick-up time:</label>
-            <input type="time" id="pickup-time" />
+            <select id="pickup-time">
+              <!-- options will be injected dynamically -->
+            </select>
           </div>
 
           <div style="margin-top: 30px; display: flex; gap: 15px;">

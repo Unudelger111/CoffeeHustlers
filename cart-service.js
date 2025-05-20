@@ -22,8 +22,10 @@ export class CartService {
   
   addItem(item) {
     const cart = this.getCart();
-    const existingItemIndex = cart.findIndex(i => i.id === item.id);
-    
+
+    // ✅ Match by both id AND size
+    const existingItemIndex = cart.findIndex(i => i.id === item.id && i.size === item.size);
+
     if (existingItemIndex >= 0) {
       cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 1) + (item.quantity || 1);
     } else {
@@ -32,10 +34,11 @@ export class CartService {
       }
       cart.push(item);
     }
-    
+
     this.saveCart(cart);
     return cart;
   }
+
   
   updateItemQuantity(itemId, quantity) {
     const cart = this.getCart();

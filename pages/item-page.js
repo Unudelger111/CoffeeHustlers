@@ -7,7 +7,6 @@ export default class ItemPage extends HTMLElement {
     this.item = null;
     this.quantity = 1;
     this.size = "Regular";
-    this.options = "";
     this.price = 0;
 
     this.render();
@@ -176,10 +175,9 @@ export default class ItemPage extends HTMLElement {
       id: this.item.id,
       name: this.item.name,
       price: this.price,
-      image: this.item.image,
+      image: this.item.image_url,
       quantity: this.quantity,
       size: this.size,
-      options: this.options
     };
 
     cartService.addItem(cartItem);
