@@ -17,7 +17,6 @@ export default class OrderConfirmationPage extends HTMLElement {
     if (this.order?.public_order_id) {
       const qrContainer = this.shadowRoot.getElementById("qr-code");
 
-      // ✅ Load the QRCode library dynamically if not already loaded
       if (!window.QRCode) {
         const script = document.createElement("script");
         script.src = "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js";

@@ -9,6 +9,7 @@ export default class MenuPage extends HTMLElement {
     this.categories = [];
     this.render();
     this.setupThemeListener();
+    this.setupCartEvents();
   }
 
   async fetchFranchises() {
@@ -206,6 +207,68 @@ export default class MenuPage extends HTMLElement {
       this.updateThemeStyles();
     });
   }
+  
+  setupCartEvents() {
+    // Listen for add-to-cart events from the re-order column
+    this.addEventListener('add-to-cart', (e) => {
+      const item = e.detail;
+      console.log('Adding to cart:', item);
+      
+      // Dispatch an event to add the item to cart
+      // This assumes you have a cart system that listens for this event
+      const addToCartEvent = new CustomEvent('add-item-to-cart', {
+        bubbles: true,
+        composed: true,
+        detail: item
+      });
+      
+      this.dispatchEvent(addToCartEvent);
+      
+      // Show a notification
+      this.showAddToCartNotification(item);
+    });
+  }
+  
+  showAddToCartNotification(item) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.textContent = `Added ${item.name} (${item.size}) to cart!`;
+    
+    // Apply styles
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.right = '20px';
+    notification.style.backgroundColor = '#6f4e37';
+    notification.style.color = '#fff';
+    notification.style.padding = '10px 20px';
+    notification.style.borderRadius = '5px';
+    notification.style.zIndex = '1000';
+    notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    notification.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(20px); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Add to document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 3000);
+  }
 
   updateThemeStyles() {}
 
@@ -255,13 +318,28 @@ export default class MenuPage extends HTMLElement {
       }
 
       .container {
-          max-width: 1200px;
-          margin: 0 auto;
           padding: 20px;
           min-height: 100vh;
           background-color: var(--bg-color, #f5f0e8);
           color: var(--text-color, #4a3520);
           transition: all 0.3s ease;
+          display: flex;
+
+      }
+      
+      .reorder-sidebar {
+          width: 250px;
+          flex-shrink: 0;
+          position: sticky;
+          top: 0;
+          height: calc(100vh - 40px);
+          overflow-y: auto;
+          padding-right: 16px;
+      }
+      
+      .menu-content {
+          flex: 1;
+          padding-left: 20px;
       }
 
       .hidden {
@@ -391,6 +469,21 @@ export default class MenuPage extends HTMLElement {
       }
 
       @media (max-width: 768px) {
+          .container {
+              flex-direction: column;
+          }
+          
+          .reorder-sidebar {
+              width: 100%;
+              height: auto;
+              max-height: 300px;
+              margin-bottom: 20px;
+          }
+          
+          .menu-content {
+              padding-left: 0;
+          }
+      
           .menu-section {
               grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
           }
@@ -431,40 +524,45 @@ export default class MenuPage extends HTMLElement {
     this.shadowRoot.innerHTML = `
       ${this.styleSheet}
       <div class="container">
-        <div class="theme-toggle-wrapper">
-          <theme-toggle></theme-toggle>
+        <div class="reorder-sidebar">
+          <reorder-column></reorder-column>
         </div>
-
-        ${this.franchises.length > 0 ? `
-          <div class="dropdowns">
-            <select id="shop-select">
-              <option disabled selected>Select Coffee Shop</option>
-              ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
-            </select>
-            <select id="location-select">
-              <option disabled selected>Select Location</option>
-            </select>
+        
+        <div class="menu-content">
+          <div class="theme-toggle-wrapper">
+            <theme-toggle></theme-toggle>
           </div>
-        ` : `<p class="loading-indicator">Loading coffee shops...</p>`}
 
-          <menu-categories 
-            categories='${JSON.stringify(this.categories)}' 
-            active='${this.tab}'
-          ></menu-categories>
+          ${this.franchises.length > 0 ? `
+            <div class="dropdowns">
+              <select id="shop-select">
+                <option disabled selected>Select Coffee Shop</option>
+                ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
+              </select>
+              <select id="location-select">
+                <option disabled selected>Select Location</option>
+              </select>
+            </div>
+          ` : `<p class="loading-indicator">Loading coffee shops...</p>`}
 
-        <div class="menu-items">
-          <div class="menu-section" id="menu-items-container"></div>
+            <menu-categories 
+              categories='${JSON.stringify(this.categories)}' 
+              active='${this.tab}'
+            ></menu-categories>
+
+          <div class="menu-items">
+            <div class="menu-section" id="menu-items-container"></div>
+          </div>
         </div>
       </div>
     `;
 
-    // ✅ Reattach category listener every render
     const catComponent = this.shadowRoot.querySelector("menu-categories");
     if (catComponent) {
       catComponent.addEventListener("change-tab", (e) => {
         this.tab = e.detail.tab;
-        this.updateCategories();  // just updates the `menu-categories` state
-        this.renderItems();       // to update filtered menu
+        this.updateCategories(); 
+        this.renderItems();    
       });
     }
   }
