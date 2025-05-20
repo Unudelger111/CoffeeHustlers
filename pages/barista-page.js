@@ -5,7 +5,8 @@ class BaristaPage extends HTMLElement {
     this.token = '';
     this.shopId = '';
     this.expandedOrderId = null;
-    this.orderDetailsCache = {}; // cache by order ID
+    this.orderDetailsCache = {};
+    this.pollingInterval = null;
   }
 
   connectedCallback() {
@@ -20,6 +21,7 @@ class BaristaPage extends HTMLElement {
     this.token = token;
     this.shopId = shopId;
     this.fetchOrders();
+    this.startPolling();
   }
 
   async fetchOrders() {
@@ -33,7 +35,7 @@ class BaristaPage extends HTMLElement {
       if (!res.ok) throw new Error('Failed to fetch orders');
 
       const data = await res.json();
-      console.log('Fetched orders:', data);
+      console.log('Fetching data!');
       this.orders = data;
       this.render();
     } catch (err) {
@@ -41,6 +43,21 @@ class BaristaPage extends HTMLElement {
       this.renderError('Failed to load orders.');
     }
   }
+  startPolling() {
+    this.pollingInterval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        this.fetchOrders();
+      }
+    }, 10000); // every 10 seconds
+  }
+
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
+  }
+
 
   logout() {
     localStorage.removeItem('token');
@@ -55,6 +72,9 @@ class BaristaPage extends HTMLElement {
     window.location.href = '/login'; // or use router if you have it
   }
 
+  disconnectedCallback() {
+    this.stopPolling();
+  }
 
   renderError(message) {
     this.innerHTML = `

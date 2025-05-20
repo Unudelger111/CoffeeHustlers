@@ -4,6 +4,8 @@ class HistoryView extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.currentTheme = 'light'; 
     this.onThemeChange = this.onThemeChange.bind(this);
+    this.pollingInterval = null;
+    this.shopCache = {};
   }
 
   connectedCallback() {
@@ -25,10 +27,12 @@ class HistoryView extends HTMLElement {
     this.userId = user.id;
 
     this.fetchOrderHistory();
+    this.startPolling();
   }
 
   disconnectedCallback() {
     window.removeEventListener('theme-changed', this.onThemeChange);
+    this.stopPolling();
   }
 
   onThemeChange(e) {
@@ -40,6 +44,21 @@ class HistoryView extends HTMLElement {
     } else {
       this.renderLoading();
       this.fetchOrderHistory();
+    }
+  }
+
+  startPolling() {
+    this.pollingInterval = setInterval(() => {
+      if (document.visibilityState === 'visible' && !this.currentOrderDetail) {
+        this.fetchOrderHistory();
+      }
+    }, 10000); // every 10s
+  }
+
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
     }
   }
 
@@ -96,6 +115,28 @@ class HistoryView extends HTMLElement {
     }
   }
 
+  async fetchShopInfo(shopId) {
+    if (this.shopCache[shopId]) {
+      return this.shopCache[shopId];
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3000/coffee-shops/${shopId}`, {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch shop info');
+      const shop = await res.json();
+      this.shopCache[shopId] = shop;
+      return shop;
+    } catch (err) {
+      console.error(`Shop fetch failed for ID ${shopId}`, err);
+      return null;
+    }
+  }
+
   renderLoading() {
     this.shadowRoot.innerHTML = `
       <style>${this.styles()}</style>
@@ -119,44 +160,17 @@ class HistoryView extends HTMLElement {
   renderOrders(orders) {
     const listItems = orders.map(order => {
       const details = order.OrderDetails;
-      if (!details || details.length === 0) {
-        return `
-          <div class="order-card" data-id="${order.id}">
-            <div class="left"><span class="icon">🛍️</span></div>
-            <div class="middle">
-              <div class="shop-name">Coffee Haven - 2nd Street</div>
-              <div class="order-id">Order ID: ${order.public_order_id}</div>
-              <div class="items-summary">No items</div>
-            </div>
-            <div class="right">
-              <div class="pickup-time">${new Date(order.pickup_time).toLocaleTimeString()}</div>
-              <div class="status">${order.order_status}</div>
-              <button class="view-btn">View Details</button>
-            </div>
-          </div>
-        `;
-      }
-      const summaryParts = [];
-      const summaryLimit = 2;
-      for (let i = 0; i < Math.min(details.length, summaryLimit); i++) {
-        const d = details[i];
-        const itemName = d.MenuItemSize.menu_item.name;
-        const size = d.MenuItemSize.size;
-        const qty = d.quantity;
-        summaryParts.push(`${itemName} ${size} x${qty}`);
-      }
-      let summary = summaryParts.join(', ');
-      if (details.length > summaryLimit) {
-        summary += ` +${details.length - summaryLimit} more...`;
-      }
+      const summary = (details || []).slice(0, 2).map(d =>
+        `${d.MenuItemSize.menu_item.name} ${d.MenuItemSize.size} x${d.quantity}`
+      ).join(', ') + (details.length > 2 ? ` +${details.length - 2} more...` : '');
 
       return `
-        <div class="order-card" data-id="${order.id}">
+        <div class="order-card" data-id="${order.id}" data-shop-id="${order.shop_id}">
           <div class="left"><span class="icon">🛍️</span></div>
           <div class="middle">
-            <div class="shop-name">Coffee Haven - 2nd Street</div>
+            <div class="shop-name" id="shop-${order.id}">Loading shop...</div>
             <div class="order-id">Order ID: ${order.public_order_id}</div>
-            <div class="items-summary">${summary}</div>
+            <div class="items-summary">${summary || 'No items'}</div>
           </div>
           <div class="right">
             <div class="pickup-time">${new Date(order.pickup_time).toLocaleTimeString()}</div>
@@ -175,13 +189,26 @@ class HistoryView extends HTMLElement {
       </div>
     `;
 
+    // Set up "View Details" button listeners
     this.shadowRoot.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.target.closest('.order-card').dataset.id;
         this.fetchOrderDetails(id);
       });
     });
+
+    // 🔁 After rendering, fetch and update shop info dynamically
+    orders.forEach(async (order) => {
+      const shop = await this.fetchShopInfo(order.shop_id); // use the function you defined earlier
+      const el = this.shadowRoot.getElementById(`shop-${order.id}`);
+      if (el && shop) {
+        el.textContent = `${shop.name} - ${shop.location}`;
+      } else if (el) {
+        el.textContent = 'Unknown Shop';
+      }
+    });
   }
+
 
   renderOrderDetail(order) {
     const items = order.OrderDetails.map(detail => {
