@@ -464,11 +464,31 @@ export default class LoginPage extends HTMLElement {
       errorElement.textContent = "Logged in successfully!";
       errorElement.style.color = "#2ecc71";
 
-      if (data.user?.role === "Barista") {
-        setTimeout(() => (window.location.href = "/barista"), 1000);
-      } else {
-        setTimeout(() => (window.location.href = "/menu"), 1000);
+    if (data.user?.role === "Barista") {
+      // 👉 Fetch staff assignment to get coffee_shop_id
+      console.log("Barista is logging in!");
+      const assignmentRes = await fetch(`http://localhost:3000/users/${data.user.id}/staff-assignments`, {
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+          Accept: "*/*"
+        }
+      });
+
+      if (assignmentRes.ok) {
+        const assignments = await assignmentRes.json();
+        if (assignments.length > 0) {
+          const shopId = assignments[0].coffee_shop_id;
+          localStorage.setItem("selected_shop_id", shopId);
+        }
       }
+      console.log("got shop id");
+
+      setTimeout(() => (window.location.href = "/barista"), 1000);
+      console.log("went to barista page");
+    } else {
+      setTimeout(() => (window.location.href = "/menu"), 1000);
+    }
+
     } catch (err) {
       errorElement.textContent = "Login failed: " + err.message;
       errorElement.style.color = "#e74c3c";

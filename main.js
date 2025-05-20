@@ -35,12 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 const hideHeaderOnPaths = [
-  '/login', 
+  '/login',
+  '/barista', 
   '/'
 ];
 
 const hideFooterOnPaths = [
   '/login',
+  '/barista', 
   '/'
 ];
 
