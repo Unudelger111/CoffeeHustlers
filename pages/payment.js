@@ -73,7 +73,7 @@ export default class PaymentPage extends HTMLElement {
       return;
     }
 
-    const shopId = cart[0].shop_id || 1;
+    const shopId = cart[0].shop_id;
 
     // 1️⃣ Step 1: Create the order
     const orderPayload = {
