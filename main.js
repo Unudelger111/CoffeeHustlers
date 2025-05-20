@@ -13,6 +13,7 @@ import "./pages/cart-page.js";
 import "./pages/history-view.js";
 import "./pages/payment.js";
 import "./pages/barista-page.js";
+import "./pages/barista-order-page.js";
 import './pages/order-confirmation-page.js';
 
 import { Router } from "./router.js";
@@ -37,12 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
 const hideHeaderOnPaths = [
   '/login',
   '/barista', 
+  '/barista-order/:id',
   '/'
 ];
 
 const hideFooterOnPaths = [
   '/login',
-  '/barista', 
+  '/barista',
+  '/barista-order/:id',
   '/'
 ];
 
@@ -59,7 +62,9 @@ const router = new Router({
     '/reorder': 'reorder-page',
     '/payment': 'payment-page',
     '/barista': 'barista-page',
+    '/barista-order/:id': 'barista-order-page',
     '/order-confirmation': 'order-confirmation-page',
+
   },
   hideHeaderOnPaths,
   hideFooterOnPaths

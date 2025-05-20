@@ -4,6 +4,8 @@ class BaristaPage extends HTMLElement {
     this.orders = [];
     this.token = '';
     this.shopId = '';
+    this.expandedOrderId = null;
+    this.orderDetailsCache = {}; // cache by order ID
   }
 
   connectedCallback() {
@@ -67,6 +69,29 @@ class BaristaPage extends HTMLElement {
       <div class="container">${message}</div>
     `;
   }
+
+  async fetchOrderDetails(orderId) {
+    if (this.orderDetailsCache[orderId]) return; // already cached
+
+    try {
+      const res = await fetch(`http://localhost:3000/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch order details');
+
+      const orderData = await res.json();
+      this.orderDetailsCache[orderId] = orderData;
+      this.expandedOrderId = orderId;
+      this.render(); // re-render after getting details
+    } catch (err) {
+      console.error(err);
+      alert('Failed to load item details.');
+    }
+  }
+
 
   render() {
     this.innerHTML = `
@@ -138,6 +163,21 @@ class BaristaPage extends HTMLElement {
             align-self: flex-end;
           }
         }
+        .toggle-btn {
+          background: none;
+          border: none;
+          color: #6f4e37;
+          cursor: pointer;
+          font-size: 14px;
+          margin-top: 10px;
+          text-decoration: underline;
+        }
+        .order-items {
+          margin-top: 10px;
+          padding-left: 20px;
+          font-size: 14px;
+        }
+
       </style>
 
       <div class="container">
@@ -148,7 +188,7 @@ class BaristaPage extends HTMLElement {
         ${this.orders.length === 0
           ? `<p>No orders found.</p>`
           : this.orders.map(order => `
-              <div class="order">
+              <div class="order" data-id="${order.id}" style="cursor: pointer;">
                 <div class="order-header">
                   <div><strong>Order ID:</strong> ${order.public_order_id}</div>
                   <div><strong>Customer:</strong> ${order.User?.name || "Unknown"}</div>
@@ -158,6 +198,7 @@ class BaristaPage extends HTMLElement {
                   <p><strong>Pickup Time:</strong> ${new Date(order.pickup_time).toLocaleString()}</p>
                   <p><strong>Ordered At:</strong> ${new Date(order.order_time).toLocaleString()}</p>
                 </div>
+                
               </div>
             `).join('')}
       </div>
@@ -165,9 +206,14 @@ class BaristaPage extends HTMLElement {
 
     // Attach logout button listener
     this.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
+    this.querySelectorAll('.order').forEach(orderEl => {
+      const orderId = parseInt(orderEl.dataset.id);
+      orderEl.addEventListener('click', () => {
+        window.location.href = `/barista-order/${orderId}`;
+      });
+    });
+
   }
-
-
 }
 
 customElements.define('barista-page', BaristaPage);
