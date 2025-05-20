@@ -171,8 +171,14 @@ export default class ItemPage extends HTMLElement {
   addToCart() {
     if (!this.item) return;
 
-    const selectedSize = this.item.sizes?.find(s => s.size === this.size);
+    const shopId = sessionStorage.getItem("selectedShopId");
+    if (!shopId) {
+      alert("❌ Shop selection missing. Please reselect your coffee shop.");
+      return;
+    }
 
+    const selectedSize = this.item.sizes?.find(s => s.size === this.size);
+    console.log(this.item);
     const cartItem = {
       id: this.item.id,
       name: this.item.name,
@@ -180,7 +186,8 @@ export default class ItemPage extends HTMLElement {
       image: this.item.image_url,
       quantity: this.quantity,
       size: this.size,
-      menu_size_id: selectedSize?.id
+      menu_size_id: selectedSize?.id,
+      shop_id: parseInt(shopId)
     };
 
     cartService.addItem(cartItem);

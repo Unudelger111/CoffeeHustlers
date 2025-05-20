@@ -155,7 +155,11 @@ export default class MenuPage extends HTMLElement {
 
     locationSelect.addEventListener("change", (e) => {
       const shopId = e.target.value;
-      if (shopId) this.fetchCoffeeShopMenu(shopId);
+      if (shopId) {
+        cartService.clearCart();
+        sessionStorage.setItem("selectedShopId", shopId);
+        this.fetchCoffeeShopMenu(shopId);
+      }
     });
   }
 
