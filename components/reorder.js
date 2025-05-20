@@ -2,12 +2,13 @@ class ReOrderColumn extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.frequentItems = [];
+    this.latestOrder = null;
     this.currentTheme = 'light';
     this.isLoading = true;
     this.error = null;
     this.token = localStorage.getItem('token');
     this.user = JSON.parse(localStorage.getItem('user') || '{}');
+    this.cartService = null; // Will be initialized later
     this.onThemeChange = this.onThemeChange.bind(this);
     this.render();
   }
@@ -17,7 +18,18 @@ class ReOrderColumn extends HTMLElement {
     window.addEventListener('theme-changed', this.onThemeChange);
     this.currentTheme = document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light';
     
-    this.fetchFrequentOrders();
+    // Import CartService
+    import('../cart-service.js')
+      .then(module => {
+        this.cartService = module.cartService;
+        this.fetchLatestOrder();
+      })
+      .catch(error => {
+        console.error('Error importing cart service:', error);
+        this.isLoading = false;
+        this.error = 'Failed to initialize the component';
+        this.render();
+      });
   }
 
   disconnectedCallback() {
@@ -29,10 +41,10 @@ class ReOrderColumn extends HTMLElement {
     this.render();
   }
 
-  async fetchFrequentOrders() {
+  async fetchLatestOrder() {
     if (!this.token || !this.user?.id) {
       this.isLoading = false;
-      this.error = 'Please log in to see your frequent orders';
+      this.error = 'Please log in to see your previous orders';
       this.render();
       return;
     }
@@ -48,138 +60,180 @@ class ReOrderColumn extends HTMLElement {
 
       if (!res.ok) throw new Error('Failed to fetch order history');
       const orders = await res.json();
-
-      // Get details for each order
-      const ordersWithDetails = await Promise.all(orders.map(async order => {
-        const detailRes = await fetch(`http://localhost:3000/orders/${order.id}`, {
-          headers: {
-            'Authorization': `Bearer ${this.token}`,
-            'Accept': '*/*'
-          }
-        });
-        if (!detailRes.ok) throw new Error('Failed to fetch order details');
-        return await detailRes.json();
-      }));
-
-      // Calculate frequency of each item
-      const itemFrequency = {};
       
-      ordersWithDetails.forEach(order => {
-        order.OrderDetails?.forEach(detail => {
-          const menuItem = detail.MenuItemSize.menu_item;
-          const size = detail.MenuItemSize.size;
-          const menuItemSizeId = detail.MenuItemSize.id;
-          const key = `${menuItem.id}-${size}`;
-          
-          if (!itemFrequency[key]) {
-            itemFrequency[key] = {
-              count: 0,
-              name: menuItem.name,
-              size: size,
-              price: detail.subtotal / detail.quantity,
-              imageUrl: menuItem.image_url,
-              menuItemSizeId: menuItemSizeId,
-              lastOrdered: new Date(order.created_at || order.pickup_time)
-            };
-          }
-          
-          itemFrequency[key].count += detail.quantity;
-          
-          // Update last ordered date if this order is newer
-          const orderDate = new Date(order.created_at || order.pickup_time);
-          if (orderDate > itemFrequency[key].lastOrdered) {
-            itemFrequency[key].lastOrdered = orderDate;
-          }
-        });
+      if (orders.length === 0) {
+        this.isLoading = false;
+        this.render();
+        return;
+      }
+
+      // Sort orders by date (newest first)
+      orders.sort((a, b) => {
+        const dateA = new Date(a.created_at || a.pickup_time);
+        const dateB = new Date(b.created_at || b.pickup_time);
+        return dateB - dateA;
+      });
+
+      // Get only the latest order
+      const latestOrder = orders[0];
+
+      // Fetch details for the latest order
+      const detailRes = await fetch(`http://localhost:3000/orders/${latestOrder.id}`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': '*/*'
+        }
       });
       
-      // Convert to array and sort by frequency
-      this.frequentItems = Object.values(itemFrequency)
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5); // Top 5 most frequent items
+      if (!detailRes.ok) throw new Error('Failed to fetch order details');
+      this.latestOrder = await detailRes.json();
       
       this.isLoading = false;
       this.render();
     } catch (error) {
-      console.error('Error fetching frequent orders:', error);
+      console.error('Error fetching latest order:', error);
       this.isLoading = false;
-      this.error = 'Failed to load your frequent orders';
+      this.error = 'Failed to load your latest order';
       this.render();
     }
   }
 
-  addToCart(item) {
-    // Create a custom event for adding to cart
-    const event = new CustomEvent('add-to-cart', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        menuItemSizeId: item.menuItemSizeId,
-        name: item.name,
-        size: item.size,
-        price: item.price,
-        quantity: 1
-      }
-    });
+  addAllToCart() {
+    if (!this.latestOrder || !this.latestOrder.OrderDetails || this.latestOrder.OrderDetails.length === 0 || !this.cartService) {
+      console.error('Cannot add to cart: Either no order details or cart service not available');
+      return;
+    }
     
-    this.dispatchEvent(event);
-    
-    // Provide visual feedback
-    this.showAddedToCartFeedback(item);
+    try {
+      // Add each item from the latest order to the cart
+      this.latestOrder.OrderDetails.forEach(detail => {
+        const menuItem = detail.MenuItemSize.menu_item;
+        const price = detail.subtotal / detail.quantity;
+        
+        // Create cart item with the exact structure expected by CartService
+        const cartItem = {
+          id: detail.MenuItemSize.id,  // This is critical - must match the id CartService expects
+          name: menuItem.name,
+          size: detail.MenuItemSize.size,
+          price: price,
+          quantity: detail.quantity,
+          image: menuItem.image_url
+        };
+        
+        // Add directly to cart using the cartService
+        this.cartService.addItem(cartItem);
+      });
+      
+      // Provide visual feedback
+      this.showAddedToCartFeedback();
+      
+      // Alert the user
+      const itemCount = this.latestOrder.OrderDetails.reduce((total, detail) => total + detail.quantity, 0);
+      this.showFeedbackMessage(`Added ${itemCount} item${itemCount > 1 ? 's' : ''} to your cart!`);
+    } catch (error) {
+      console.error('Error adding items to cart:', error);
+      this.showFeedbackMessage('Failed to add items to cart', true);
+    }
   }
   
-  showAddedToCartFeedback(item) {
-    const itemElement = this.shadowRoot.querySelector(`.frequent-item[data-id="${item.menuItemSizeId}"]`);
-    if (!itemElement) return;
+  showAddedToCartFeedback() {
+    const orderElement = this.shadowRoot.querySelector('.latest-order');
+    if (!orderElement) return;
     
     // Add a temporary "added" class for animation
-    itemElement.classList.add('added');
+    orderElement.classList.add('added');
     
     // Remove it after animation completes
     setTimeout(() => {
-      itemElement.classList.remove('added');
+      orderElement.classList.remove('added');
     }, 1500);
+  }
+  
+  showFeedbackMessage(message, isError = false) {
+    // Create feedback element if it doesn't exist
+    let feedback = this.shadowRoot.querySelector('.feedback-message');
+    if (!feedback) {
+      feedback = document.createElement('div');
+      feedback.className = 'feedback-message';
+      this.shadowRoot.querySelector('.reorder-column').appendChild(feedback);
+    }
+    
+    // Set message and style
+    feedback.textContent = message;
+    feedback.className = `feedback-message ${isError ? 'error' : 'success'}`;
+    feedback.style.display = 'block';
+    
+    // Auto hide after delay
+    setTimeout(() => {
+      feedback.style.opacity = '0';
+      setTimeout(() => {
+        feedback.style.display = 'none';
+        feedback.style.opacity = '1';
+      }, 500);
+    }, 3000);
   }
 
   renderLoading() {
-    return `<div class="loading">Loading your frequent orders...</div>`;
+    return `<div class="loading">Loading your latest order...</div>`;
   }
 
   renderError() {
     return `<div class="error">${this.error}</div>`;
   }
 
-  renderItems() {
-    if (this.frequentItems.length === 0) {
+  renderLatestOrder() {
+    if (!this.latestOrder || !this.latestOrder.OrderDetails || this.latestOrder.OrderDetails.length === 0) {
       return `<div class="empty-state">No order history found.<br>Order some delicious drinks first!</div>`;
     }
 
-    return this.frequentItems.map(item => `
-      <div class="frequent-item" data-id="${item.menuItemSizeId}">
-        <div class="item-image">
-          <img src="${item.imageUrl}" alt="${item.name}">
-          <div class="frequency">
-            ${this.renderFrequencyStars(item.count)}
+    const orderDate = new Date(this.latestOrder.created_at || this.latestOrder.pickup_time);
+    const formattedDate = orderDate.toLocaleDateString();
+    const formattedTime = orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const itemsList = this.latestOrder.OrderDetails.map(detail => {
+      const menuItem = detail.MenuItemSize.menu_item;
+      const size = detail.MenuItemSize.size;
+      const price = detail.subtotal / detail.quantity;
+      
+      return `
+        <div class="order-item">
+          <div class="item-image">
+            <img src="${menuItem.image_url}" alt="${menuItem.name}" onerror="this.src='/img/default-coffee.jpg'">
+          </div>
+          <div class="item-details">
+            <h4>${menuItem.name}</h4>
+            <p class="size">${size}</p>
+            <div class="item-meta">
+              <span class="quantity">Qty: ${detail.quantity}</span>
+              <span class="price">$${price.toFixed(2)}</span>
+            </div>
           </div>
         </div>
-        <div class="item-details">
-          <h3>${item.name}</h3>
-          <p class="size">${item.size}</p>
-          <p class="price">$${item.price.toFixed(2)}</p>
+      `;
+    }).join('');
+
+    // Calculate total items
+    const totalItems = this.latestOrder.OrderDetails.reduce((total, detail) => total + detail.quantity, 0);
+
+    return `
+      <div class="latest-order">
+        <div class="order-header">
+          <div class="order-date">
+            <div class="date">${formattedDate}</div>
+            <div class="time">${formattedTime}</div>
+          </div>
+          <div class="items-count">${totalItems} item${totalItems > 1 ? 's' : ''}</div>
         </div>
-        <button class="add-to-cart-btn" data-id="${item.menuItemSizeId}">
-          Add to Cart
+        
+        <div class="order-items">
+          ${itemsList}
+        </div>
+        
+        <button class="add-all-to-cart-btn">
+          Re-Order All Items
         </button>
       </div>
-    `).join('');
-  }
-  
-  renderFrequencyStars(count) {
-    // Convert count to a star rating (1-5)
-    const maxCount = Math.max(...this.frequentItems.map(item => item.count));
-    const normalizedCount = Math.max(1, Math.min(5, Math.ceil((count / maxCount) * 5)));
-    
-    return '★'.repeat(normalizedCount) + '☆'.repeat(5 - normalizedCount);
+    `;
   }
 
   render() {
@@ -187,7 +241,7 @@ class ReOrderColumn extends HTMLElement {
       ? this.renderLoading() 
       : this.error 
         ? this.renderError() 
-        : this.renderItems();
+        : this.renderLatestOrder();
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -211,6 +265,7 @@ class ReOrderColumn extends HTMLElement {
           height: 100%;
           overflow-y: auto;
           transition: all 0.3s ease;
+          position: relative;
         }
         
         h2 {
@@ -222,22 +277,21 @@ class ReOrderColumn extends HTMLElement {
           border-bottom: 2px solid ${this.currentTheme === 'dark' ? '#483c32' : '#e9e1d9'};
         }
         
-        .frequent-item {
+        .latest-order {
           background: ${this.currentTheme === 'dark' ? '#3a332c' : '#ffffff'};
           border-radius: 12px;
           margin-bottom: 15px;
-          padding: 12px;
+          padding: 16px;
           box-shadow: 0 2px 8px ${this.currentTheme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(111,78,55,0.1)'};
           transition: all 0.3s ease;
-          position: relative;
         }
         
-        .frequent-item:hover {
+        .latest-order:hover {
           transform: translateY(-3px);
           box-shadow: 0 4px 12px ${this.currentTheme === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(111,78,55,0.15)'};
         }
         
-        .frequent-item.added {
+        .latest-order.added {
           background-color: ${this.currentTheme === 'dark' ? '#44382e' : '#f0e8e0'};
           animation: pulse 1.5s ease;
         }
@@ -251,37 +305,75 @@ class ReOrderColumn extends HTMLElement {
           100% { transform: scale(1); }
         }
         
+        .order-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 12px;
+          margin-bottom: 12px;
+          border-bottom: 1px solid ${this.currentTheme === 'dark' ? '#483c32' : '#e9e1d9'};
+        }
+        
+        .order-date {
+          color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#6f4e37'};
+        }
+        
+        .date {
+          font-weight: bold;
+          font-size: 1rem;
+        }
+        
+        .time {
+          font-size: 0.8rem;
+          color: ${this.currentTheme === 'dark' ? '#b0a69a' : '#8b5a2b'};
+        }
+        
+        .items-count {
+          background-color: ${this.currentTheme === 'dark' ? '#483c32' : '#e9e1d9'};
+          color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#6f4e37'};
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          font-weight: bold;
+        }
+        
+        .order-items {
+          margin-bottom: 16px;
+          max-height: 300px;
+          overflow-y: auto;
+        }
+        
+        .order-item {
+          display: flex;
+          padding: 8px 0;
+          border-bottom: 1px solid ${this.currentTheme === 'dark' ? '#483c32' : '#e9e1d9'};
+        }
+        
+        .order-item:last-child {
+          border-bottom: none;
+        }
+        
         .item-image {
-          width: 100%;
-          position: relative;
-          margin-bottom: 10px;
+          width: 60px;
+          height: 60px;
+          min-width: 60px;
+          border-radius: 8px;
+          overflow: hidden;
+          margin-right: 12px;
         }
         
         .item-image img {
           width: 100%;
-          height: 100px;
+          height: 100%;
           object-fit: cover;
-          border-radius: 8px;
-        }
-        
-        .frequency {
-          position: absolute;
-          bottom: -5px;
-          right: 5px;
-          background: ${this.currentTheme === 'dark' ? '#332b24' : '#fff'};
-          color: #e6a14c;
-          padding: 3px 8px;
-          border-radius: 12px;
-          font-size: 0.8rem;
-          box-shadow: 0 2px 4px ${this.currentTheme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.1)'};
         }
         
         .item-details {
-          margin-bottom: 10px;
+          flex: 1;
         }
         
-        .item-details h3 {
-          font-size: 1rem;
+        .item-details h4 {
+          font-size: 0.95rem;
           margin-bottom: 4px;
           color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#6f4e37'};
         }
@@ -289,27 +381,40 @@ class ReOrderColumn extends HTMLElement {
         .size {
           font-size: 0.8rem;
           color: ${this.currentTheme === 'dark' ? '#b0a69a' : '#8b5a2b'};
-          margin-bottom: 2px;
+          margin-bottom: 4px;
         }
         
-        .price {
+        .item-meta {
+          display: flex;
+          justify-content: space-between;
+        }
+        
+        .quantity {
+          font-size: 0.8rem;
           font-weight: bold;
           color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#6f4e37'};
         }
         
-        .add-to-cart-btn {
+        .price {
+          font-size: 0.8rem;
+          font-weight: bold;
+          color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#6f4e37'};
+        }
+        
+        .add-all-to-cart-btn {
           width: 100%;
-          padding: 8px;
+          padding: 12px;
           background-color: ${this.currentTheme === 'dark' ? '#8b5a2b' : '#6f4e37'};
           color: #fff;
           border: none;
-          border-radius: 6px;
+          border-radius: 8px;
           cursor: pointer;
           transition: background-color 0.3s ease;
           font-weight: bold;
+          font-size: 1rem;
         }
         
-        .add-to-cart-btn:hover {
+        .add-all-to-cart-btn:hover {
           background-color: ${this.currentTheme === 'dark' ? '#a67c52' : '#8b5a2b'};
         }
         
@@ -324,6 +429,29 @@ class ReOrderColumn extends HTMLElement {
           color: #e74c3c;
         }
         
+        .feedback-message {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 12px 20px;
+          border-radius: 8px;
+          font-weight: bold;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 1000;
+          transition: opacity 0.5s ease;
+        }
+        
+        .feedback-message.success {
+          background-color: #4CAF50;
+          color: white;
+        }
+        
+        .feedback-message.error {
+          background-color: #e74c3c;
+          color: white;
+        }
+        
         @media (max-width: 768px) {
           .reorder-column {
             padding: 15px 10px;
@@ -334,32 +462,29 @@ class ReOrderColumn extends HTMLElement {
             margin-bottom: 15px;
           }
           
-          .frequent-item {
-            padding: 10px;
+          .latest-order {
+            padding: 12px;
           }
           
-          .item-image img {
-            height: 80px;
+          .item-image {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
           }
         }
       </style>
       
       <div class="reorder-column">
-        <h2>Re-Order</h2>
+        <h2>Re-Order Latest</h2>
         ${content}
       </div>
     `;
-
-    // Add event listeners for add-to-cart buttons
-    if (!this.isLoading && !this.error) {
-      const buttons = this.shadowRoot.querySelectorAll('.add-to-cart-btn');
-      buttons.forEach(button => {
-        button.addEventListener('click', () => {
-          const itemId = button.dataset.id;
-          const item = this.frequentItems.find(i => i.menuItemSizeId === itemId);
-          if (item) this.addToCart(item);
-        });
-      });
+    
+    if (!this.isLoading && !this.error && this.latestOrder) {
+      const addAllButton = this.shadowRoot.querySelector('.add-all-to-cart-btn');
+      if (addAllButton) {
+        addAllButton.addEventListener('click', () => this.addAllToCart());
+      }
     }
   }
 }
