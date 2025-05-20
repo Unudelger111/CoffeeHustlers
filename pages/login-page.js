@@ -457,13 +457,19 @@ export default class LoginPage extends HTMLElement {
       localStorage.setItem("user", JSON.stringify({
         name: data.user?.name || "Coffee Lover",
         email,
-        id: data.user?.id
+        id: data.user?.id,
+        role: data.user?.role
       }));
 
       errorElement.textContent = "Logged in successfully!";
       errorElement.style.color = "#2ecc71";
 
-      setTimeout(() => (window.location.href = "/menu"), 1000);
+      // Check if user is a Barista and redirect accordingly
+      if (data.user?.role === "Barista") {
+        setTimeout(() => (window.location.href = "/barista"), 1000);
+      } else {
+        setTimeout(() => (window.location.href = "/menu"), 1000);
+      }
     } catch (err) {
       errorElement.textContent = "Login failed: " + err.message;
       errorElement.style.color = "#e74c3c";
@@ -503,17 +509,17 @@ export default class LoginPage extends HTMLElement {
         body: JSON.stringify({ email, password, name, phone, role })
       });
 
-          if (!response.ok) {
-      const text = await response.text();
-      let message = text;
+      if (!response.ok) {
+        const text = await response.text();
+        let message = text;
 
-      // Customize message for email in use
-      if (text.toLowerCase().includes("validation") || text.toLowerCase().includes("email")) {
-        message = "Email already in use";
+        // Customize message for email in use
+        if (text.toLowerCase().includes("validation") || text.toLowerCase().includes("email")) {
+          message = "Email already in use";
+        }
+
+        throw new Error(message);
       }
-
-      throw new Error(message);
-    }
 
       errorElement.textContent = "Account created successfully!";
       errorElement.style.color = "#2ecc71";

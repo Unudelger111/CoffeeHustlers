@@ -12,12 +12,11 @@ export default class CartPage extends HTMLElement {
     if (!pickupSelect) return;
 
     const savedTime = cartService.getPickupTime();
-    pickupSelect.innerHTML = ''; // clear
+    pickupSelect.innerHTML = ''; 
 
     const now = new Date();
     now.setMinutes(now.getMinutes() + 30);
 
-    // Round up to next 10 min
     const roundedMinutes = Math.ceil(now.getMinutes() / 10) * 10;
     if (roundedMinutes === 60) {
       now.setHours(now.getHours() + 1);
@@ -27,7 +26,7 @@ export default class CartPage extends HTMLElement {
     }
 
     const latest = new Date();
-    latest.setHours(20, 0, 0, 0); // 8:00 PM
+    latest.setHours(20, 0, 0, 0); 
 
     const options = [];
 
@@ -106,7 +105,6 @@ export default class CartPage extends HTMLElement {
       cartItemsContainer.appendChild(cartItem);
     });
 
-    // Add event listeners to remove buttons
     this.shadowRoot.querySelectorAll('.remove-btn').forEach(button => {
       button.addEventListener('click', (event) => {
         const itemId = parseInt(event.target.getAttribute('data-id'));
@@ -186,7 +184,6 @@ export default class CartPage extends HTMLElement {
       });
     }
 
-    // Listen for cart updates from other components
     window.addEventListener('cart-updated', () => {
       this.updateCartUI();
     });
