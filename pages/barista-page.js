@@ -69,7 +69,7 @@ class BaristaPage extends HTMLElement {
     });
     this.dispatchEvent(logoutEvent);
 
-    window.location.href = '/login'; // or use router if you have it
+    window.location.href = '/login'; 
   }
 
   disconnectedCallback() {
@@ -91,7 +91,7 @@ class BaristaPage extends HTMLElement {
   }
 
   async fetchOrderDetails(orderId) {
-    if (this.orderDetailsCache[orderId]) return; // already cached
+    if (this.orderDetailsCache[orderId]) return; 
 
     try {
       const res = await fetch(`http://localhost:3000/orders/${orderId}`, {
@@ -105,7 +105,7 @@ class BaristaPage extends HTMLElement {
       const orderData = await res.json();
       this.orderDetailsCache[orderId] = orderData;
       this.expandedOrderId = orderId;
-      this.render(); // re-render after getting details
+      this.render(); 
     } catch (err) {
       console.error(err);
       alert('Failed to load item details.');
@@ -224,7 +224,6 @@ class BaristaPage extends HTMLElement {
       </div>
     `;
 
-    // Attach logout button listener
     this.querySelector('#logout-btn')?.addEventListener('click', () => this.logout());
     this.querySelectorAll('.order').forEach(orderEl => {
       const orderId = parseInt(orderEl.dataset.id);

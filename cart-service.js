@@ -1,7 +1,7 @@
 export class CartService {
   constructor() {
     this.cartKey = 'cart';
-    this.pickupTimeKey = 'pickupTime';  // new key for pick-up time
+    this.pickupTimeKey = 'pickupTime'; 
     this.init();
   }
   
@@ -23,7 +23,6 @@ export class CartService {
   addItem(item) {
     const cart = this.getCart();
 
-    // ✅ Match by both id AND size
     const existingItemIndex = cart.findIndex(i => i.id === item.id && i.size === item.size);
 
     if (existingItemIndex >= 0) {
@@ -66,7 +65,7 @@ export class CartService {
   
   clearCart() {
     this.saveCart([]);
-    this.clearPickupTime();  // clear pick-up time when cart is cleared
+    this.clearPickupTime();
     return [];
   }
   
@@ -84,7 +83,6 @@ export class CartService {
     window.dispatchEvent(new CustomEvent('cart-updated'));
   }
 
-  // New methods for pick-up time
   setPickupTime(time) {
     localStorage.setItem(this.pickupTimeKey, time);
   }
@@ -98,5 +96,4 @@ export class CartService {
   }
 }
 
-// Create a singleton instance and export it
 export const cartService = new CartService();

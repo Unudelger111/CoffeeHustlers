@@ -1,4 +1,4 @@
-import { saveMenuPageState } from '../menu-state.js'; // adjust path if needed
+import { saveMenuPageState } from '../menu-state.js';
 
 export default class ItemCard extends HTMLElement {
   static get observedAttributes() {
@@ -18,10 +18,8 @@ export default class ItemCard extends HTMLElement {
   connectedCallback() {
     this.render();
 
-    // ✅ Store item in sessionStorage on click
     const anchor = this.shadowRoot.querySelector("a");
     if (anchor) {
-        // ✅ Save current menu-page state before routing
         anchor.addEventListener("click", () => {
         
         saveMenuPageState();

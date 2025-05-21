@@ -113,6 +113,7 @@ export default class CartPage extends HTMLElement {
     });
   }
 
+  // cart iin UI uurchlgdn  
   updateCartUI() {
     const cartItemsContainer = this.shadowRoot.getElementById("cart-items");
     const emptyCartContainer = this.shadowRoot.getElementById("empty-cart");
@@ -184,6 +185,7 @@ export default class CartPage extends HTMLElement {
       });
     }
 
+    // item-page ees irjga dispatch iig listen hiine
     window.addEventListener('cart-updated', () => {
       this.updateCartUI();
     });

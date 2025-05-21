@@ -7,13 +7,9 @@ export default class ThemeToggle extends HTMLElement {
 
   connectedCallback() {
     const toggleButton = this.shadowRoot.querySelector('.theme-toggle-button');
-    
-    // Apply CSS variables from the main document to the shadow DOM
     this.updateCSSVariables();
-    // Listen for theme changes to update the CSS variables
     window.addEventListener('theme-changed', () => this.updateCSSVariables());
     
-    // Initial theme check
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.classList.add('dark-mode');
       toggleButton.classList.add('dark');
@@ -34,30 +30,24 @@ export default class ThemeToggle extends HTMLElement {
 
     toggleButton.addEventListener('click', () => {
       if (toggleButton.classList.contains('dark')) {
-        // Switch to light mode
         document.documentElement.classList.remove('dark-mode');
         toggleButton.classList.remove('dark');
         localStorage.setItem('theme', 'light');
         this.dispatchThemeEvent('light');
       } else {
-        // Switch to dark mode
         document.documentElement.classList.add('dark-mode');
         toggleButton.classList.add('dark');
         localStorage.setItem('theme', 'dark');
         this.dispatchThemeEvent('dark');
       }
-      // Update CSS variables after theme change
       this.updateCSSVariables();
     });
   }
 
   updateCSSVariables() {
-    // Get computed styles from document root to apply to shadow DOM
     const rootStyles = getComputedStyle(document.documentElement);
     const host = this.shadowRoot.host;
-    
-    // Update the host element's CSS variables with values from root document
-    host.style.setProperty('--theme-toggle-light-bg', rootStyles.getPropertyValue('--button-bg'));
+        host.style.setProperty('--theme-toggle-light-bg', rootStyles.getPropertyValue('--button-bg'));
     host.style.setProperty('--theme-toggle-light-text', rootStyles.getPropertyValue('--button-text'));
     host.style.setProperty('--theme-toggle-dark-bg', rootStyles.getPropertyValue('--primary-button-bg'));
     host.style.setProperty('--theme-toggle-dark-text', rootStyles.getPropertyValue('--primary-button-text'));
@@ -71,7 +61,6 @@ export default class ThemeToggle extends HTMLElement {
       detail: { theme }
     });
 
-    // Dispatch globally so all components can listen
     window.dispatchEvent(event);
   }
 

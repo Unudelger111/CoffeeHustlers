@@ -8,17 +8,15 @@ class ReOrderColumn extends HTMLElement {
     this.error = null;
     this.token = localStorage.getItem('token');
     this.user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.cartService = null; // Will be initialized later
+    this.cartService = null; 
     this.onThemeChange = this.onThemeChange.bind(this);
     this.render();
   }
 
   connectedCallback() {
-    // Listen for theme changes
     window.addEventListener('theme-changed', this.onThemeChange);
     this.currentTheme = document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light';
     
-    // Import CartService
     import('../cart-service.js')
       .then(module => {
         this.cartService = module.cartService;
@@ -50,7 +48,6 @@ class ReOrderColumn extends HTMLElement {
     }
 
     try {
-      // Fetch all orders
       const res = await fetch(`http://localhost:3000/users/${this.user.id}/orders`, {
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -67,18 +64,13 @@ class ReOrderColumn extends HTMLElement {
         return;
       }
 
-      // Sort orders by date (newest first)
       orders.sort((a, b) => {
         const dateA = new Date(a.created_at || a.pickup_time);
         const dateB = new Date(b.created_at || b.pickup_time);
         return dateB - dateA;
       });
 
-      // Get only the latest order
       const latestOrder = orders[0];
-
-
-      // Fetch details for the latest order
       const detailRes = await fetch(`http://localhost:3000/orders/${latestOrder.id}`, {
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -108,11 +100,9 @@ class ReOrderColumn extends HTMLElement {
     try {
       console.log(this.latestOrder);
       const shopId = parseInt(this.latestOrder.shop_id);
-      // Add each item from the latest order to the cart
       this.latestOrder.OrderDetails.forEach(detail => {
         const menuItem = detail.MenuItemSize.menu_item;
         const price = detail.subtotal / detail.quantity;
-        // Create cart item with the exact structure expected by CartService
         const cartItem = {
           id: detail.MenuItemSize.id,
           name: menuItem.name,
@@ -123,15 +113,12 @@ class ReOrderColumn extends HTMLElement {
           shop_id: shopId,
           menu_size_id: detail.menu_size_id          
         };
-        
-        // Add directly to cart using the cartService
+
         this.cartService.addItem(cartItem);
       });
       
-      // Provide visual feedback
       this.showAddedToCartFeedback();
       
-      // Alert the user
       const itemCount = this.latestOrder.OrderDetails.reduce((total, detail) => total + detail.quantity, 0);
       this.showFeedbackMessage(`Added ${itemCount} item${itemCount > 1 ? 's' : ''} to your cart!`);
     } catch (error) {
@@ -144,17 +131,14 @@ class ReOrderColumn extends HTMLElement {
     const orderElement = this.shadowRoot.querySelector('.latest-order');
     if (!orderElement) return;
     
-    // Add a temporary "added" class for animation
     orderElement.classList.add('added');
     
-    // Remove it after animation completes
     setTimeout(() => {
       orderElement.classList.remove('added');
     }, 1500);
   }
   
   showFeedbackMessage(message, isError = false) {
-    // Create feedback element if it doesn't exist
     let feedback = this.shadowRoot.querySelector('.feedback-message');
     if (!feedback) {
       feedback = document.createElement('div');
@@ -162,12 +146,10 @@ class ReOrderColumn extends HTMLElement {
       this.shadowRoot.querySelector('.reorder-column').appendChild(feedback);
     }
     
-    // Set message and style
     feedback.textContent = message;
     feedback.className = `feedback-message ${isError ? 'error' : 'success'}`;
     feedback.style.display = 'block';
     
-    // Auto hide after delay
     setTimeout(() => {
       feedback.style.opacity = '0';
       setTimeout(() => {
@@ -216,7 +198,6 @@ class ReOrderColumn extends HTMLElement {
       `;
     }).join('');
 
-    // Calculate total items
     const totalItems = this.latestOrder.OrderDetails.reduce((total, detail) => total + detail.quantity, 0);
 
     return `

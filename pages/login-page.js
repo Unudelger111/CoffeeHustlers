@@ -465,7 +465,6 @@ export default class LoginPage extends HTMLElement {
       errorElement.style.color = "#2ecc71";
 
     if (data.user?.role === "Barista") {
-      // 👉 Fetch staff assignment to get coffee_shop_id
       console.log("Barista is logging in!");
       const assignmentRes = await fetch(`http://localhost:3000/users/${data.user.id}/staff-assignments`, {
         headers: {

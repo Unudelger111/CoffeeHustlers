@@ -1,10 +1,10 @@
 import { saveMenuPageState } from './menu-state.js';
 
-export class Router {
+export class Router { // Router class-iig export hiijga
   constructor({ routes, rootId, hideHeaderOnPaths = [], hideFooterOnPaths = [] }) {
     this.routes = routes; 
     this.root = document.getElementById(rootId);
-    this.routeMatchers = this.compileRoutes(routes);
+    this.routeMatchers = this.compileRoutes(routes); // dynamic route-iig uurchluh
     this.hideHeaderOnPaths = hideHeaderOnPaths; 
     this.hideFooterOnPaths = hideFooterOnPaths; 
     this.handleClick = this.handleClick.bind(this);
@@ -13,6 +13,7 @@ export class Router {
     this.init();
   }
 
+  //dynamic route-iig uurchluh
   compileRoutes(routes) {
     return Object.entries(routes).map(([path, component]) => {
       const paramNames = [];
@@ -25,6 +26,8 @@ export class Router {
     });
   }
 
+
+  // ugsun path iig route tei ni match hiine
   matchRoute(path) {
     for (const { matcher, paramNames, component } of this.routeMatchers) {
       const match = path.match(matcher);
@@ -33,7 +36,7 @@ export class Router {
         paramNames.forEach((name, index) => {
           params[name] = decodeURIComponent(match[index + 1]);
         });
-        return { component, params };
+        return { component, params }; 
       }
     }
     return null;

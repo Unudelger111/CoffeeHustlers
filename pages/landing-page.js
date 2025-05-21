@@ -191,7 +191,6 @@ export default class LandingPage extends HTMLElement {
               </div>
               
               <div class="button-container">
-                  <button id="shop-selector-btn">Select Coffee Shop</button>
                   <button id="continue-btn" class="primary-btn">Continue</button>
               </div>
           </div>

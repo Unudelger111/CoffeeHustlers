@@ -46,7 +46,6 @@ export default class ItemPage extends HTMLElement {
       const item = await res.json();
       this.item = item;
 
-      // ✅ Set default size and price from the first size
       const firstSize = item.sizes?.[0];
       if (firstSize) {
         this.size = firstSize.size;
@@ -86,9 +85,8 @@ export default class ItemPage extends HTMLElement {
 
     if (quantityElement) quantityElement.value = this.quantity;
 
-    // 🆕 Generate dynamic size buttons
     if (sizeContainer && Array.isArray(this.item.sizes)) {
-      sizeContainer.innerHTML = ''; // clear existing
+      sizeContainer.innerHTML = '';
       this.item.sizes.forEach((s, i) => {
         const btn = document.createElement('button');
         btn.textContent = `${s.size} ($${parseFloat(s.base_price).toFixed(2)})`;
@@ -98,7 +96,6 @@ export default class ItemPage extends HTMLElement {
         sizeContainer.appendChild(btn);
       });
 
-      // Re-bind listeners
       this.setupSizeListeners();
     }
   }
@@ -167,13 +164,13 @@ export default class ItemPage extends HTMLElement {
       });
     }
   }
-
+  //add to cart arga
   addToCart() {
     if (!this.item) return;
 
     const shopId = sessionStorage.getItem("selectedShopId");
     if (!shopId) {
-      alert("❌ Shop selection missing. Please reselect your coffee shop.");
+      alert("Coffee shop oo songo.");
       return;
     }
 
@@ -200,7 +197,7 @@ export default class ItemPage extends HTMLElement {
       }, 3000);
     }
 
-    window.dispatchEvent(new CustomEvent('cart-updated'));
+    window.dispatchEvent(new CustomEvent('cart-updated')); // Custom event yag dispatch hiijga heseg
   }
   updateTotalPrice() {
     const total = this.price * this.quantity;
@@ -411,7 +408,7 @@ export default class ItemPage extends HTMLElement {
       }
     }
 
-    /* 🌙 DARK MODE SUPPORT */
+    /* 🌙 DARK MODE demjij bga */
     :host-context(.dark) .container {
       background-color: #121212;
       color: #f1f1f1;

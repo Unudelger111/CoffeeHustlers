@@ -52,7 +52,7 @@ class HistoryView extends HTMLElement {
       if (document.visibilityState === 'visible' && !this.currentOrderDetail) {
         this.fetchOrderHistory();
       }
-    }, 10000); // every 10s
+    }, 10000); 
   }
 
   stopPolling() {
@@ -189,7 +189,6 @@ class HistoryView extends HTMLElement {
       </div>
     `;
 
-    // Set up "View Details" button listeners
     this.shadowRoot.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.target.closest('.order-card').dataset.id;
@@ -197,9 +196,8 @@ class HistoryView extends HTMLElement {
       });
     });
 
-    // 🔁 After rendering, fetch and update shop info dynamically
     orders.forEach(async (order) => {
-      const shop = await this.fetchShopInfo(order.shop_id); // use the function you defined earlier
+      const shop = await this.fetchShopInfo(order.shop_id); 
       const el = this.shadowRoot.getElementById(`shop-${order.id}`);
       if (el && shop) {
         el.textContent = `${shop.name} - ${shop.location}`;

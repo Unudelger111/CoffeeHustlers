@@ -125,7 +125,6 @@ export default class PaymentPage extends HTMLElement {
         }
       }
 
-      // ✅ Save confirmation data
       sessionStorage.setItem("orderConfirmation", JSON.stringify({
         public_order_id: publicOrderId,
         total_price: this.totalAmount

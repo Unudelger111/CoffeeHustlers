@@ -1,14 +1,7 @@
-/**
- * @class Header
- * Custom header component with user dropdown functionality
- */
 export default class Header extends HTMLElement {
-  // Define observed attributes that will update when changed
   static get observedAttributes() {
     return ['username', 'cart-count', 'user-avatar', 'theme'];
   }
-  
-  // Properties that will reflect to attributes
   get username() {
     return this.getAttribute('username');
   }
@@ -61,7 +54,6 @@ export default class Header extends HTMLElement {
     this.setupEventListeners();
   }
 
-  // Handle attribute changes
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue === newValue) return;
     
@@ -260,9 +252,9 @@ export default class Header extends HTMLElement {
         position: absolute;
         top: -5px;
         right: -5px;
-        background-color: #6F4E37; /* Coffee brown */
+        background-color: #6F4E37; 
         color: #fff;
-        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* Bean-like ellipse */
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
         width: 24px;
         height: 16px;
         display: flex;
@@ -270,7 +262,7 @@ export default class Header extends HTMLElement {
         justify-content: center;
         font-size: 12px;
         font-weight: bold;
-        box-shadow: inset 0 0 2px #3e2b23; /* Inner shading for texture */
+        box-shadow: inset 0 0 2px #3e2b23; 
         font-family: sans-serif;
       }
 
@@ -323,7 +315,7 @@ export default class Header extends HTMLElement {
           transform: translateY(-10px);
           visibility: hidden;
           transition: all 0.3s ease;
-          z-index: 1500; /* Higher z-index to appear above the theme toggle */
+          z-index: 1500; 
         }
 
         :host([theme="dark"]) .user-dropdown {
@@ -595,6 +587,7 @@ export default class Header extends HTMLElement {
       const userData = localStorage.getItem('user');
       const token = localStorage.getItem('token');
       
+    
       if (userData && token) {
         return JSON.parse(userData);
       }
@@ -710,17 +703,14 @@ export default class Header extends HTMLElement {
   }
 
   connectedCallback() {
-    // Initial updates based on attributes or localStorage
     this.updateUserInterface();
     
-    // Listen for cart updates via the storage event
     window.addEventListener('storage', (e) => {
       if (e.key === 'cart') {
         this.updateCartCountFromStorage();
       }
     });
     
-    // Listen for cart-updated events
     window.addEventListener('cart-updated', () => {
       this.updateCartCountFromStorage();
     });

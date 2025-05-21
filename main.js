@@ -1,3 +1,5 @@
+//Undsen huudsaa udirdah App (main) component
+//Custom WC bolon huudasnuud
 import "./components/menu-categories.js";
 import "./components/item-card.js";
 import "./components/header.js";
@@ -16,15 +18,20 @@ import "./pages/barista-page.js";
 import "./pages/barista-order-page.js";
 import './pages/order-confirmation-page.js';
 
-import { Router } from "./router.js";
+//router.js ees Router class-iig import hiij bga. Ene ni SPA navigation-iig hiij bga. 
+import { Router } from "./router.js";  
+
+//cartnii logiciig global aar importlj bga. Ene ni haanaas ch ashiglaj boldog bolgjgo.
 import { cartService } from "./cart-service.js";
 
+// Hereglegch index.html gedeg huudas deer orj irj bga bol / gedeg huudas ruu shiljij bga.
 if (window.location.pathname === "/index.html") {
   history.replaceState(null, null, "/");
 }
 
 window.cartService = cartService;
 
+// Huudsiig load hiiheed localstorage-aas theme-iig ni shalgaj bga.
 document.addEventListener('DOMContentLoaded', () => {
   const theme = localStorage.getItem('theme');
   console.log(theme)
@@ -35,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 })
 
+// Header ee nuuh huudasnuud.
 const hideHeaderOnPaths = [
   '/login',
   '/barista', 
@@ -49,8 +57,9 @@ const hideFooterOnPaths = [
   '/'
 ];
 
+// Huudas bolon url-iig uurchluh bolomjtoi Router class-iig hereglej bga.
 const router = new Router({
-  rootId: "app",
+  rootId: "app",   // hoooy ene page iig render hii 
   routes: {
     '/': 'landing-page',
     '/menu': 'menu-page',
@@ -63,11 +72,13 @@ const router = new Router({
     '/payment': 'payment-page',
     '/barista': 'barista-page',
     '/barista-order/:id': 'barista-order-page',
-    '/order-confirmation': 'order-confirmation-page',
+    '/order-confirmation': 'order-confirmation-page', 
+    '/search': 'search-page',
 
   },
   hideHeaderOnPaths,
   hideFooterOnPaths
 });
 
-window.router = router;
+// router global aar handaj bolno jishee n /menu
+window.router = router; 
