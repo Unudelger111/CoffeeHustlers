@@ -338,8 +338,6 @@ export default class MenuPage extends HTMLElement {
           top: 0;
           height: calc(100vh - 32px);
           overflow-y: auto;
-          padding-right: 20px;
-          background-color: var(--sidebar-bg, #fff);
           border-radius: 12px;
           margin-right: 20px;
           box-shadow: 0 2px 12px rgba(0,0,0,0.08);

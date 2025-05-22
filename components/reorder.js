@@ -266,7 +266,7 @@ class ReOrderColumn extends HTMLElement {
           background: ${this.currentTheme === 'dark' ? '#3a332c' : '#ffffff'};
           border-radius: 12px;
           margin-bottom: 15px;
-          padding: 16px;
+          padding: 16px;  
           box-shadow: 0 2px 8px ${this.currentTheme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(111,78,55,0.1)'};
           transition: all 0.3s ease;
         }
