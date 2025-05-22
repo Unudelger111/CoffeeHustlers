@@ -1,8 +1,9 @@
+// Hereglegch logged in bnu guyu shalgaj bga
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token');
   return !!token;
 };
-
+//Log in hiitsn bga hereglegchin medeelliig gargana
 export const getCurrentUser = () => {
   try {
     const userData = localStorage.getItem('user');
@@ -13,7 +14,7 @@ export const getCurrentUser = () => {
     return null;
   }
 };
-
+//Hereglegchiig log-out hiine
 export const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
@@ -25,7 +26,7 @@ export const logout = () => {
   
   return true;
 };
-
+//Login hiine
 export const login = (userData, token) => {
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(userData));
@@ -39,6 +40,7 @@ export const login = (userData, token) => {
   return true;
 };
 
+//Hereglegchiin ehnii usgiig avna
 export const getUserInitials = (name) => {
   if (!name) return '?';
   

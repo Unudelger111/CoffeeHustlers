@@ -1,3 +1,4 @@
+//category, menu 
 document.addEventListener('DOMContentLoaded', function() {
     const categoryBtns = document.querySelectorAll('.category-btn');
     const menuSections = document.querySelectorAll('.menu-section');

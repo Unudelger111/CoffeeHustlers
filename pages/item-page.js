@@ -166,15 +166,16 @@ export default class ItemPage extends HTMLElement {
   }
   //add to cart arga
   addToCart() {
-    if (!this.item) return;
+    if (!this.item) return; // item yag bgayu gdge shalgana
 
+    //CoffeeShop oo songsn bnu shalgn
     const shopId = sessionStorage.getItem("selectedShopId");
     if (!shopId) {
       alert("Coffee shop oo songo.");
       return;
     }
-
-    const selectedSize = this.item.sizes?.find(s => s.size === this.size);
+    //cartItem obiekt uusgeh  
+    const selectedSize = this.item.sizes?.find(s => s.size === this.size); //hemjee
     console.log(this.item);
     const cartItem = {
       id: this.item.id,
@@ -187,7 +188,7 @@ export default class ItemPage extends HTMLElement {
       shop_id: parseInt(shopId)
     };
 
-    cartService.addItem(cartItem);
+    cartService.addItem(cartItem); //cart-service aa duudna
 
     const messageElement = this.shadowRoot.getElementById('added-message');
     if (messageElement) {

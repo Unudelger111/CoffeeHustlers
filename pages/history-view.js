@@ -64,6 +64,7 @@ class HistoryView extends HTMLElement {
 
   async fetchOrderHistory() {
     try {
+      //hereglegchiiin buh order iig avna
       const res = await fetch(`http://localhost:3000/users/${this.userId}/orders`, {
         headers: {
           'Authorization': `Bearer ${this.token}`,
@@ -73,7 +74,7 @@ class HistoryView extends HTMLElement {
 
       if (!res.ok) throw new Error('Failed to fetch order history');
       const orders = await res.json();
-
+      //zahialga bolginii details iig avna
       const ordersWithDetails = await Promise.all(orders.map(async order => {
         const detailRes = await fetch(`http://localhost:3000/orders/${order.id}`, {
           headers: {
@@ -85,7 +86,7 @@ class HistoryView extends HTMLElement {
         const orderDetails = await detailRes.json();
         return orderDetails;
       }));
-
+      //avsan datag render hiine
       this.ordersDisplayed = ordersWithDetails;
       this.currentOrderDetail = null;
       this.renderOrders(ordersWithDetails);
@@ -94,7 +95,7 @@ class HistoryView extends HTMLElement {
       this.renderError('Failed to load order history.');
     }
   }
-
+  //Zahialgiin yg detail (View Detail)
   async fetchOrderDetails(orderId) {
     try {
       const res = await fetch(`http://localhost:3000/orders/${orderId}`, {

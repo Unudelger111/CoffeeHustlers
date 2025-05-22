@@ -1,15 +1,16 @@
 export default class ThemeToggle extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.render();
+    this.attachShadow({ mode: 'open' }); //shadowDOM uchir n tusgaarlsn styles css
+    this.render(); //tovchluuraa render hiine
   }
 
   connectedCallback() {
-    const toggleButton = this.shadowRoot.querySelector('.theme-toggle-button');
-    this.updateCSSVariables();
-    window.addEventListener('theme-changed', () => this.updateCSSVariables());
+    const toggleButton = this.shadowRoot.querySelector('.theme-toggle-button'); //tovchluur
+    this.updateCSSVariables(); //css iin uurchlultuudig update hiine
+    window.addEventListener('theme-changed', () => this.updateCSSVariables()); //theme uurchlultuudig sonsoh
     
+    //huuudsaa load hiihed ali theme ee ashiglah ve gdge shiidn
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.classList.add('dark-mode');
       toggleButton.classList.add('dark');
@@ -27,7 +28,7 @@ export default class ThemeToggle extends HTMLElement {
         this.dispatchThemeEvent('dark');
       }
     }
-
+    //tovchluur deer click hiihad theme iig uurchluh
     toggleButton.addEventListener('click', () => {
       if (toggleButton.classList.contains('dark')) {
         document.documentElement.classList.remove('dark-mode');
@@ -45,9 +46,10 @@ export default class ThemeToggle extends HTMLElement {
   }
 
   updateCSSVariables() {
-    const rootStyles = getComputedStyle(document.documentElement);
+    const rootStyles = getComputedStyle(document.documentElement); //root iin styles iig avna
     const host = this.shadowRoot.host;
-        host.style.setProperty('--theme-toggle-light-bg', rootStyles.getPropertyValue('--button-bg'));
+    //custom property
+    host.style.setProperty('--theme-toggle-light-bg', rootStyles.getPropertyValue('--button-bg'));
     host.style.setProperty('--theme-toggle-light-text', rootStyles.getPropertyValue('--button-text'));
     host.style.setProperty('--theme-toggle-dark-bg', rootStyles.getPropertyValue('--primary-button-bg'));
     host.style.setProperty('--theme-toggle-dark-text', rootStyles.getPropertyValue('--primary-button-text'));
@@ -56,6 +58,7 @@ export default class ThemeToggle extends HTMLElement {
     host.style.setProperty('--theme-toggle-secondary', rootStyles.getPropertyValue('--secondary-color'));
   }
 
+  //tsaashaa dispatch
   dispatchThemeEvent(theme) {
     const event = new CustomEvent('theme-changed', {
       detail: { theme }

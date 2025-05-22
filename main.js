@@ -19,7 +19,7 @@ import "./pages/barista-order-page.js";
 import './pages/order-confirmation-page.js';
 
 //router.js ees Router class-iig import hiij bga. Ene ni SPA navigation-iig hiij bga. 
-import { Router } from "./router.js";  
+import { Router } from "./router.js"; 
 
 //cartnii logiciig global aar importlj bga. Ene ni haanaas ch ashiglaj boldog bolgjgo.
 import { cartService } from "./cart-service.js";

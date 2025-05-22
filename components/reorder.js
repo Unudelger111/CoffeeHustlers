@@ -248,7 +248,7 @@ class ReOrderColumn extends HTMLElement {
           color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#4a3520'};
           border-right: 1px solid ${this.currentTheme === 'dark' ? '#483c32' : '#e9e1d9'};
           height: 100%;
-          overflow-y: auto;
+          overflow-y: hidden;  /* Changed from auto to hidden to remove scrollbar */
           transition: all 0.3s ease;
           position: relative;
         }
@@ -324,8 +324,7 @@ class ReOrderColumn extends HTMLElement {
         
         .order-items {
           margin-bottom: 16px;
-          max-height: 300px;
-          overflow-y: auto;
+          /* Removed max-height and overflow for items container */
         }
         
         .order-item {

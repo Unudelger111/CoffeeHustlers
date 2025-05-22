@@ -4,7 +4,7 @@ export class Router { // Router class-iig export hiijga
   constructor({ routes, rootId, hideHeaderOnPaths = [], hideFooterOnPaths = [] }) {
     this.routes = routes; 
     this.root = document.getElementById(rootId);
-    this.routeMatchers = this.compileRoutes(routes); // dynamic route-iig uurchluh
+    this.routeMatchers = this.compileRoutes(routes);
     this.hideHeaderOnPaths = hideHeaderOnPaths; 
     this.hideFooterOnPaths = hideFooterOnPaths; 
     this.handleClick = this.handleClick.bind(this);
@@ -13,11 +13,11 @@ export class Router { // Router class-iig export hiijga
     this.init();
   }
 
-  //dynamic route-iig uurchluh
+  //paramatertei route-uudiig regex bolgoj dynamicaar match hiine 
   compileRoutes(routes) {
     return Object.entries(routes).map(([path, component]) => {
       const paramNames = [];
-      const regexPath = path.replace(/:([\w]+)/g, (_, key) => {
+      const regexPath = path.replace(/:([\w]+)/g, (_, key) => {       
         paramNames.push(key);
         return '([^\\/]+)';
       });
@@ -61,7 +61,7 @@ export class Router { // Router class-iig export hiijga
     }
     return false;
   }
-
+  //
   render(path) {
     const match = this.matchRoute(path);
     if (!match) {
