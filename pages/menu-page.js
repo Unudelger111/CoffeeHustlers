@@ -7,9 +7,21 @@ export default class MenuPage extends HTMLElement {
     this.franchises = [];
     this.franchiseMap = {};
     this.categories = [];
+    this.isMobile = window.innerWidth <= 768;
     this.render();
     this.setupThemeListener();
     this.setupCartEvents();
+    this.setupResizeListener();
+  }
+
+  setupResizeListener() {
+    window.addEventListener('resize', () => {
+      const wasMobile = this.isMobile;
+      this.isMobile = window.innerWidth <= 768;
+      if (wasMobile !== this.isMobile) {
+        this.render();
+      }
+    });
   }
 
   async fetchFranchises() {
@@ -229,15 +241,18 @@ export default class MenuPage extends HTMLElement {
     notification.textContent = `Added ${item.name} (${item.size}) to cart!`;
     
     notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
+    notification.style.bottom = this.isMobile ? '80px' : '20px';
     notification.style.right = '20px';
+    notification.style.left = this.isMobile ? '20px' : 'auto';
     notification.style.backgroundColor = '#6f4e37';
     notification.style.color = '#fff';
-    notification.style.padding = '10px 20px';
-    notification.style.borderRadius = '5px';
+    notification.style.padding = this.isMobile ? '12px 16px' : '10px 20px';
+    notification.style.borderRadius = '8px';
     notification.style.zIndex = '1000';
-    notification.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    notification.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
     notification.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
+    notification.style.fontSize = this.isMobile ? '14px' : '16px';
+    notification.style.textAlign = 'center';
     
     const style = document.createElement('style');
     style.textContent = `
@@ -255,7 +270,9 @@ export default class MenuPage extends HTMLElement {
     document.body.appendChild(notification);
     
     setTimeout(() => {
-      document.body.removeChild(notification);
+      if (document.body.contains(notification)) {
+        document.body.removeChild(notification);
+      }
     }, 3000);
   }
 
@@ -284,7 +301,6 @@ export default class MenuPage extends HTMLElement {
     this.fetchFranchises();
   }
 
-
   updateCategories() {
     const catComponent = this.shadowRoot.querySelector("menu-categories");
     if (!catComponent) return;
@@ -307,64 +323,68 @@ export default class MenuPage extends HTMLElement {
       }
 
       .container {
-          padding: 20px;
+          padding: 16px;
           min-height: 100vh;
           background-color: var(--bg-color, #f5f0e8);
           color: var(--text-color, #4a3520);
           transition: all 0.3s ease;
           display: flex;
-
       }
       
       .reorder-sidebar {
-          width: 250px;
+          width: 280px;
           flex-shrink: 0;
           position: sticky;
           top: 0;
-          height: calc(100vh - 40px);
+          height: calc(100vh - 32px);
           overflow-y: auto;
-          padding-right: 16px;
+          padding-right: 20px;
+          background-color: var(--sidebar-bg, #fff);
+          border-radius: 12px;
+          margin-right: 20px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
       }
       
       .menu-content {
           flex: 1;
-          padding-left: 20px;
+          min-width: 0;
       }
 
       .hidden {
           display: none !important;
       }
 
-      /* Toggle Position */
       .theme-toggle-wrapper {
           position: absolute;
-          top: 20px;
-          right: 20px;
-          z-index: 100;
+          top: 16px;
+          right: 16px;
+          z-index: 50;
       }
 
-      /* Updated dropdown styles */
       .dropdowns {
           display: flex;
           justify-content: center;
-          gap: 1.5rem;
-          margin: 30px auto;
+          gap: 1rem;
+          margin: 30px auto 40px;
           max-width: 600px;
+          flex-wrap: wrap;
       }
 
       .dropdowns select {
-          padding: 12px 20px;
-          border-radius: 25px;
+          padding: 14px 24px;
+          border-radius: 30px;
           border: 2px solid var(--border-color, #6f4e37);
           font-family: 'Poppins', sans-serif;
           font-size: 16px;
+          font-weight: 500;
           background-color: var(--dropdown-bg, #fff);
           color: var(--text-color, #6f4e37);
           appearance: none;
-          box-shadow: 0 4px 10px var(--shadow-color, rgba(111, 78, 55, 0.1));
+          box-shadow: 0 4px 16px var(--shadow-color, rgba(111, 78, 55, 0.12));
           cursor: pointer;
-          width: 100%;
-          max-width: 220px;
+          flex: 1;
+          min-width: 180px;
+          max-width: 280px;
           text-align: center;
           background-repeat: no-repeat;
           background-position: right 15px center;
@@ -375,58 +395,73 @@ export default class MenuPage extends HTMLElement {
       .dropdowns select:hover {
           background-color: var(--bg-color, #f9f5f0);
           transform: translateY(-2px);
+          box-shadow: 0 6px 20px var(--shadow-color, rgba(111, 78, 55, 0.18));
       }
 
       .dropdowns select:focus {
           outline: none;
           border-color: var(--secondary-color, #8b5a2b);
-          box-shadow: 0 4px 12px var(--shadow-color, rgba(111, 78, 55, 0.2));
+          box-shadow: 0 6px 24px var(--shadow-color, rgba(111, 78, 55, 0.25));
       }
 
       .dropdowns select option {
           background-color: var(--dropdown-bg, #fff);
           color: var(--text-color, #4a3520);
-          padding: 10px;
+          padding: 12px;
       }
 
       .menu-categories {
           display: flex;
           justify-content: center;
-          gap: 15px;
-          margin: 30px 0;
+          gap: 12px;
+          margin: 30px 0 40px;
           flex-wrap: wrap;
+          padding: 0 8px;
       }
 
       .category-btn {
           background-color: var(--category-bg, #e9e1d9);
           color: var(--text-color, #6f4e37);
-          padding: 10px 20px;
+          padding: 12px 24px;
           border-radius: 25px;
           transition: all 0.3s ease;
+          font-weight: 500;
+          font-size: 15px;
+          border: none;
+          cursor: pointer;
+          white-space: nowrap;
       }
 
       .category-btn.active {
           background-color: var(--category-active-bg, #6f4e37);
           color: var(--category-active-text, #fff);
+          box-shadow: 0 4px 12px rgba(111, 78, 55, 0.3);
+      }
+
+      .category-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(111, 78, 55, 0.2);
       }
 
       .menu-section {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 25px;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 24px;
+          padding: 0 8px;
       }
 
       .menu-item {
           background-color: var(--card-bg, #fff);
-          border-radius: 15px;
+          border-radius: 16px;
           overflow: hidden;
-          box-shadow: 0 4px 15px var(--shadow-color, rgba(0, 0, 0, 0.1));
-          transition: transform 0.3s ease;
+          box-shadow: 0 4px 20px var(--shadow-color, rgba(0, 0, 0, 0.08));
+          transition: all 0.3s ease;
           cursor: pointer;
       }
 
       .menu-item:hover {
-          transform: translateY(-5px);
+          transform: translateY(-6px);
+          box-shadow: 0 8px 32px var(--shadow-color, rgba(0, 0, 0, 0.15));
       }
 
       .menu-item img {
@@ -434,76 +469,266 @@ export default class MenuPage extends HTMLElement {
           height: auto;
           object-fit: contain;
           aspect-ratio: 4 / 3;
-          padding: 10px;
+          padding: 12px;
       }
 
       .item-details {
-          padding: 15px;
+          padding: 20px;
       }
 
       .item-details h3 {
-          margin-bottom: 5px;
+          margin-bottom: 8px;
           color: var(--heading-color, #6f4e37);
+          font-size: 18px;
+          font-weight: 600;
       }
 
       .item-details p {
           color: var(--secondary-color, #8b5a2b);
-          font-weight: bold;
+          font-weight: 700;
+          font-size: 16px;
       }
       
       .loading-indicator {
           text-align: center;
-          padding: 30px;
+          padding: 40px 20px;
           font-size: 18px;
+          color: var(--text-color, #6f4e37);
       }
 
+      /* Mobile Styles - Tablet */
+      @media (max-width: 1024px) {
+          .container {
+              padding: 12px;
+          }
+          
+          .reorder-sidebar {
+              width: 240px;
+              margin-right: 16px;
+          }
+          
+          .menu-section {
+              grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+              gap: 20px;
+          }
+          
+          .theme-toggle-wrapper {
+              top: 12px;
+              right: 12px;
+          }
+      }
+
+      /* Mobile tom utas */
       @media (max-width: 768px) {
           .container {
               flex-direction: column;
+              padding: 12px;
+              gap: 0;
           }
           
           .reorder-sidebar {
               width: 100%;
               height: auto;
-              max-height: 300px;
+              max-height: 280px;
+              margin-right: 0;
               margin-bottom: 20px;
+              position: relative;
+              border-radius: 12px;
+              padding: 16px;
           }
           
           .menu-content {
               padding-left: 0;
           }
-      
-          .menu-section {
-              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+          .theme-toggle-wrapper {
+              position: relative;
+              top: 0;
+              right: 0;
+              display: flex;
+              justify-content: flex-end;
+              margin: 0 0 20px 0;
+              z-index: 10;
           }
 
           .dropdowns {
               flex-direction: column;
-              gap: 10px;
+              gap: 12px;
+              margin: 20px auto 30px;
+              padding: 0 4px;
           }
-          
-          .theme-toggle-wrapper {
-              position: relative;
-              top: 10px;
-              right: auto;
-              display: flex;
-              justify-content: center;
-              margin-bottom: 20px;
-          }
-      }
 
-      @media (max-width: 480px) {
+          .dropdowns select {
+              width: 100%;
+              max-width: none;
+              min-width: auto;
+              padding: 16px 20px;
+              font-size: 16px;
+          }
+
           .menu-categories {
-              flex-direction: column;
-              align-items: center;
+              gap: 8px;
+              margin: 20px 0 30px;
+              padding: 0 4px;
           }
 
           .category-btn {
-              width: 80%;
+              padding: 10px 16px;
+              font-size: 14px;
+              flex: 1;
+              min-width: 80px;
+          }
+      
+          .menu-section {
+              grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+              gap: 16px;
+              padding: 0 4px;
+          }
+
+          .item-details {
+              padding: 16px;
+          }
+
+          .item-details h3 {
+              font-size: 16px;
+          }
+
+          .item-details p {
+              font-size: 15px;
+          }
+      }
+
+      /* Mobile  */
+      @media (max-width: 480px) {
+          .container {
+              padding: 8px;
+          }
+
+          .reorder-sidebar {
+              padding: 12px;
+              margin-bottom: 16px;
+          }
+
+          .theme-toggle-wrapper {
+              top: 8px;
+              right: 8px;
+          }
+
+          .dropdowns {
+              margin: 16px auto 24px;
+              padding: 0 2px;
+          }
+
+          .dropdowns select {
+              padding: 14px 16px;
+              font-size: 15px;
+              border-radius: 25px;
+          }
+
+          .menu-categories {
+              gap: 6px;
+              margin: 16px 0 24px;
+              padding: 0 2px;
+          }
+
+          .category-btn {
+              padding: 8px 12px;
+              font-size: 13px;
+              border-radius: 20px;
           }
 
           .menu-section {
               grid-template-columns: 1fr;
+              gap: 12px;
+              padding: 0 2px;
+          }
+
+          .menu-item {
+              border-radius: 12px;
+          }
+
+          .item-details {
+              padding: 12px;
+          }
+
+          .item-details h3 {
+              font-size: 15px;
+              margin-bottom: 6px;
+          }
+
+          .item-details p {
+              font-size: 14px;
+          }
+
+          .loading-indicator {
+              padding: 30px 16px;
+              font-size: 16px;
+          }
+      }
+
+      /* Mobile */
+      @media (max-width: 360px) {
+          .container {
+              padding: 6px;
+          }
+
+          .theme-toggle-wrapper {
+              top: 6px;
+              right: 6px;
+          }
+
+          .dropdowns select {
+              padding: 12px 14px;
+              font-size: 14px;
+          }
+
+          .category-btn {
+              padding: 6px 10px;
+              font-size: 12px;
+          }
+
+          .menu-section {
+              gap: 10px;
+          }
+
+          .item-details {
+              padding: 10px;
+          }
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+          .reorder-sidebar {
+              max-height: 200px;
+          }
+          
+          .menu-categories {
+              margin: 16px 0 20px;
+          }
+          
+          .category-btn {
+              padding: 8px 16px;
+              font-size: 13px;
+          }
+      }
+
+      @media (hover: none) and (pointer: coarse) {
+          .category-btn {
+              min-height: 44px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+          }
+
+          .dropdowns select {
+              min-height: 48px;
+          }
+
+          .menu-item {
+              cursor: default;
+          }
+
+          .menu-item:active {
+              transform: scale(0.98);
           }
       }
     </style> 
@@ -513,14 +738,22 @@ export default class MenuPage extends HTMLElement {
     this.shadowRoot.innerHTML = `
       ${this.styleSheet}
       <div class="container">
-        <div class="reorder-sidebar">
-          <reorder-column></reorder-column>
-        </div>
+        ${!this.isMobile ? `
+          <div class="reorder-sidebar">
+            <reorder-column></reorder-column>
+          </div>
+        ` : ''}
         
         <div class="menu-content">
           <div class="theme-toggle-wrapper">
             <theme-toggle></theme-toggle>
           </div>
+
+          ${this.isMobile ? `
+            <div class="reorder-sidebar">
+              <reorder-column></reorder-column>
+            </div>
+          ` : ''}
 
           ${this.franchises.length > 0 ? `
             <div class="dropdowns">
@@ -557,4 +790,4 @@ export default class MenuPage extends HTMLElement {
   }
 }
 
-customElements.define('menu-page', MenuPage);
+customElements.define('menu-page', MenuPage); 
