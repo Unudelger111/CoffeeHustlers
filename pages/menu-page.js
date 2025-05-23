@@ -804,12 +804,14 @@ export default class MenuPage extends HTMLElement {
           ${this.franchises.length > 0 ? `
             <div class="dropdowns">
               <div class="select-wrapper">
+                <label for="shop-select">Coffee Shop</label>
                 <select id="shop-select">
                   <option value="" disabled selected>Select Coffee Shop</option>
                   ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
                 </select>
               </div>
               <div class="select-wrapper">
+              <label for="location-select">Location</label>
                 <select id="location-select">
                   <option value="" disabled selected>Select Location</option>
                 </select>
