@@ -187,7 +187,7 @@ class ReOrderColumn extends HTMLElement {
             <img src="${menuItem.image_url}" alt="${menuItem.name}" onerror="this.src='/img/default-coffee.jpg'">
           </div>
           <div class="item-details">
-            <h4>${menuItem.name}</h4>
+            <h3>${menuItem.name}</h3>
             <p class="size">${size}</p>
             <div class="item-meta">
               <span class="quantity">Qty: ${detail.quantity}</span>
@@ -356,7 +356,7 @@ class ReOrderColumn extends HTMLElement {
           flex: 1;
         }
         
-        .item-details h4 {
+        .item-details h3 {
           font-size: 0.95rem;
           margin-bottom: 4px;
           color: ${this.currentTheme === 'dark' ? '#e0d6cc' : '#6f4e37'};

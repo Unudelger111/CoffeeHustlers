@@ -407,6 +407,11 @@ export default class MenuPage extends HTMLElement {
           color: var(--text-color, #4a3520);
           padding: 12px;
       }
+      label {
+        font-size: 14px;
+        margin-bottom: 4px;
+        display: block;
+      }
 
       .menu-categories {
           display: flex;
@@ -755,10 +760,12 @@ export default class MenuPage extends HTMLElement {
 
           ${this.franchises.length > 0 ? `
             <div class="dropdowns">
+              <label for="shop-select">Coffee Shop</label>
               <select id="shop-select">
                 <option disabled selected>Select Coffee Shop</option>
                 ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
               </select>
+              <label for="location-select">Location</label>
               <select id="location-select">
                 <option disabled selected>Select Location</option>
               </select>
