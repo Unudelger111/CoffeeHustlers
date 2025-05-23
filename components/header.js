@@ -106,9 +106,9 @@ export default class Header extends HTMLElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 15px 20px;
+          padding: 0.9375rem 1.25rem;
           background-color: var(--header-bg);
-          box-shadow: 0 2px 5px var(--header-shadow);
+          box-shadow: 0 0.125rem 0.3125rem var(--header-shadow);
           position: relative;
           z-index: 1000;
         }
@@ -122,46 +122,44 @@ export default class Header extends HTMLElement {
         }
 
         .logo {
-          height:50px;
-          margin-right: 10px;
+          height: 3.125rem;
+          margin-right: 0.625rem;
           transition: var(--transition);
         }
 
         header h1 {
           color: var(--header-title);
-          font-size: 20px;
+          font-size: 1.25rem;
         }
 
         /* Desktop Navigation */
         .desktop-nav {
           display: flex;
           align-items: center;
-          gap: 20px;
-          flex: 1;
+          gap: 1.25rem;
+          margin-left: auto;
         }
 
         .search-container {
           display: flex;
-          flex: 1;
-          max-width: 400px;
-          gap: 10px;
+          max-width: 25rem;
+          gap: 0.625rem;
           align-items: center;
-          margin-left: 20px;
         }
 
         .search-wrapper {
           position: relative;
-          flex: 1;
+          width: 20rem;
         }
 
         .search-input {
           width: 100%;
-          padding: 8px 12px;
-          border-radius: 20px;
+          padding: 0.5rem 0.75rem;
+          border-radius: 1.25rem;
           border: 1px solid var(--header-shadow);
           background-color: var(--header-bg);
           color: var(--header-text);
-          font-size: 14px;
+          font-size: 0.875rem;
         }
 
         .search-input::placeholder {
@@ -170,18 +168,18 @@ export default class Header extends HTMLElement {
 
         .clear-button {
           position: absolute;
-          right: 10px;
+          right: 0.625rem;
           top: 50%;
           transform: translateY(-50%);
           border: none;
           background: transparent;
-          font-size: 16px;
+          font-size: 1rem;
           color: var(--header-text);
           cursor: pointer;
           display: none;
-          width: 20px;
-          height: 20px;
-          line-height: 20px;
+          width: 1.25rem;
+          height: 1.25rem;
+          line-height: 1.25rem;
           text-align: center;
           padding: 0;
         }
@@ -195,8 +193,8 @@ export default class Header extends HTMLElement {
         }
 
         .search-button {
-          padding: 8px 14px;
-          border-radius: 20px;
+          padding: 0.5rem 0.875rem;
+          border-radius: 1.25rem;
           border: none;
           background-color: var(--header-button-bg);
           color: var(--header-button-text);
@@ -208,8 +206,8 @@ export default class Header extends HTMLElement {
         }
 
         .search-button img.search-icon {
-          width: 16px;
-          height: 16px;
+          width: 1rem;
+          height: 1rem;
           filter: invert(0);
         }
 
@@ -219,7 +217,7 @@ export default class Header extends HTMLElement {
 
         .header-buttons {
           display: flex;
-          gap: 10px;
+          gap: 0.625rem;
           align-items: center;
         }
 
@@ -228,29 +226,29 @@ export default class Header extends HTMLElement {
           background-color: var(--header-button-bg);
           color: var(--header-button-text);
           border: none;
-          padding: 8px 16px;
-          border-radius: 20px;
-          font-size: 14px;
-          height: 36px;
+          padding: 0.5rem 1rem;
+          border-radius: 1.25rem;
+          font-size: 0.875rem;
+          height: 2.25rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 0.375rem;
           transition: var(--transition);
         }
 
         button i {
-          font-size: 14px;
+          font-size: 0.875rem;
         }
 
         button.user-logged-in {
-          padding: 4px 12px;
+          padding: 0.25rem 0.75rem;
         }
 
         button:hover {
           background-color: var(--header-button-hover);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px var(--header-shadow);
+          transform: translateY(-0.125rem);
+          box-shadow: 0 0.25rem 0.5rem var(--header-shadow);
         }
 
         #cart-btn {
@@ -259,19 +257,19 @@ export default class Header extends HTMLElement {
 
         #cart-count {
           position: absolute;
-          top: -5px;
-          right: -5px;
+          top: -0.3125rem;
+          right: -0.3125rem;
           background-color: #6F4E37; 
           color: #fff;
           border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
-          width: 24px;
-          height: 16px;
+          width: 1.5rem;
+          height: 1rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
+          font-size: 0.75rem;
           font-weight: bold;
-          box-shadow: inset 0 0 2px #3e2b23; 
+          box-shadow: inset 0 0 0.125rem #3e2b23; 
           font-family: sans-serif;
         }
 
@@ -284,8 +282,8 @@ export default class Header extends HTMLElement {
           display: none;
           flex-direction: column;
           justify-content: space-around;
-          width: 30px;
-          height: 30px;
+          width: 1.875rem;
+          height: 1.875rem;
           background: transparent;
           border: none;
           cursor: pointer;
@@ -293,17 +291,26 @@ export default class Header extends HTMLElement {
           z-index: 1001;
         }
 
+        .hamburger:hover {
+          background: transparent;
+        }
+
+        .hamburger:focus {
+          outline: none;
+          background: transparent;
+        }
+
         .hamburger span {
           width: 100%;
-          height: 3px;
+          height: 0.1875rem;
           background-color: var(--header-text);
-          border-radius: 2px;
+          border-radius: 0.125rem;
           transition: var(--transition);
           transform-origin: center;
         }
 
         .hamburger.active span:nth-child(1) {
-          transform: rotate(45deg) translate(6px, 6px);
+          transform: rotate(45deg) translate(0.375rem, 0.375rem);
         }
 
         .hamburger.active span:nth-child(2) {
@@ -311,7 +318,7 @@ export default class Header extends HTMLElement {
         }
 
         .hamburger.active span:nth-child(3) {
-          transform: rotate(-45deg) translate(6px, -6px);
+          transform: rotate(-45deg) translate(0.375rem, -0.375rem);
         }
 
         .mobile-menu {
@@ -325,7 +332,7 @@ export default class Header extends HTMLElement {
           transform: translateX(-100%);
           transition: transform 0.3s ease;
           overflow-y: auto;
-          padding-top: 80px;
+          padding-top: 5rem;
         }
 
         .mobile-menu.active {
@@ -333,56 +340,56 @@ export default class Header extends HTMLElement {
         }
 
         .mobile-menu-content {
-          padding: 20px;
+          padding: 1.25rem;
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 1.25rem;
         }
 
         .mobile-search {
-          margin-bottom: 20px;
+          margin-bottom: 1.25rem;
         }
 
         .mobile-search .search-wrapper {
           position: relative;
-          margin-bottom: 10px;
+          margin-bottom: 0.625rem;
         }
 
         .mobile-search .search-input {
           width: 100%;
-          padding: 12px 16px;
-          border-radius: 25px;
-          border: 2px solid var(--header-shadow);
+          padding: 0.75rem 1rem;
+          border-radius: 1.5625rem;
+          border: 0.125rem solid var(--header-shadow);
           background-color: var(--header-bg);
           color: var(--header-text);
-          font-size: 16px;
+          font-size: 1rem;
         }
 
         .mobile-search .search-button {
           width: 100%;
-          padding: 12px;
-          border-radius: 25px;
-          font-size: 16px;
+          padding: 0.75rem;
+          border-radius: 1.5625rem;
+          font-size: 1rem;
           height: auto;
         }
 
         .mobile-menu-items {
           display: flex;
           flex-direction: column;
-          gap: 15px;
+          gap: 0.9375rem;
         }
 
         .mobile-menu-item {
           display: flex;
           align-items: center;
-          padding: 15px 20px;
+          padding: 0.9375rem 1.25rem;
           background-color: var(--header-button-bg);
           color: var(--header-button-text);
-          border-radius: 15px;
+          border-radius: 0.9375rem;
           text-decoration: none;
-          font-size: 16px;
+          font-size: 1rem;
           font-weight: 500;
-          gap: 12px;
+          gap: 0.75rem;
           cursor: pointer;
           border: none;
           width: 100%;
@@ -392,12 +399,12 @@ export default class Header extends HTMLElement {
 
         .mobile-menu-item:hover {
           background-color: var(--header-button-hover);
-          transform: translateX(5px);
+          transform: translateX(0.3125rem);
         }
 
         .mobile-menu-item i {
-          font-size: 18px;
-          width: 24px;
+          font-size: 1.125rem;
+          width: 1.5rem;
           text-align: center;
         }
 
@@ -409,31 +416,31 @@ export default class Header extends HTMLElement {
           background-color: #6F4E37;
           color: #fff;
           border-radius: 50%;
-          width: 20px;
-          height: 20px;
+          width: 1.25rem;
+          height: 1.25rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
+          font-size: 0.75rem;
           font-weight: bold;
           margin-left: auto;
         }
 
         /* User section in mobile menu */
         .mobile-user-section {
-          border-top: 1px solid var(--header-shadow);
-          padding-top: 20px;
-          margin-top: 20px;
+          border-top: 0.0625rem solid var(--header-shadow);
+          padding-top: 1.25rem;
+          margin-top: 1.25rem;
         }
 
         .mobile-user-info {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 15px 20px;
+          gap: 0.75rem;
+          padding: 0.9375rem 1.25rem;
           background-color: #f9f5f1;
-          border-radius: 15px;
-          margin-bottom: 15px;
+          border-radius: 0.9375rem;
+          margin-bottom: 0.9375rem;
         }
 
         :host([theme="dark"]) .mobile-user-info {
@@ -441,8 +448,8 @@ export default class Header extends HTMLElement {
         }
 
         .mobile-user-avatar {
-          width: 40px;
-          height: 40px;
+          width: 2.5rem;
+          height: 2.5rem;
           border-radius: 50%;
           background-color: #6f4e37;
           color: #fff;
@@ -450,7 +457,7 @@ export default class Header extends HTMLElement {
           align-items: center;
           justify-content: center;
           font-weight: 600;
-          font-size: 16px;
+          font-size: 1rem;
           flex-shrink: 0;
         }
 
@@ -461,12 +468,12 @@ export default class Header extends HTMLElement {
         .mobile-user-name {
           font-weight: 600;
           color: var(--header-title);
-          font-size: 16px;
-          margin-bottom: 2px;
+          font-size: 1rem;
+          margin-bottom: 0.125rem;
         }
 
         .mobile-user-email {
-          font-size: 14px;
+          font-size: 0.875rem;
           color: var(--header-text);
           opacity: 0.8;
         }
@@ -481,6 +488,7 @@ export default class Header extends HTMLElement {
         }
 
         /* User Account Styling for Desktop */
+        
         .user-container {
           position: relative;
         }
@@ -488,15 +496,15 @@ export default class Header extends HTMLElement {
         .user-btn {
           display: flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px 10px;
+          gap: 0.375rem;
+          padding: 0.375rem 0.625rem;
           background: transparent;
           border: none;
         }
 
         .user-avatar {
-          width: 24px;
-          height: 24px;
+          width: 1.5rem;
+          height: 1.5rem;
           border-radius: 50%;
           background-color: #6f4e37;
           color: #fff;
@@ -504,13 +512,13 @@ export default class Header extends HTMLElement {
           align-items: center;
           justify-content: center;
           font-weight: 600;
-          font-size: 12px;
+          font-size: 0.75rem;
           flex-shrink: 0;
         }
 
         .user-name {
-          font-size: 13px;
-          max-width: 80px;
+          font-size: 0.8125rem;
+          max-width: 5rem;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -519,14 +527,14 @@ export default class Header extends HTMLElement {
 
         .user-dropdown {
           position: absolute;
-          top: calc(100% + 8px);
+          top: calc(100% + 0.5rem);
           right: 0;
-          width: 200px;
+          width: 12.5rem;
           background-color: #fff;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border-radius: 0.5rem;
+          box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
           opacity: 0;
-          transform: translateY(-10px);
+          transform: translateY(-0.625rem);
           visibility: hidden;
           transition: all 0.3s ease;
           z-index: 1500; 
@@ -534,7 +542,7 @@ export default class Header extends HTMLElement {
 
         :host([theme="dark"]) .user-dropdown {
           background-color: #2d2520;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.3);
         }
 
         .user-dropdown.visible {
@@ -544,20 +552,20 @@ export default class Header extends HTMLElement {
         }
 
         .dropdown-header {
-          padding: 12px 16px;
-          border-bottom: 1px solid #f1f1f1;
+          padding: 0.75rem 1rem;
+          border-bottom: 0.0625rem solid #f1f1f1;
           background-color: #f9f5f1;
         }
 
         :host([theme="dark"]) .dropdown-header {
           background-color: #3a322c;
-          border-bottom: 1px solid #4a4038;
+          border-bottom: 0.0625rem solid #4a4038;
         }
 
         .dropdown-header .user-full-name {
           font-weight: 600;
           color: #6f4e37;
-          font-size: 15px;
+          font-size: 0.9375rem;
         }
 
         :host([theme="dark"]) .dropdown-header .user-full-name {
@@ -565,7 +573,7 @@ export default class Header extends HTMLElement {
         }
 
         .dropdown-header .user-email {
-          font-size: 13px;
+          font-size: 0.8125rem;
           color: #8b5a2b;
           word-break: break-word;
         }
@@ -575,16 +583,16 @@ export default class Header extends HTMLElement {
         }
 
         .dropdown-menu {
-          padding: 8px 0;
+          padding: 0.5rem 0;
         }
 
         .dropdown-item {
-          padding: 10px 16px;
+          padding: 0.625rem 1rem;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 0.625rem;
           color: #3c2f24;
-          font-size: 14px;
+          font-size: 0.875rem;
           cursor: pointer;
         }
 
@@ -605,21 +613,21 @@ export default class Header extends HTMLElement {
         }
 
         .dropdown-item .icon {
-          font-size: 16px;
-          width: 20px;
+          font-size: 1rem;
+          width: 1.25rem;
           text-align: center;
         }
 
-        /* Responsive breakpoints */
-        @media (max-width: 1024px) {
-          .search-container {
-            max-width: 300px;
+        /* Responsive */
+        @media (max-width: 64rem) {
+          .search-wrapper {
+            width: 18.75rem;
           }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 48rem) {
           header {
-            padding: 12px 16px;
+            padding: 0.75rem 1rem;
           }
 
           .desktop-nav {
@@ -635,36 +643,36 @@ export default class Header extends HTMLElement {
           }
 
           header h1 {
-            font-size: 18px;
+            font-size: 1.125rem;
           }
 
           .logo {
-            height: 40px;
-            margin-right: 8px;
+            height: 2.5rem;
+            margin-right: 0.5rem;
           }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 30rem) {
           header {
-            padding: 10px 12px;
+            padding: 0.625rem 0.75rem;
           }
 
           header h1 {
-            font-size: 16px;
+            font-size: 1rem;
           }
 
           .logo {
-            height: 35px;
-            margin-right: 6px;
+            height: 2.1875rem;
+            margin-right: 0.375rem;
           }
 
           .hamburger {
-            width: 28px;
-            height: 28px;
+            width: 1.75rem;
+            height: 1.75rem;
           }
 
           .hamburger span {
-            height: 2.5px;
+            height: 0.15625rem;
           }
         }
 
