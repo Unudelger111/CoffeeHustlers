@@ -325,18 +325,28 @@ class HistoryView extends HTMLElement {
       }
 
       .view-btn {
-        background-color: ${this.currentTheme === 'dark' ? 'var(--button-bg-dark)' : 'var(--button-bg-light)'};
-        color: ${this.currentTheme === 'dark' ? 'var(--button-text-dark)' : 'var(--button-text-light)'};
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+        background-image: ${this.currentTheme === 'dark' 
+        ? 'linear-gradient(45deg, #a67c52, #b39268)' 
+        : 'linear-gradient(45deg, #6f4e37, #a67c52)'};
+      color: ${this.currentTheme === 'dark' ? 'var(--button-text-dark)' : 'var(--button-text-light)'};
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background-image 0.3s ease;
+          box-shadow: ${this.currentTheme === 'dark' 
+      ? '0 4px 6px rgba(166, 124, 82, 0.6)' 
+      : '0 4px 6px rgba(111, 78, 55, 0.6)'};  
+        box-shadow: ${this.currentTheme === 'dark' 
+      ? '0 6px 10px rgba(211, 180, 140, 0.8)' 
+      : '0 6px 10px rgba(166, 124, 82, 0.8)'};
       }
 
       .view-btn:hover {
-        background-color: ${this.currentTheme === 'dark' ? '#b39268' : '#a67c52'};
+         background-image: ${this.currentTheme === 'dark' 
+    ? 'linear-gradient(45deg, #b39268, #d2b48c)' 
+    : 'linear-gradient(45deg, #a67c52, #b39268)'};
       }
 
       .item-list {
