@@ -1,17 +1,17 @@
-export default class Footer extends HTMLElement {
+export default class Footer extends HTMLElement {   //class aa zarlaj bga
   constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.render();
+    super();  //Parent baiguulagch duudna
+    this.attachShadow({ mode: "open" }); //Shadow DOM-iig zarlaj bga
+    this.render(); //Customer method-iig duudna. Ene ni Shadow DOM-iig HTML CSS-eer duurgej bga
   }
 
   styleSheet = `
     <style>
       footer {
-          background-color: #333;
-          color: white;
-          padding: 30px 0 15px;
-          margin-top: 30px;
+          background-color: #333;   //ariin ungu
+          color: white;             // textiin ungu
+          padding: 30px 0 15px;     //deereesee 30px , dooshoo 15px padding
+          margin-top: 30px;         // footer-iin deesh 30px margin
       }
 
       .footer-content {
@@ -87,7 +87,7 @@ export default class Footer extends HTMLElement {
     </style>
   `
 
-  render() {
+  render() {    //Shadow DOM-iig HTML CSS-eer duurgej bga method
     this.shadowRoot.innerHTML = `
       ${this.styleSheet}
       <footer>
@@ -125,4 +125,4 @@ export default class Footer extends HTMLElement {
   }
 }
 
-customElements.define('my-footer', Footer);
+customElements.define('my-footer', Footer);     //Custom Element zarlaj ugj bga

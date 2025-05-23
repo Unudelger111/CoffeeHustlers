@@ -122,7 +122,7 @@ export default class Header extends HTMLElement {
         }
 
         .logo {
-          height: 50px;
+          height:50px;
           margin-right: 10px;
           transition: var(--transition);
         }

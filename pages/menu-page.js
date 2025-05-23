@@ -146,7 +146,20 @@ export default class MenuPage extends HTMLElement {
     const locationSelect = this.shadowRoot.querySelector("#location-select");
     if (!locationSelect) return;
 
-    locationSelect.innerHTML = `<option disabled selected>Select Location</option>`;
+    // Remove the placeholder option if it exists
+    while (locationSelect.firstChild) {
+      locationSelect.removeChild(locationSelect.firstChild);
+    }
+
+    // Add a new placeholder option
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = "Select Location";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    locationSelect.appendChild(placeholderOption);
+
+    // Add location options
     locations.forEach(shop => {
       const option = document.createElement("option");
       option.value = shop.id;
@@ -156,15 +169,21 @@ export default class MenuPage extends HTMLElement {
 
     if (this.restoreLocation) {
       locationSelect.value = this.restoreLocation;
-      await this.fetchCoffeeShopMenu(this.restoreLocation); 
-      window.scrollTo(0, this.savedScrollY || 0);
-      sessionStorage.removeItem("menuState"); 
-      this.restoreLocation = null;
+      // If the value was successfully set, remove the selected attribute from the placeholder
+      if (locationSelect.value === this.restoreLocation) {
+        placeholderOption.selected = false;
+        await this.fetchCoffeeShopMenu(this.restoreLocation); 
+        window.scrollTo(0, this.savedScrollY || 0);
+        sessionStorage.removeItem("menuState"); 
+        this.restoreLocation = null;
+      }
     }
 
     locationSelect.addEventListener("change", (e) => {
       const shopId = e.target.value;
       if (shopId) {
+        // Ensure placeholder is not selected
+        placeholderOption.selected = false;
         cartService.clearCart();
         sessionStorage.setItem("selectedShopId", shopId);
         this.fetchCoffeeShopMenu(shopId);
@@ -178,6 +197,12 @@ export default class MenuPage extends HTMLElement {
 
     shopSelect.addEventListener("change", (e) => {
       const selectedName = e.target.value;
+      // Ensure placeholder option is no longer selected
+      const placeholderOption = shopSelect.querySelector("option[disabled]");
+      if (placeholderOption) {
+        placeholderOption.selected = false;
+      }
+      
       const franchiseId = this.franchiseMap[selectedName];
       if (franchiseId) this.fetchLocations(franchiseId);
     });
@@ -388,6 +413,7 @@ export default class MenuPage extends HTMLElement {
           background-position: right 15px center;
           background-size: 16px;
           transition: all 0.3s ease;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236f4e37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
       }
 
       .dropdowns select:hover {
@@ -407,10 +433,21 @@ export default class MenuPage extends HTMLElement {
           color: var(--text-color, #4a3520);
           padding: 12px;
       }
-      label {
+      
+      .dropdowns label {
         font-size: 14px;
         margin-bottom: 4px;
         display: block;
+        color: var(--text-color, #4a3520);
+        font-weight: 500;
+      }
+
+      .select-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 180px;
+        max-width: 280px;
       }
 
       .menu-categories {
@@ -567,6 +604,12 @@ export default class MenuPage extends HTMLElement {
               min-width: auto;
               padding: 16px 20px;
               font-size: 16px;
+          }
+
+          .select-wrapper {
+            max-width: none;
+            min-width: auto;
+            width: 100%;
           }
 
           .menu-categories {
@@ -760,15 +803,17 @@ export default class MenuPage extends HTMLElement {
 
           ${this.franchises.length > 0 ? `
             <div class="dropdowns">
-              <label for="shop-select">Coffee Shop</label>
-              <select id="shop-select">
-                <option disabled selected>Select Coffee Shop</option>
-                ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
-              </select>
-              <label for="location-select">Location</label>
-              <select id="location-select">
-                <option disabled selected>Select Location</option>
-              </select>
+              <div class="select-wrapper">
+                <select id="shop-select">
+                  <option value="" disabled selected>Select Coffee Shop</option>
+                  ${this.franchises.map(name => `<option value="${name}">${name}</option>`).join("")}
+                </select>
+              </div>
+              <div class="select-wrapper">
+                <select id="location-select">
+                  <option value="" disabled selected>Select Location</option>
+                </select>
+              </div>
             </div>
           ` : `<p class="loading-indicator">Loading coffee shops...</p>`}
 
@@ -792,7 +837,27 @@ export default class MenuPage extends HTMLElement {
         this.renderItems();    
       });
     }
+
+    // Check if we need to restore selections
+    if (this.franchises.length > 0 && this.restoreFranchise) {
+      const shopSelect = this.shadowRoot.querySelector("#shop-select");
+      if (shopSelect) {
+        shopSelect.value = this.restoreFranchise;
+        // If value was set successfully, ensure placeholder is not selected
+        if (shopSelect.value === this.restoreFranchise) {
+          const placeholderOption = shopSelect.querySelector("option[disabled]");
+          if (placeholderOption) {
+            placeholderOption.selected = false;
+          }
+          
+          const franchiseId = this.franchiseMap[this.restoreFranchise];
+          if (franchiseId) {
+            this.fetchLocations(franchiseId);
+          }
+        }
+      }
+    }
   }
 }
 
-customElements.define('menu-page', MenuPage); 
+customElements.define('menu-page', MenuPage);

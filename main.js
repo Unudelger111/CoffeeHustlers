@@ -59,7 +59,7 @@ const hideFooterOnPaths = [
 
 // Huudas bolon url-iig uurchluh bolomjtoi Router class-iig hereglej bga.
 const router = new Router({
-  rootId: "app",   // hoooy ene page iig render hii 
+  rootId: "app",   // ene page iig render hii 
   routes: {
     '/': 'landing-page',
     '/menu': 'menu-page',

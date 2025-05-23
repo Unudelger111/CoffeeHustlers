@@ -1,17 +1,17 @@
-import { saveMenuPageState } from '../menu-state.js';
+import { saveMenuPageState } from '../menu-state.js'; //Menu giin state iig hadgalah
 
-export default class ItemCard extends HTMLElement {
+export default class ItemCard extends HTMLElement {   //item card gdg custome element-iig zarlaj bga
   static get observedAttributes() {
-    return ['id', 'name', 'price', 'img', 'description'];
+    return ['id', 'name', 'price', 'img', 'description'];   //properties-iig hadgalj bga
   }
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.render();
+    this.attachShadow({ mode: 'open' });    //Shadow DOM-iig zarlaj bga
+    this.render();                          // Ene ni Shadow DOM-iig HTML CSS-eer duurgej bga
   }
 
-  attributeChangedCallback() {
+  attributeChangedCallback() {            // Ene ni properties-iig uurchluh bolomjtoi
     this.render();
   }
 
@@ -42,10 +42,10 @@ export default class ItemCard extends HTMLElement {
     window.removeEventListener('theme-changed', this.handleThemeChange);
   }
 
-  handleThemeChange = () => {
+  handleThemeChange = () => {     //theme-changed gdg event-iig hereglej bga
     this.render();
   };
-
+  
   render() {
     const id = this.getAttribute("id") || "";
     const name = this.getAttribute("name") || "Item Name";
@@ -56,18 +56,7 @@ export default class ItemCard extends HTMLElement {
       <style>
         a {
           text-decoration: none;
-          display: block; /* Makes the entire card clickable */
-        }
-
-        button {
-          cursor: pointer;
-          background-color: var(--primary-button-bg, #d4a574);
-          color: var(--primary-button-text, #4a3520);
-          border: none;
-          padding: 8px 16px;
-          border-radius: 20px;
-          font-size: 14px;
-          transition: all 0.3s ease;
+          display: block; /* Click hiij boldg */
         }
 
         button:hover {
@@ -144,4 +133,4 @@ export default class ItemCard extends HTMLElement {
   }
 }
 
-customElements.define('item-card', ItemCard);
+customElements.define('item-card', ItemCard);   //custom element-iig zarlaj bga
